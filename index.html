@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@5.0.0/index.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/shippori-mincho@5.0.0/index.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
   --sushi-red: #c0392b;
@@ -567,6 +567,7 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   animation: badgePulse 1.5s ease-in-out infinite;
 }
 @keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.ws-grid{touch-action:none;user-select:none;-webkit-user-select:none}
 </style>
 </head>
 <body>
@@ -591,8 +592,8 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
     <h1>Was4bi</h1>
     <div class="subtitle">ワサビ • WASABI</div>
     <div class="tagline">Siswa Stetsa Bisa — SMA Negeri 4 Malang</div>
-    <input type="text" id="loginUser" placeholder="Username Guru" value="guru">
-    <input type="password" id="loginPass" placeholder="Password" value="guru123">
+    <input type="text" id="loginUser" placeholder="Username Guru">
+    <input type="password" id="loginPass" placeholder="Password">
     <button onclick="doLogin()">Masuk ke Dapur 🍱</button>
     <div class="login-error" id="loginError">Username atau password salah!</div>
     <div class="login-footer">Media Pembelajaran Bahasa Jepang Kelas XII</div>
@@ -888,7 +889,7 @@ let gameQuestions = {
     {q:"「ぜんぜん のみません」のいみは？",options:["Sering minum","Kadang minum","Sama sekali tidak minum","Jarang minum"],answer:2,spice:"medium"},
     {q:"「ろくじに たべます」は いつですか？",options:["Jam 5","Jam 6","Jam 7","Jam 8"],answer:1,spice:"medium"},
     {q:"Kalimat 「ときどき すしを たべます」 berarti?",options:["Sering makan sushi","Kadang-kadang makan sushi","Tidak pernah makan sushi","Setiap hari makan sushi"],answer:1,spice:"medium"},
-    {q:"Manakah yang merupakan bentuk ～て连接 yang benar?",options:["たべて いきます","たべます て いきます","たべて いくます","たべます ていきます"],answer:0,spice:"hot"},
+    {q:"Manakah yang merupakan bentuk ～て形 yang benar?",options:["たべて いきます","たべます て いきます","たべて いくます","たべます ていきます"],answer:0,spice:"hot"},
     {q:"「あさごはんを たべて、がっこうへ いきます」terjemahan yang tepat?",options:["Makan malam lalu tidur","Sarapan lalu pergi ke sekolah","Minum teh lalu makan","Pergi ke sekolah lalu sarapan"],answer:1,spice:"hot"},
     {q:"Bentuk negatif dari 「のみます」 adalah?",options:["のみません","のむません","のんでません","のみませんでした"],answer:0,spice:"extra"},
     {q:"「ぜんぜん」 biasanya dipasangkan dengan?",options:["Bentuk positif","Bentuk negatif","Bentuk lampau","Bentuk perintah"],answer:1,spice:"extra"},
@@ -979,12 +980,25 @@ let gameQuestions = {
     {q:"Pola 「～ので」 menunjukkan?",options:["Larangan","Alasan (karena)","Tujuan","Kondisi"],answer:1,spice:"extra"}
   ]
 };
+try { const sq = JSON.parse(localStorage.getItem('was4bi_questions') || 'null'); if (sq) gameQuestions = sq; } catch(e) {}
+function saveQuestions() { try { localStorage.setItem('was4bi_questions', JSON.stringify(gameQuestions)); } catch(e) {} }
+function exportQuestions() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(gameQuestions, null, 2)], {type:'application/json'}));
+  a.download = 'soal-was4bi.json'; a.click();
+}
+function importQuestions(inp) {
+  const f = inp.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { try { gameQuestions = JSON.parse(r.result); saveQuestions(); notify('✅ Soal berhasil diimpor'); showAdminTab('questions'); } catch(e) { notify('File JSON tidak valid', true); } };
+  r.readAsText(f);
+}
 // WORD SEARCH DATA
 const WORDSEARCH_DATA = {
   tabemono: {words:["GOHAN","MIZU","NIKU","SAKANA","PAN","CHA","SUSHI","UDON"],title:"Makanan & Minuman"},
   kaimono: {words:["KABAN","KUTSU","MISE","EN","TAKAI","YASUI","ATARASHII","FURUI"],title:"Belanja"},
   norimono: {words:["DENSHA","BASU","KURUMA","FUNE","EKI","KIPPU","MICHI","HAYAI"],title:"Transportasi"},
-  ryokou: {words:["RYOKOU","ONSEN","TERA","HOTERU","OMIYAGE","TANOSII","KIREI","SAIKOU"],title:"Perjalanan"},
+  ryokou: {words:["RYOKOU","ONSEN","TERA","HOTERU","OMIYAGE","TANOSHII","KIREI","SAIKOU"],title:"Perjalanan"},
   kisetsu: {words:["HARU","NATSU","AKI","FUYU","SAKURA","YUKI","AME","KAZE"],title:"Musim"},
   shumi: {words:["ONGAKU","EIGA","SHASHIN","RYORI","SUPORTSU","DOKUSHO","ANIME","SUPEI"],title:"Hobi"},
   shourai: {words:["YUME","SENSEI","ISHA","DAIGAKU","HATARAKU","NARU","BENKYOU","SHOURAI"],title:"Masa Depan"},
@@ -1007,13 +1021,37 @@ let currentGameTopic = 'all';
 let currentGameSpice = 'all';
 // Hand raise system
 let handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
+let usedQ = new Set();
 let currentGameType = null; // 'individual' or 'group'
+// ==================== KONFIGURASI ====================
+const TEACHER_USER = 'guru';
+const TEACHER_PASS = 'guru123'; // GANTI! (login ini hanya di sisi browser, bukan keamanan sungguhan)
+// Isi dengan URL Firebase Realtime Database agar angkat tangan bekerja lintas HP.
+// Contoh: 'https://nama-proyek-default-rtdb.firebaseio.com'  (kosong = hanya satu perangkat)
+const DB_URL = '';
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const saveLocal = () => localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+async function dbLoad() {
+  if (!DB_URL) return JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
+  try { const d = await (await fetch(DB_URL + '/hands.json')).json(); return Object.values(d || {}); } catch(e) { return handRaiseList; }
+}
+async function dbAdd(entry) {
+  if (!DB_URL) { handRaiseList.push(entry); saveLocal(); return true; }
+  try { return (await fetch(DB_URL + '/hands/' + entry.id + '.json', {method:'PUT', body:JSON.stringify(entry)})).ok; }
+  catch(e) { alert('Gagal mengirim, periksa koneksi lalu coba lagi.'); return false; }
+}
+function dbUpdate(id, patch) {
+  if (!DB_URL) return saveLocal();
+  fetch(DB_URL + '/hands/' + id + '.json', {method:'PATCH', body:JSON.stringify(patch)}).catch(() => {});
+}
+function dbClear() { if (!DB_URL) return saveLocal(); fetch(DB_URL + '/hands.json', {method:'DELETE'}).catch(() => {}); }
 // ==================== CHECK IF STUDENT VIEW ====================
 function checkStudentView() {
   const params = new URLSearchParams(window.location.search);
   const game = params.get('game');
   if (game === 'individual' || game === 'group') {
     document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('loginError').style.display = 'none';
     document.getElementById('mainApp').style.display = 'none';
     document.getElementById('studentView').classList.add('active');
     currentGameType = game;
@@ -1042,12 +1080,12 @@ function renderStudentView(gameType) {
       <input type="text" id="studentName" placeholder="✍️ Nama wakil kelompok..." style="text-align:center">
       <select id="studentGroup">
         <option value="">-- Pilih Kelompok --</option>
-        <option value="Tim A">🍣 Tim A (Sushi)</option>
-        <option value="Tim B">🍱 Tim B (Bento)</option>
-        <option value="Tim C">🍙 Tim C (Onigiri)</option>
-        <option value="Tim D">🍜 Tim D (Ramen)</option>
-        <option value="Tim E">🥟 Tim E (Gyoza)</option>
-        <option value="Tim F">🍡 Tim F (Dango)</option>
+        <option value="Tim Sushi 🍣">🍣 Tim Sushi</option>
+        <option value="Tim Bento 🍱">🍱 Tim Bento</option>
+        <option value="Tim Onigiri 🍙">🍙 Tim Onigiri</option>
+        <option value="Tim Ramen 🍜">🍜 Tim Ramen</option>
+        <option value="Tim Gyoza 🥟">🥟 Tim Gyoza</option>
+        <option value="Tim Dango 🍡">🍡 Tim Dango</option>
       </select>
       <button class="raise-hand-btn" onclick="raiseHandGroup()">
         <i class="fas fa-users"></i> Angkat Tangan Kelompok! 🙋‍♂️
@@ -1055,7 +1093,7 @@ function renderStudentView(gameType) {
     `;
   }
 }
-function raiseHandIndividual() {
+async function raiseHandIndividual() {
   const name = document.getElementById('studentName').value.trim();
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
   const entry = {
@@ -1067,17 +1105,16 @@ function raiseHandIndividual() {
     timestamp: Date.now(),
     status: 'raised'
   };
-  handRaiseList.push(entry);
-  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+  if (!(await dbAdd(entry))) return;
   const btn = document.querySelector('.raise-hand-btn');
   btn.classList.add('raised');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
   const status = document.getElementById('studentStatus');
   status.classList.add('show');
-  status.innerHTML = `✅ <strong>${name}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  status.innerHTML = `✅ <strong>${esc(name)}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
 }
-function raiseHandGroup() {
+async function raiseHandGroup() {
   const name = document.getElementById('studentName').value.trim();
   const group = document.getElementById('studentGroup').value;
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
@@ -1091,29 +1128,29 @@ function raiseHandGroup() {
     timestamp: Date.now(),
     status: 'raised'
   };
-  handRaiseList.push(entry);
-  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+  if (!(await dbAdd(entry))) return;
   const btn = document.querySelector('.raise-hand-btn');
   btn.classList.add('raised');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
   const status = document.getElementById('studentStatus');
   status.classList.add('show');
-  status.innerHTML = `✅ <strong>group</strong>({name}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  status.innerHTML = `✅ <strong>${esc(group)}</strong> (${esc(name)}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
 }
 // Refresh hand list periodically
-setInterval(() => {
-  handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
-  if (currentPage === 'gameIndividual' || currentPage === 'gameGroup') {
+setInterval(async () => {
+  if (currentPage === 'gameIndividual' || currentPage === 'gameGroup' || currentPage === 'dashboard') {
+    handRaiseList = await dbLoad();
     renderHandList();
   }
-}, 2000);
+}, 3000);
 // ==================== LOGIN ====================
 function doLogin() {
   const u = document.getElementById('loginUser').value;
   const p = document.getElementById('loginPass').value;
-  if(u === 'guru' && p === 'guru123') {
+  if(u === TEACHER_USER && p === TEACHER_PASS) {
     document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('loginError').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     showPage('dashboard');
   } else {
@@ -1128,6 +1165,8 @@ function doLogout() {
 function showPage(page) {
   currentPage = page;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sidebar').classList.remove('open');
+  { const nv=[...document.querySelectorAll('.nav-item')].find(n=>(n.getAttribute('onclick')||'')==="showPage('"+page+"')"); if(nv) nv.classList.add('active'); }
   const area = document.getElementById('contentArea');
   if(page === 'dashboard') {
     document.getElementById('pageTitle').innerHTML = '🏮 Dashboard';
@@ -1148,6 +1187,8 @@ function showMaterial(key) {
   currentMaterial = key;
   currentPage = 'material';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sidebar').classList.remove('open');
+  { const nv=[...document.querySelectorAll('.nav-item')].find(n=>(n.getAttribute('onclick')||'')==="showMaterial('"+key+"')"); if(nv) nv.classList.add('active'); }
   document.getElementById('pageTitle').innerHTML = MATERIALS[key].icon + ' ' + MATERIALS[key].title;
   renderMaterial(key);
 }
@@ -1234,7 +1275,7 @@ function renderMaterial(key) {
         <div class="back-btn" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Kembali ke Menu</div>
         <h1>${m.icon} ${m.title}</h1>
         <div class="jp-title">${m.jp}</div>
-        <p class="editable-field" contenteditable="editMode">{m.description}</p>
+        <p class="editable-field" contenteditable="${editMode}">${m.description}</p>
       </div>
       <div class="section-block">
         <h2><i class="fas fa-spell-check"></i> Kosakata (言葉)</h2>
@@ -1245,9 +1286,9 @@ function renderMaterial(key) {
             ${m.vocab.map((v,i) => `
               <tr>
                 <td>${i+1}</td>
-                <td class="jp editable-field" contenteditable="editMode">{v.jp}</td>
-                <td class="romaji editable-field" contenteditable="editMode">{v.romaji}</td>
-                <td class="editable-field" contenteditable="editMode">{v.id}</td>
+                <td class="jp editable-field" contenteditable="${editMode}">${v.jp}</td>
+                <td class="romaji editable-field" contenteditable="${editMode}">${v.romaji}</td>
+                <td class="editable-field" contenteditable="${editMode}">${v.id}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -1259,13 +1300,13 @@ function renderMaterial(key) {
         ${m.grammar.map(g => `
           <div class="grammar-box">
             <div class="pattern editable-field" contenteditable="${editMode}">📌 ${g.pattern}</div>
-            <div class="meaning editable-field" contenteditable="editMode">{g.meaning}</div>
+            <div class="meaning editable-field" contenteditable="${editMode}">${g.meaning}</div>
             <h3>Contoh Kalimat:</h3>
             ${g.examples.map(e => `
               <div class="example">
-                <div class="jp-sentence editable-field" contenteditable="editMode">{e.jp}</div>
-                <div class="romaji-sentence editable-field" contenteditable="editMode">{e.romaji}</div>
-                <div class="id-sentence editable-field" contenteditable="editMode">{e.id}</div>
+                <div class="jp-sentence editable-field" contenteditable="${editMode}">${e.jp}</div>
+                <div class="romaji-sentence editable-field" contenteditable="${editMode}">${e.romaji}</div>
+                <div class="id-sentence editable-field" contenteditable="${editMode}">${e.id}</div>
               </div>
             `).join('')}
           </div>
@@ -1335,7 +1376,7 @@ function renderIndividualGame() {
         <h2 style="border:none;padding:0;margin-bottom:12px">🎯 Pilih Filter Soal</h2>
         <div class="topic-selector" id="gameTopicSelector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="setGameTopic('k',this)">{v.icon} ${v.title}</button>
+            <button class="topic-btn" onclick="setGameTopic('${k}',this)">${v.icon} ${v.title}</button>
           `).join('')}
           <button class="topic-btn active" onclick="setGameTopic('all',this)">🎲 Semua</button>
         </div>
@@ -1353,7 +1394,7 @@ function renderIndividualGame() {
       </div>
       <div class="game-board" id="gameBoard">
         ${Array.from({length:16}, (_,i) => `
-          <div class="game-box" id="boxi"onclick="openBox({i})">
+          <div class="game-box" id="box${i}" onclick="openBox(${i})">
             <span class="box-num">${i+1}</span>
             <span>🍣</span>
           </div>
@@ -1367,7 +1408,7 @@ function renderIndividualGame() {
   // Generate QR
   setTimeout(() => {
     const qrContainer = document.getElementById('qrIndividual');
-    if (qrContainer) {
+    if (qrContainer && typeof QRCode !== 'undefined') {
       new QRCode(qrContainer, {
         text: qrUrl,
         width: 140,
@@ -1407,7 +1448,11 @@ function getGameQuestion() {
     });
   });
   if (pool.length === 0) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
+  let fresh = pool.filter(q => !usedQ.has(q.q));
+  if (fresh.length === 0) { usedQ.clear(); fresh = pool; }
+  const pick = fresh[Math.floor(Math.random() * fresh.length)];
+  usedQ.add(pick.q);
+  return pick;
 }
 function openBox(idx) {
   if(openedBoxes.has(idx)) return;
@@ -1420,16 +1465,16 @@ function openBox(idx) {
     <h3>🍣 Soal #${gameTotal + 1}</h3>
     <div class="q-meta">
       <span class="q-tag topic">${q.topic}</span>
-      <span class="q-tag spice spice-q.spice==='extra'?'extra':q.spice">{spiceInfo.label}</span>
+      <span class="q-tag spice spice-${q.spice}">${spiceInfo.label}</span>
       <span class="q-tag" style="background:rgba(212,160,23,0.2);color:var(--gold)">+${spiceInfo.points} poin</span>
     </div>
     <div class="question">${q.q}</div>
     <div class="quiz-options">
       ${q.options.map((o,i) => `
-        <div class="quiz-option" onclick="selectOption(this,i)"data-idx="{i}">${String.fromCharCode(65+i)}. ${o}</div>
+        <div class="quiz-option" onclick="selectOption(this,${i})" data-idx="${i}">${String.fromCharCode(65+i)}. ${o}</div>
       `).join('')}
     </div>
-    <button class="quiz-submit" onclick="submitAnswer(q.answer,{idx},${spiceInfo.points})">Jawab</button>
+    <button class="quiz-submit" onclick="submitAnswer(${q.answer},${idx},${spiceInfo.points})">Jawab</button>
     <div class="quiz-result" id="quizResult"></div>
   `;
   modal.classList.add('show');
@@ -1464,17 +1509,15 @@ function submitAnswer(correct, boxIdx, points) {
     result.className = 'quiz-result show wrong';
     result.innerHTML = '❌ Salah! Jawaban yang benar ditandai hijau.';
   }
-  document.getElementById('gameScoreDisplay').textContent = `gameScore({gameCorrect}/${gameTotal})`;
-  setTimeout(() => {
-    document.getElementById('quizModal').classList.remove('show');
-  }, 2200);
+  document.getElementById('gameScoreDisplay').textContent = `${gameScore} poin (${gameCorrect}/${gameTotal} benar)`;
+  result.innerHTML += '<br><button class="quiz-submit" style="margin-top:10px" onclick="document.getElementById(\'quizModal\').classList.remove(\'show\')">Lanjut ▶</button>';
 }
 function resetGame() {
-  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
+  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set(); usedQ.clear();
   const board = document.getElementById('gameBoard');
   if(board) {
     board.innerHTML = Array.from({length:16}, (_,i) => `
-      <div class="game-box" id="boxi"onclick="openBox({i})">
+      <div class="game-box" id="box${i}" onclick="openBox(${i})">
         <span class="box-num">${i+1}</span>
         <span>🍣</span>
       </div>
@@ -1502,8 +1545,8 @@ function renderHandList() {
       <div class="hand-info">
         <div class="hand-icon">${h.type === 'group' ? '👥' : '🙋'}</div>
         <div>
-          <div class="hand-name">${h.name} ${h.group ? `<span style="color:var(--wasabi);font-size:11px">• ${h.group}</span>` : ''}</div>
-          <div class="hand-meta">h.type==='group'?'Kelompok':'Individu'•Urutan#{idx + 1}</div>
+          <div class="hand-name">${esc(h.name)} ${h.group ? `<span style="color:var(--wasabi);font-size:11px">• ${esc(h.group)}</span>` : ''}</div>
+          <div class="hand-meta">${h.type==='group'?'Kelompok':'Individu'} • Urutan #${idx + 1}</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -1519,31 +1562,19 @@ function renderHandList() {
 function callStudent(id) {
   const entry = handRaiseList.find(h => h.id === id);
   if (entry) {
-    notify(`📢 Memanggil entry.name{entry.group ? ' (' + entry.group + ')' : ''}!`);
+    notify(`📢 Memanggil ${entry.name}${entry.group ? ' (' + entry.group + ')' : ''}!`);
   }
 }
 function lowerHand(id) {
-  const entry = handRaiseList.find(h => h.id === id);
-  if (entry) {
-    entry.status = 'lowered';
-    localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
-    renderHandList();
-    notify(`Tangan ${entry.name} diturunkan`);
-  }
+  const e = handRaiseList.find(h => h.id === id);
+  if (e) { e.status = 'lowered'; dbUpdate(id, {status:'lowered'}); renderHandList(); notify(`Tangan ${e.name} diturunkan`); }
 }
 function lowerAllHands() {
-  handRaiseList.forEach(h => h.status = 'lowered');
-  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
-  renderHandList();
-  notify('Semua tangan diturunkan');
+  handRaiseList.forEach(h => { if (h.status === 'raised') { h.status = 'lowered'; dbUpdate(h.id, {status:'lowered'}); } });
+  renderHandList(); notify('Semua tangan diturunkan');
 }
 function clearHandHistory() {
-  if (confirm('Hapus semua riwayat angkat tangan?')) {
-    handRaiseList = [];
-    localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
-    renderHandList();
-    notify('Riwayat dihapus');
-  }
+  if (confirm('Hapus semua riwayat angkat tangan?')) { handRaiseList = []; dbClear(); renderHandList(); notify('Riwayat dihapus'); }
 }
 // ==================== GROUP GAME ====================
 function renderGroupGame() {
@@ -1553,7 +1584,9 @@ function renderGroupGame() {
     {name:"Tim Sushi 🍣",score:0},
     {name:"Tim Bento 🍱",score:0},
     {name:"Tim Onigiri 🍙",score:0},
-    {name:"Tim Ramen 🍜",score:0}
+    {name:"Tim Ramen 🍜",score:0},
+    {name:"Tim Gyoza 🥟",score:0},
+    {name:"Tim Dango 🍡",score:0}
   ];
   const baseUrl = window.location.href.split('?')[0].split('#')[0];
   const qrUrl = baseUrl + '?game=group';
@@ -1564,7 +1597,7 @@ function renderGroupGame() {
         <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Cari kata-kata tersembunyi di dalam kotak! Setiap tim bergiliran menemukan kata.</p>
         <div class="topic-selector" id="wsTopicSelector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn k==='tabemono'?'active':''"onclick="setWsTopic('{k}',this)">${v.icon} ${v.title}</button>
+            <button class="topic-btn ${k===wsCurrentTopic?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>
           `).join('')}
         </div>
       </div>
@@ -1594,7 +1627,7 @@ function renderGroupGame() {
   `;
   setTimeout(() => {
     const qrContainer = document.getElementById('qrGroup');
-    if (qrContainer) {
+    if (qrContainer && typeof QRCode !== 'undefined') {
       new QRCode(qrContainer, {
         text: qrUrl,
         width: 140,
@@ -1636,9 +1669,9 @@ function startWordSearch() {
       <div class="ws-grid-wrapper">
         <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${gridSize},36px)">
           ${grid.map((row,r) => row.map((cell,c) => `
-            <div class="ws-cell" data-r="r"data-c="{c}" 
-                 onmousedown="wsStartSelect(r,{c})" 
-                 onmouseover="wsMoveSelect(r,{c})" 
+            <div class="ws-cell" data-r="${r}" data-c="${c}" 
+                 onmousedown="wsStartSelect(${r},${c})" 
+                 onmouseover="wsMoveSelect(${r},${c})" 
                  onmouseup="wsEndSelect()">${cell}</div>
           `).join('')).join('')}
         </div>
@@ -1647,14 +1680,14 @@ function startWordSearch() {
           ${wsTeams.map((t,i) => `
             <div class="ws-team-score">
               <span style="font-size:13px">${t.name}</span>
-              <span style="font-weight:700;color:var(--gold)" id="teamScorei">{t.score}</span>
+              <span style="font-weight:700;color:var(--gold)" id="teamScore${i}">${t.score}</span>
             </div>
           `).join('')}
           <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
             <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Pilih tim yang menemukan kata:</p>
             <div class="topic-selector" id="wsTeamSelector">
               ${wsTeams.map((t,i) => `
-                <button class="topic-btn i===0?'active':''"onclick="selectWsTeam({i},this)">${t.name}</button>
+                <button class="topic-btn ${i===wsCurrentTeam?'active':''}" onclick="selectWsTeam(${i},this)">${t.name}</button>
               `).join('')}
             </div>
           </div>
@@ -1672,10 +1705,10 @@ function selectWsTeam(idx, btn) {
 function generateWordGrid(words, size) {
   let grid = Array.from({length:size}, () => Array(size).fill(''));
   const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1]];
-  const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-  words.forEach(word => {
+  const katakana = 'ABCDEFGHIJKLMNOPRSTUWYZ';
+  [...words].sort((a,b)=>b.length-a.length).forEach(word => {
     let placed = false;
-    for(let attempt = 0; attempt < 100 && !placed; attempt++) {
+    for(let attempt = 0; attempt < 500 && !placed; attempt++) {
       const dir = directions[Math.floor(Math.random() * directions.length)];
       const startR = Math.floor(Math.random() * size);
       const startC = Math.floor(Math.random() * size);
@@ -1729,15 +1762,16 @@ function wsMoveSelect(r, c) {
 function wsEndSelect() {
   if(!wsSelecting) return;
   wsSelecting = false;
-  const word = wsSelectedCells.map(({r,c}) => {
-    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+  let word = wsSelectedCells.map(({r,c}) => {
+    const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
     return cell ? cell.textContent : '';
   }).join('');
   const data = WORDSEARCH_DATA[wsCurrentTopic];
+  if(data && !data.words.includes(word)) { const rv=[...word].reverse().join(''); if(data.words.includes(rv)) word=rv; }
   if(data && data.words.includes(word) && !wsFoundWords.includes(word)) {
     wsFoundWords.push(word);
     wsSelectedCells.forEach(({r,c}) => {
-      const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+      const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
       if(cell) cell.classList.add('found-cell');
     });
     const wordEl = document.getElementById('wsw_' + word);
@@ -1745,7 +1779,7 @@ function wsEndSelect() {
     wsTeams[wsCurrentTeam].score += 10;
     const scoreEl = document.getElementById('teamScore' + wsCurrentTeam);
     if(scoreEl) scoreEl.textContent = wsTeams[wsCurrentTeam].score;
-    notify(`wsTeams[wsCurrentTeam].namemenemukan"{word}"! +10 poin`);
+    notify(`${wsTeams[wsCurrentTeam].name} menemukan "${word}"! +10 poin`);
     if(wsFoundWords.length === data.words.length) {
       setTimeout(() => {
         const winner = wsTeams.reduce((a,b) => a.score > b.score ? a : b);
@@ -1759,7 +1793,7 @@ function wsEndSelect() {
 function updateWsSelection() {
   document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
   wsSelectedCells.forEach(({r,c}) => {
-    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+    const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
     if(cell && !cell.classList.contains('found-cell')) cell.classList.add('selecting');
   });
 }
@@ -1788,9 +1822,10 @@ function showAdminTab(tab, btn) {
     content.innerHTML = `
       <div class="admin-form">
         <h3>📝 Daftar Soal per Sub-Tema (dengan Tingkat Kepedasan)</h3>
+        <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-secondary" onclick="exportQuestions()">⬇️ Ekspor Soal (JSON)</button><label class="btn-secondary" style="cursor:pointer">⬆️ Impor Soal<input type="file" accept=".json" hidden onchange="importQuestions(this)"></label></div>
         <div class="topic-selector" style="margin-bottom:14px">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showQuestionsFor('k',this)">{v.icon} v.title({gameQuestions[k]?.length || 0})</button>
+            <button class="topic-btn" onclick="showQuestionsFor('${k}',this)">${v.icon} ${v.title} (${gameQuestions[k]?.length || 0})</button>
           `).join('')}
         </div>
         <div id="questionListArea">
@@ -1856,7 +1891,7 @@ function showAdminTab(tab, btn) {
         <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Aktifkan "Mode Edit" di pojok kanan atas, lalu pilih sub-tema yang ingin diedit:</p>
         <div class="topic-selector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showMaterial('k');if(!editMode)toggleEditMode()">{v.icon} ${v.title}</button>
+            <button class="topic-btn" onclick="showMaterial('${k}');if(!editMode)toggleEditMode()">${v.icon} ${v.title}</button>
           `).join('')}
         </div>
         <div style="margin-top:16px;padding:14px;background:rgba(0,0,0,0.3);border-radius:10px;border-left:3px solid var(--wasabi)">
@@ -1881,11 +1916,11 @@ function showQuestionsFor(topic, btn) {
         <div class="question-item">
           <div class="q-text">
             <strong>${i+1}.</strong> ${q.q}<br>
-            <span class="spice-indicator spice-q.spice==='extra'?'extra':q.spice"style="margin-top:4px">{SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
+            <span class="spice-indicator spice-${q.spice}" style="margin-top:4px">${SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
             <small style="color:var(--wasabi);margin-left:8px">Jawaban: ${q.options[q.answer]}</small>
           </div>
           <div class="q-actions">
-            <button class="btn-danger" onclick="deleteQuestion('topic',{i})"><i class="fas fa-trash"></i></button>
+            <button class="btn-danger" onclick="deleteQuestion('${topic}',${i})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       `).join('')}
@@ -1907,6 +1942,7 @@ function addQuestion() {
   }
   if(!gameQuestions[topic]) gameQuestions[topic] = [];
   gameQuestions[topic].push({q:text, options:[a,b,c,d], answer, spice});
+  saveQuestions();
   document.getElementById('newQText').value = '';
   document.getElementById('newQA').value = '';
   document.getElementById('newQB').value = '';
@@ -1917,6 +1953,7 @@ function addQuestion() {
 function deleteQuestion(topic, idx) {
   if(confirm('Yakin ingin menghapus soal ini?')) {
     gameQuestions[topic].splice(idx, 1);
+    saveQuestions();
     showQuestionsFor(topic);
     notify('Soal berhasil dihapus');
   }
@@ -1933,6 +1970,11 @@ document.getElementById('quizModal').addEventListener('click', function(e) {
   if(e.target === this) this.classList.remove('show');
 });
 document.addEventListener('mouseup', () => { if(wsSelecting) wsEndSelect(); });
+const wsTouchCell = p => { const el = document.elementFromPoint(p.clientX, p.clientY); return el && el.classList && el.classList.contains('ws-cell') ? el : null; };
+document.addEventListener('touchstart', e => { const c = wsTouchCell(e.touches[0]); if (c) { e.preventDefault(); wsStartSelect(+c.dataset.r, +c.dataset.c); } }, {passive:false});
+document.addEventListener('touchmove', e => { if (!wsSelecting) return; const c = wsTouchCell(e.touches[0]); if (c) { e.preventDefault(); wsMoveSelect(+c.dataset.r, +c.dataset.c); } }, {passive:false});
+document.addEventListener('touchend', () => { if (wsSelecting) wsEndSelect(); });
+['loginUser','loginPass'].forEach(id => document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); }));
 // ==================== INIT ====================
 if (!checkStudentView()) {
   // Normal teacher flow
