@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Was4bi - Siswa Stetsa Bisa</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@5.0.0/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/shippori-mincho@5.0.0/index.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --sushi-red: #c0392b;
+  --sushi-red-dark: #922b21;
+  --sushi-red-light: #e74c3c;
+  --wood: #8B4513;
+  --wood-light: #A0522D;
+  --wood-dark: #5D2E0C;
+  --cream: #F5E6D3;
+  --cream-dark: #E8D5B7;
+  --rice: #FFFAF0;
+  --nori: #1a1a1a;
+  --nori-soft: #2d2d2d;
+  --wasabi: #7FB069;
+  --wasabi-dark: #5C8A4C;
+  --soy: #3E2723;
+  --ginger: #FFB6C1;
+  --gold: #D4A017;
+  --mild: #81C784;
+  --medium: #FFD54F;
+  --hot: #FF8A65;
+  --extra-hot: #E53935;
+  --border: rgba(139,69,19,0.3);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(--cream); min-height:100vh; overflow-x:hidden; }
+::-webkit-scrollbar { width:8px; }
+::-webkit-scrollbar-track { background:var(--nori-soft); }
+::-webkit-scrollbar-thumb { background:var(--sushi-red); border-radius:4px; }
+/* ===== BACKGROUND PATTERN ===== */
+.sushi-bg {
+  position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:0.04;
+  background-image: 
+    radial-gradient(circle at 20% 30%, var(--sushi-red) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, var(--sushi-red) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+/* ===== LOGIN ===== */
+.login-screen {
+  display:flex; align-items:center; justify-content:center; min-height:100vh;
+  background: linear-gradient(135deg, #1a0a0a 0%, #2d0f0f 50%, #1a0a0a 100%);
+  position:relative; overflow:hidden;
+}
+.login-screen::before {
+  content:''; position:absolute; top:-100px; left:-100px; width:400px; height:400px;
+  background:radial-gradient(circle, rgba(192,57,43,0.3), transparent 70%); border-radius:50%;
+}
+.login-screen::after {
+  content:''; position:absolute; bottom:-100px; right:-100px; width:500px; height:500px;
+  background:radial-gradient(circle, rgba(127,176,105,0.15), transparent 70%); border-radius:50%;
+}
+.lantern {
+  position:absolute; width:60px; height:90px; border-radius:30px;
+  background:linear-gradient(180deg, var(--sushi-red), var(--sushi-red-dark));
+  box-shadow: 0 0 40px rgba(192,57,43,0.6), inset 0 0 20px rgba(255,255,255,0.1);
+  animation: lanternSwing 4s ease-in-out infinite;
+}
+.lantern::before { content:'寿'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:var(--gold); font-size:24px; font-weight:700; font-family:'Shippori Mincho',serif; }
+.lantern::after { content:''; position:absolute; top:-20px; left:50%; transform:translateX(-50%); width:2px; height:20px; background:var(--gold); }
+.lantern-1 { top:50px; left:10%; animation-delay:0s; }
+.lantern-2 { top:80px; right:12%; animation-delay:1s; }
+.lantern-3 { top:40px; left:45%; animation-delay:2s; transform:scale(0.7); }
+@keyframes lanternSwing { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+.login-box {
+  background: linear-gradient(180deg, var(--nori-soft), var(--nori));
+  border:2px solid var(--sushi-red);
+  border-radius:20px; padding:48px 40px; width:440px; max-width:90vw; text-align:center;
+  position:relative; z-index:1; box-shadow: 0 0 60px rgba(192,57,43,0.3);
+}
+.login-box::before {
+  content:''; position:absolute; top:-2px; left:20%; right:20%; height:3px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.login-logo { font-size:72px; margin-bottom:8px; filter:drop-shadow(0 0 20px rgba(127,176,105,0.5)); }
+.login-box h1 {
+  font-family:'Shippori Mincho',serif; font-size:36px; margin-bottom:4px;
+  background:linear-gradient(135deg, var(--sushi-red-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+}
+.login-box .subtitle { color:var(--wasabi); font-size:13px; margin-bottom:4px; font-weight:600; letter-spacing:3px; }
+.login-box .tagline { color:var(--cream-dark); font-size:11px; margin-bottom:32px; opacity:0.7; }
+.login-box input {
+  width:100%; padding:14px 18px; border:1px solid var(--border); border-radius:10px;
+  background:rgba(255,255,255,0.05); color:var(--cream); font-size:14px; margin-bottom:14px; outline:none; transition:0.3s;
+}
+.login-box input:focus { border-color:var(--sushi-red); box-shadow:0 0 0 3px rgba(192,57,43,0.2); }
+.login-box button {
+  width:100%; padding:14px; border:none; border-radius:10px;
+  background:linear-gradient(135deg, var(--sushi-red), var(--sushi-red-dark));
+  color:var(--cream); font-size:15px; font-weight:600; cursor:pointer; transition:0.3s;
+  box-shadow:0 4px 20px rgba(192,57,43,0.4);
+}
+.login-box button:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(192,57,43,0.6); }
+.login-error { color:var(--sushi-red-light); font-size:12px; margin-top:8px; display:none; }
+.login-footer { margin-top:24px; font-size:10px; color:var(--cream-dark); opacity:0.5; }
+/* ===== MAIN APP ===== */
+.app { display:none; min-height:100vh; position:relative; z-index:1; }
+/* SIDEBAR */
+.sidebar {
+  position:fixed; left:0; top:0; width:280px; height:100vh;
+  background:linear-gradient(180deg, var(--nori-soft), var(--nori));
+  border-right:2px solid var(--sushi-red-dark); overflow-y:auto; z-index:100; transition:0.3s;
+}
+.sidebar-header {
+  padding:24px 20px; border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg, rgba(192,57,43,0.15), transparent);
+}
+.sidebar-header .brand { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.sidebar-header .brand-icon { font-size:28px; }
+.sidebar-header h2 {
+  font-family:'Shippori Mincho',serif; font-size:22px;
+  background:linear-gradient(135deg, var(--sushi-red-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.sidebar-header small { color:var(--wasabi); font-size:10px; letter-spacing:2px; }
+.sidebar-nav { padding:12px; }
+.nav-section { margin-bottom:8px; }
+.nav-section-title {
+  font-size:10px; text-transform:uppercase; letter-spacing:2px;
+  color:var(--sushi-red-light); padding:12px 16px 6px; font-weight:700;
+}
+.nav-item {
+  display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:8px;
+  cursor:pointer; transition:0.2s; font-size:13px; color:var(--cream-dark);
+  border-left:3px solid transparent;
+}
+.nav-item:hover { background:rgba(192,57,43,0.1); color:var(--cream); border-left-color:var(--sushi-red); }
+.nav-item.active {
+  background:linear-gradient(90deg, rgba(192,57,43,0.2), transparent);
+  color:var(--cream); border-left-color:var(--gold);
+}
+.nav-item i { width:20px; text-align:center; font-size:14px; color:var(--sushi-red-light); }
+.nav-item .badge {
+  margin-left:auto; background:var(--wasabi-dark); color:var(--cream);
+  font-size:10px; padding:2px 8px; border-radius:10px;
+}
+/* MAIN CONTENT */
+.main-content { margin-left:280px; min-height:100vh; }
+.topbar {
+  position:sticky; top:0; background:rgba(26,10,10,0.95); backdrop-filter:blur(20px);
+  border-bottom:2px solid var(--sushi-red-dark); padding:16px 32px;
+  display:flex; align-items:center; justify-content:space-between; z-index:50;
+}
+.topbar h2 { font-size:18px; display:flex; align-items:center; gap:10px; }
+.topbar-actions { display:flex; gap:12px; align-items:center; }
+.topbar-actions .edit-toggle {
+  padding:8px 16px; border-radius:8px; border:1px solid var(--wasabi);
+  background:transparent; color:var(--wasabi); font-size:12px; cursor:pointer; transition:0.3s;
+  display:flex; align-items:center; gap:6px;
+}
+.topbar-actions .edit-toggle.active { background:var(--wasabi); color:var(--nori); }
+.topbar-actions .logout-btn {
+  padding:8px 16px; border-radius:8px; border:1px solid var(--sushi-red);
+  background:transparent; color:var(--sushi-red-light); font-size:12px; cursor:pointer; transition:0.3s;
+}
+.topbar-actions .logout-btn:hover { background:var(--sushi-red); color:var(--cream); }
+.content-area { padding:32px; }
+/* ===== DASHBOARD ===== */
+.dashboard-hero {
+  background:linear-gradient(135deg, rgba(192,57,43,0.15), rgba(127,176,105,0.08));
+  border:1px solid var(--border); border-radius:20px; padding:32px;
+  margin-bottom:28px; position:relative; overflow:hidden;
+}
+.dashboard-hero::before {
+  content:'🍣'; position:absolute; right:30px; top:50%; transform:translateY(-50%);
+  font-size:120px; opacity:0.1;
+}
+.dashboard-hero h1 {
+  font-family:'Shippori Mincho',serif; font-size:32px; margin-bottom:8px;
+  background:linear-gradient(135deg, var(--sushi-red-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.dashboard-hero p { color:var(--cream-dark); font-size:14px; max-width:600px; line-height:1.7; }
+.dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:28px; }
+.stat-card {
+  background:linear-gradient(135deg, var(--nori-soft), var(--nori));
+  border:1px solid var(--border); border-radius:14px; padding:20px; transition:0.3s;
+  position:relative; overflow:hidden;
+}
+.stat-card:hover { transform:translateY(-4px); border-color:var(--sushi-red); }
+.stat-card .stat-icon {
+  width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; margin-bottom:12px;
+}
+.stat-card h3 { font-size:26px; margin-bottom:4px; color:var(--gold); }
+.stat-card p { color:var(--cream-dark); font-size:12px; }
+.material-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+.material-card {
+  background:linear-gradient(135deg, var(--nori-soft), var(--nori));
+  border:1px solid var(--border); border-radius:14px; padding:22px;
+  cursor:pointer; transition:0.3s; position:relative; overflow:hidden;
+}
+.material-card:hover { transform:translateY(-4px); border-color:var(--sushi-red); box-shadow:0 8px 30px rgba(192,57,43,0.2); }
+.material-card .card-num {
+  position:absolute; top:12px; right:16px; font-size:48px; font-weight:800; opacity:0.05;
+  font-family:'Shippori Mincho',serif;
+}
+.material-card .card-icon { font-size:36px; margin-bottom:10px; }
+.material-card h3 { font-size:16px; margin-bottom:4px; color:var(--cream); }
+.material-card .card-jp { font-size:13px; color:var(--sushi-red-light); margin-bottom:8px; }
+.material-card p { color:var(--cream-dark); font-size:12px; line-height:1.6; }
+.material-card .card-tag {
+  display:inline-block; padding:3px 10px; border-radius:10px; font-size:10px;
+  background:rgba(127,176,105,0.15); color:var(--wasabi); margin-top:8px;
+}
+/* ===== MATERIAL DETAIL ===== */
+.detail-header {
+  background:linear-gradient(135deg, rgba(192,57,43,0.12), rgba(139,69,19,0.08));
+  border:1px solid var(--border); border-radius:18px; padding:28px; margin-bottom:20px;
+  position:relative; overflow:hidden;
+}
+.detail-header::after {
+  content:'🍣'; position:absolute; right:20px; top:50%; transform:translateY(-50%);
+  font-size:100px; opacity:0.08;
+}
+.detail-header .back-btn {
+  display:inline-flex; align-items:center; gap:8px; color:var(--cream-dark);
+  font-size:13px; cursor:pointer; margin-bottom:14px; transition:0.3s;
+}
+.detail-header .back-btn:hover { color:var(--sushi-red-light); }
+.detail-header h1 { font-family:'Shippori Mincho',serif; font-size:26px; margin-bottom:4px; }
+.detail-header .jp-title { font-size:16px; color:var(--sushi-red-light); margin-bottom:10px; }
+.detail-header p { color:var(--cream-dark); font-size:13px; line-height:1.7; }
+.section-block {
+  background:var(--nori-soft); border:1px solid var(--border);
+  border-radius:14px; padding:24px; margin-bottom:18px;
+}
+.section-block h2 {
+  font-size:17px; margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  color:var(--cream); border-bottom:1px solid var(--border); padding-bottom:10px;
+}
+.section-block h2 i { color:var(--sushi-red-light); }
+.section-block h3 { font-size:14px; margin:14px 0 8px; color:var(--wasabi); }
+.vocab-table { width:100%; border-collapse:collapse; margin:10px 0; }
+.vocab-table th {
+  background:rgba(192,57,43,0.15); padding:10px 14px; text-align:left;
+  font-size:11px; color:var(--cream-dark); border-bottom:1px solid var(--border);
+  text-transform:uppercase; letter-spacing:1px;
+}
+.vocab-table td { padding:10px 14px; border-bottom:1px solid var(--border); font-size:13px; }
+.vocab-table tr:hover td { background:rgba(192,57,43,0.05); }
+.vocab-table .jp { font-size:16px; color:var(--sushi-red-light); }
+.vocab-table .romaji { color:var(--cream-dark); font-size:12px; font-style:italic; }
+.grammar-box {
+  background:rgba(0,0,0,0.3); border:1px solid var(--border); border-left:3px solid var(--gold);
+  border-radius:10px; padding:18px; margin:12px 0;
+}
+.grammar-box .pattern {
+  font-size:17px; color:var(--gold); margin-bottom:6px; font-weight:600;
+  font-family:'Shippori Mincho',serif;
+}
+.grammar-box .meaning { color:var(--cream-dark); font-size:12px; margin-bottom:12px; }
+.grammar-box .example {
+  background:rgba(192,57,43,0.05); border-radius:8px; padding:12px; margin:8px 0;
+  border-left:2px solid var(--sushi-red);
+}
+.grammar-box .example .jp-sentence { font-size:15px; color:var(--sushi-red-light); margin-bottom:4px; }
+.grammar-box .example .romaji-sentence { font-size:12px; color:var(--cream-dark); font-style:italic; margin-bottom:4px; }
+.grammar-box .example .id-sentence { font-size:12px; color:var(--wasabi); }
+/* ===== GAME - INDIVIDUAL ===== */
+.game-container { display:none; }
+.game-board { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; max-width:600px; margin:0 auto 24px; }
+.game-box {
+  aspect-ratio:1;
+  background:linear-gradient(135deg, var(--nori-soft), var(--nori));
+  border:2px solid var(--border); border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; cursor:pointer; transition:0.3s; position:relative;
+}
+.game-box:hover { transform:scale(1.05); border-color:var(--sushi-red); box-shadow:0 0 20px rgba(192,57,43,0.3); }
+.game-box.opened { background:linear-gradient(135deg,rgba(192,57,43,0.1),rgba(212,160,23,0.05)); border-color:var(--gold); cursor:default; }
+.game-box.correct { border-color:var(--wasabi); background:linear-gradient(135deg,rgba(127,176,105,0.15),rgba(127,176,105,0.05)); }
+.game-box.wrong { border-color:var(--sushi-red); background:linear-gradient(135deg,rgba(192,57,43,0.15),rgba(192,57,43,0.05)); }
+.game-box .box-num { position:absolute; top:6px; left:8px; font-size:10px; color:var(--cream-dark); }
+.game-box .box-spice { position:absolute; bottom:6px; right:8px; font-size:10px; }
+.quiz-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center; }
+.quiz-modal.show { display:flex; }
+.quiz-content {
+  background:linear-gradient(180deg, var(--nori-soft), var(--nori));
+  border:2px solid var(--sushi-red); border-radius:18px; padding:32px;
+  width:540px; max-width:90vw; max-height:85vh; overflow-y:auto;
+  box-shadow:0 0 60px rgba(192,57,43,0.3);
+}
+.quiz-content h3 { font-size:18px; margin-bottom:6px; }
+.quiz-content .q-meta { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+.quiz-content .q-tag {
+  padding:4px 12px; border-radius:12px; font-size:11px; font-weight:600;
+}
+.q-tag.topic { background:rgba(192,57,43,0.2); color:var(--sushi-red-light); }
+.q-tag.spice { }
+.spice-mild { background:rgba(129,199,132,0.2); color:var(--mild); }
+.spice-medium { background:rgba(255,213,79,0.2); color:var(--medium); }
+.spice-hot { background:rgba(255,138,101,0.2); color:var(--hot); }
+.spice-extra { background:rgba(229,57,53,0.2); color:var(--extra-hot); }
+.quiz-content .question { font-size:16px; margin-bottom:18px; line-height:1.6; }
+.quiz-options { display:flex; flex-direction:column; gap:8px; }
+.quiz-option {
+  padding:12px 16px; border:1px solid var(--border); border-radius:10px;
+  cursor:pointer; transition:0.2s; font-size:14px;
+}
+.quiz-option:hover { border-color:var(--sushi-red); background:rgba(192,57,43,0.05); }
+.quiz-option.selected { border-color:var(--gold); background:rgba(212,160,23,0.1); }
+.quiz-option.correct-answer { border-color:var(--wasabi); background:rgba(127,176,105,0.15); }
+.quiz-option.wrong-answer { border-color:var(--sushi-red); background:rgba(192,57,43,0.15); }
+.quiz-submit {
+  margin-top:18px; padding:12px 24px; border:none; border-radius:10px;
+  background:linear-gradient(135deg, var(--sushi-red), var(--sushi-red-dark));
+  color:var(--cream); font-size:14px; cursor:pointer; transition:0.3s;
+}
+.quiz-submit:hover { transform:translateY(-2px); }
+.quiz-result { margin-top:14px; padding:14px; border-radius:10px; font-size:14px; display:none; }
+.quiz-result.show { display:block; }
+.quiz-result.correct { background:rgba(127,176,105,0.1); border:1px solid var(--wasabi); color:var(--wasabi); }
+.quiz-result.wrong { background:rgba(192,57,43,0.1); border:1px solid var(--sushi-red); color:var(--sushi-red-light); }
+.game-score {
+  text-align:center; padding:18px; background:var(--nori-soft);
+  border:1px solid var(--border); border-radius:14px; margin-bottom:20px;
+}
+.game-score h3 { font-size:13px; color:var(--cream-dark); margin-bottom:6px; }
+.game-score .score-num {
+  font-size:34px; font-weight:700;
+  background:linear-gradient(135deg, var(--gold), var(--sushi-red-light));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+/* ===== HAND RAISE FEATURE ===== */
+.hand-raise-section {
+  background:linear-gradient(135deg, rgba(127,176,105,0.1), rgba(192,57,43,0.05));
+  border:1px solid var(--wasabi-dark); border-radius:16px; padding:24px; margin-bottom:24px;
+}
+.hand-raise-section h3 { font-size:16px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.hand-raise-section h3 i { color:var(--wasabi); }
+.qr-container {
+  display:flex; gap:20px; flex-wrap:wrap; align-items:center;
+}
+.qr-box {
+  background:var(--rice); padding:12px; border-radius:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+.qr-info { flex:1; min-width:200px; }
+.qr-info h4 { font-size:14px; margin-bottom:6px; color:var(--cream); }
+.qr-info p { font-size:12px; color:var(--cream-dark); line-height:1.6; margin-bottom:10px; }
+.qr-info .qr-url {
+  font-family:monospace; font-size:11px; color:var(--wasabi);
+  background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px;
+  display:inline-block; word-break:break-all;
+}
+/* Hand raise list (teacher view) */
+.hand-list {
+  max-height:400px; overflow-y:auto;
+}
+.hand-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px; background:rgba(0,0,0,0.2); border:1px solid var(--border);
+  border-radius:10px; margin-bottom:8px; transition:0.3s;
+}
+.hand-item.raised {
+  background:linear-gradient(90deg, rgba(127,176,105,0.15), transparent);
+  border-color:var(--wasabi);
+  animation: handPulse 2s ease-in-out infinite;
+}
+@keyframes handPulse {
+  0%,100% { box-shadow:0 0 0 rgba(127,176,105,0); }
+  50% { box-shadow:0 0 20px rgba(127,176,105,0.3); }
+}
+.hand-item .hand-info { display:flex; align-items:center; gap:12px; }
+.hand-item .hand-icon { font-size:24px; }
+.hand-item .hand-name { font-size:14px; font-weight:600; }
+.hand-item .hand-meta { font-size:11px; color:var(--cream-dark); }
+.hand-item .hand-time { font-size:10px; color:var(--cream-dark); }
+.hand-actions { display:flex; gap:6px; }
+.hand-btn {
+  padding:6px 10px; border-radius:6px; border:none; font-size:11px; cursor:pointer; transition:0.2s;
+}
+.hand-btn.call { background:var(--wasabi); color:var(--nori); }
+.hand-btn.call:hover { background:var(--wasabi-dark); }
+.hand-btn.lower { background:rgba(192,57,43,0.2); color:var(--sushi-red-light); }
+.hand-btn.lower:hover { background:var(--sushi-red); color:var(--cream); }
+/* ===== STUDENT VIEW (QR scan result) ===== */
+.student-view {
+  display:none; min-height:100vh;
+  background:linear-gradient(135deg, #1a0a0a, #2d0f0f);
+  padding:20px;
+}
+.student-view.active { display:block; }
+.student-card {
+  max-width:480px; margin:40px auto;
+  background:linear-gradient(180deg, var(--nori-soft), var(--nori));
+  border:2px solid var(--sushi-red); border-radius:20px; padding:32px;
+  text-align:center; box-shadow:0 0 60px rgba(192,57,43,0.3);
+}
+.student-card h2 {
+  font-family:'Shippori Mincho',serif; font-size:24px; margin-bottom:6px;
+  background:linear-gradient(135deg, var(--sushi-red-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.student-card .student-subtitle { color:var(--wasabi); font-size:12px; margin-bottom:24px; letter-spacing:2px; }
+.student-card input, .student-card select {
+  width:100%; padding:14px; border:1px solid var(--border); border-radius:10px;
+  background:rgba(255,255,255,0.05); color:var(--cream); font-size:14px;
+  margin-bottom:14px; outline:none;
+}
+.student-card input:focus, .student-card select:focus { border-color:var(--sushi-red); }
+.student-card select option { background:var(--nori); color:var(--cream); }
+.raise-hand-btn {
+  width:100%; padding:20px; border:none; border-radius:14px;
+  background:linear-gradient(135deg, var(--wasabi), var(--wasabi-dark));
+  color:var(--nori); font-size:18px; font-weight:700; cursor:pointer;
+  transition:0.3s; box-shadow:0 4px 20px rgba(127,176,105,0.4);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.raise-hand-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(127,176,105,0.6); }
+.raise-hand-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.raise-hand-btn.raised {
+  background:linear-gradient(135deg, var(--sushi-red), var(--sushi-red-dark));
+  color:var(--cream);
+}
+.student-status {
+  margin-top:20px; padding:16px; border-radius:10px;
+  background:rgba(127,176,105,0.1); border:1px solid var(--wasabi);
+  color:var(--wasabi); font-size:13px; display:none;
+}
+.student-status.show { display:block; }
+/* ===== WORD SEARCH ===== */
+.ws-words { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.ws-word {
+  padding:6px 14px; background:var(--nori-soft); border:1px solid var(--border);
+  border-radius:8px; font-size:13px; transition:0.3s;
+}
+.ws-word.found { background:rgba(127,176,105,0.2); border-color:var(--wasabi); color:var(--wasabi); text-decoration:line-through; }
+.ws-grid-wrapper { display:flex; gap:20px; flex-wrap:wrap; }
+.ws-grid { display:inline-grid; gap:2px; user-select:none; }
+.ws-cell {
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  background:var(--nori-soft); border:1px solid var(--border); border-radius:6px;
+  font-size:15px; font-weight:600; cursor:pointer; transition:0.15s;
+}
+.ws-cell:hover { background:rgba(192,57,43,0.15); }
+.ws-cell.selecting { background:rgba(212,160,23,0.2); border-color:var(--gold); }
+.ws-cell.found-cell { background:rgba(127,176,105,0.2); border-color:var(--wasabi); color:var(--wasabi); }
+.ws-info {
+  background:var(--nori-soft); border:1px solid var(--border);
+  border-radius:12px; padding:18px; min-width:200px;
+}
+.ws-info h4 { font-size:13px; margin-bottom:10px; color:var(--cream-dark); }
+.ws-team-score {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 0; border-bottom:1px solid var(--border);
+}
+.ws-team-score:last-child { border:none; }
+/* ===== ADMIN ===== */
+.admin-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+.admin-tab {
+  padding:8px 18px; border-radius:8px; border:1px solid var(--border);
+  background:transparent; color:var(--cream-dark); cursor:pointer; font-size:12px; transition:0.3s;
+}
+.admin-tab.active { background:var(--sushi-red); color:var(--cream); border-color:transparent; }
+.admin-form {
+  background:var(--nori-soft); border:1px solid var(--border);
+  border-radius:14px; padding:24px; margin-bottom:18px;
+}
+.admin-form h3 { font-size:16px; margin-bottom:14px; }
+.form-group { margin-bottom:14px; }
+.form-group label { display:block; font-size:12px; color:var(--cream-dark); margin-bottom:6px; }
+.form-group input, .form-group textarea, .form-group select {
+  width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:8px;
+  background:rgba(0,0,0,0.3); color:var(--cream); font-size:13px; outline:none; transition:0.3s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:var(--sushi-red); }
+.form-group textarea { min-height:80px; resize:vertical; }
+.form-group select option { background:var(--nori); }
+.btn-primary {
+  padding:10px 22px; border:none; border-radius:8px;
+  background:linear-gradient(135deg, var(--sushi-red), var(--sushi-red-dark));
+  color:var(--cream); font-size:13px; cursor:pointer; transition:0.3s;
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(192,57,43,0.4); }
+.btn-secondary {
+  padding:10px 22px; border:1px solid var(--border); border-radius:8px;
+  background:transparent; color:var(--cream-dark); font-size:13px; cursor:pointer; transition:0.3s;
+}
+.btn-secondary:hover { border-color:var(--cream); color:var(--cream); }
+.btn-danger {
+  padding:6px 12px; border:none; border-radius:6px;
+  background:rgba(192,57,43,0.2); color:var(--sushi-red-light); font-size:11px; cursor:pointer; transition:0.3s;
+}
+.btn-danger:hover { background:var(--sushi-red); color:var(--cream); }
+.question-list { margin-top:14px; }
+.question-item {
+  background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:10px;
+  padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;
+}
+.question-item .q-text { font-size:13px; flex:1; }
+.question-item .q-actions { display:flex; gap:6px; }
+.spice-indicator {
+  display:inline-flex; align-items:center; gap:4px; padding:3px 10px;
+  border-radius:10px; font-size:11px; font-weight:600;
+}
+.topic-selector { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.topic-btn {
+  padding:8px 16px; border-radius:8px; border:1px solid var(--border);
+  background:transparent; color:var(--cream-dark); cursor:pointer; font-size:12px; transition:0.3s;
+}
+.topic-btn.active { background:var(--sushi-red); color:var(--cream); border-color:transparent; }
+.topic-btn:hover { border-color:var(--sushi-red); }
+.difficulty-selector { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.diff-btn {
+  padding:8px 14px; border-radius:8px; border:1px solid var(--border);
+  background:transparent; cursor:pointer; font-size:12px; transition:0.3s;
+  display:flex; align-items:center; gap:6px;
+}
+.diff-btn.active { color:var(--nori); }
+.diff-btn.mild { color:var(--mild); }
+.diff-btn.mild.active { background:var(--mild); border-color:var(--mild); }
+.diff-btn.medium { color:var(--medium); }
+.diff-btn.medium.active { background:var(--medium); border-color:var(--medium); }
+.diff-btn.hot { color:var(--hot); }
+.diff-btn.hot.active { background:var(--hot); border-color:var(--hot); }
+.diff-btn.extra { color:var(--extra-hot); }
+.diff-btn.extra.active { background:var(--extra-hot); border-color:var(--extra-hot); }
+/* ===== NOTIFICATION ===== */
+.notification {
+  position:fixed; top:20px; right:20px; padding:14px 22px; border-radius:12px;
+  background:var(--nori-soft); border:1px solid var(--wasabi); color:var(--wasabi);
+  font-size:13px; z-index:300; transform:translateX(120%); transition:0.3s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.notification.show { transform:translateX(0); }
+.notification.error { border-color:var(--sushi-red); color:var(--sushi-red-light); }
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main-content { margin-left:0; }
+  .game-board { grid-template-columns:repeat(3,1fr); }
+  .content-area { padding:16px; }
+  .ws-grid-wrapper { flex-direction:column; }
+}
+.mobile-toggle {
+  display:none; position:fixed; bottom:20px; right:20px;
+  width:50px; height:50px; border-radius:50%;
+  background:linear-gradient(135deg, var(--sushi-red), var(--sushi-red-dark));
+  border:none; color:var(--cream); font-size:20px; cursor:pointer; z-index:150;
+  box-shadow:var(--shadow);
+}
+@media(max-width:768px) { .mobile-toggle { display:flex; align-items:center; justify-content:center; } }
+.fade-in { animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.editable-field { position:relative; }
+.edit-mode .editable-field:hover { outline:2px dashed var(--wasabi); outline-offset:4px; border-radius:4px; }
+.edit-mode .editable-field::after { content:'✏️'; position:absolute; top:-8px; right:-8px; font-size:12px; opacity:0; transition:0.2s; }
+.edit-mode .editable-field:hover::after { opacity:1; }
+.hand-count-badge {
+  background:var(--wasabi); color:var(--nori); font-size:10px;
+  padding:2px 7px; border-radius:10px; margin-left:6px; font-weight:700;
+  animation: badgePulse 1.5s ease-in-out infinite;
+}
+@keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+</style>
+</head>
+<body>
+<div class="sushi-bg"></div>
+<!-- ===== STUDENT VIEW (QR Scan Result) ===== -->
+<div class="student-view" id="studentView">
+  <div class="student-card">
+    <div style="font-size:48px;margin-bottom:8px">🍣</div>
+    <h2 id="studentTitle">Was4bi</h2>
+    <div class="student-subtitle" id="studentSubtitle">SISWA STETSA BISA</div>
+    <div id="studentFormArea"></div>
+    <div class="student-status" id="studentStatus"></div>
+  </div>
+</div>
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="lantern lantern-1"></div>
+  <div class="lantern lantern-2"></div>
+  <div class="lantern lantern-3"></div>
+  <div class="login-box">
+    <div class="login-logo">🍣</div>
+    <h1>Was4bi</h1>
+    <div class="subtitle">ワサビ • WASABI</div>
+    <div class="tagline">Siswa Stetsa Bisa — SMA Negeri 4 Malang</div>
+    <input type="text" id="loginUser" placeholder="Username Guru" value="guru">
+    <input type="password" id="loginPass" placeholder="Password" value="guru123">
+    <button onclick="doLogin()">Masuk ke Dapur 🍱</button>
+    <div class="login-error" id="loginError">Username atau password salah!</div>
+    <div class="login-footer">Media Pembelajaran Bahasa Jepang Kelas XII</div>
+  </div>
+</div>
+<!-- ===== MAIN APP ===== -->
+<div class="app" id="mainApp">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-icon">🍣</span>
+        <h2>Was4bi</h2>
+      </div>
+      <small>ワサビ • SISWA STETSA BISA</small>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">🏮 Menu Utama</div>
+        <div class="nav-item active" onclick="showPage('dashboard')"><i class="fas fa-home"></i> Dashboard</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">🍣 Semester Ganjil</div>
+        <div class="nav-item" onclick="showMaterial('tabemono')"><i class="fas fa-utensils"></i> Tabemono <span class="badge">1</span></div>
+        <div class="nav-item" onclick="showMaterial('kaimono')"><i class="fas fa-shopping-bag"></i> Kaimono <span class="badge">2</span></div>
+        <div class="nav-item" onclick="showMaterial('norimono')"><i class="fas fa-bus"></i> Norimono <span class="badge">3</span></div>
+        <div class="nav-item" onclick="showMaterial('ryokou')"><i class="fas fa-plane"></i> Ryokou <span class="badge">4</span></div>
+        <div class="nav-item" onclick="showMaterial('kisetsu')"><i class="fas fa-leaf"></i> Kisetsu <span class="badge">5</span></div>
+        <div class="nav-item" onclick="showMaterial('shumi')"><i class="fas fa-palette"></i> Shumi <span class="badge">6</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">🍱 Semester Genap</div>
+        <div class="nav-item" onclick="showMaterial('shourai')"><i class="fas fa-rocket"></i> Shourai <span class="badge">7</span></div>
+        <div class="nav-item" onclick="showMaterial('kenkou')"><i class="fas fa-heartbeat"></i> Kenkou <span class="badge">8</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">🎮 Permainan</div>
+        <div class="nav-item" onclick="showPage('gameIndividual')"><i class="fas fa-gamepad"></i> Game Individu</div>
+        <div class="nav-item" onclick="showPage('gameGroup')"><i class="fas fa-users"></i> Game Kelompok</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">⚙️ Admin</div>
+        <div class="nav-item" onclick="showPage('admin')"><i class="fas fa-cog"></i> Kelola Konten</div>
+      </div>
+    </div>
+  </nav>
+  <div class="main-content">
+    <div class="topbar">
+      <h2 id="pageTitle">🏮 Dashboard</h2>
+      <div class="topbar-actions">
+        <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()"><i class="fas fa-edit"></i> Mode Edit</button>
+        <button class="logout-btn" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+      </div>
+    </div>
+    <div class="content-area" id="contentArea"></div>
+  </div>
+</div>
+<!-- QUIZ MODAL -->
+<div class="quiz-modal" id="quizModal">
+  <div class="quiz-content" id="quizContent"></div>
+</div>
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+<!-- MOBILE TOGGLE -->
+<button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+<script>
+// ==================== DATA ====================
+const MATERIALS = {
+  tabemono: {
+    title: "Tabemono", jp: "食べ物・飲み物", icon: "🍱", semester: "ganjil",
+    description: "Mempelajari kosakata makanan dan minuman dalam bahasa Jepang, serta cara menyampaikan kegiatan sehari-hari beserta waktu dan frekuensinya.",
+    vocab: [
+      {jp:"ご飯",romaji:"gohan",id:"nasi / makan"},{jp:"パン",romaji:"pan",id:"roti"},{jp:"みず",romaji:"mizu",id:"air"},{jp:"おちゃ",romaji:"ocha",id:"teh"},
+      {jp:"ぎゅうにゅう",romaji:"gyuunyuu",id:"susu"},{jp:"にく",romaji:"niku",id:"daging"},{jp:"さかな",romaji:"sakana",id:"ikan"},
+      {jp:"やさい",romaji:"yasai",id:"sayuran"},{jp:"くだもの",romaji:"kudamono",id:"buah"},{jp:"たまご",romaji:"tamago",id:"telur"},
+      {jp:"ラーメン",romaji:"raamen",id:"ramen"},{jp:"すし",romaji:"sushi",id:"sushi"},{jp:"カレー",romaji:"karee",id:"kari"},
+      {jp:"サラダ",romaji:"sarada",id:"salad"},{jp:"ケーキ",romaji:"keeki",id:"kue"},{jp:"コーヒー",romaji:"koohii",id:"kopi"},
+      {jp:"ジュース",romaji:"juusu",id:"jus"},{jp:"ビール",romaji:"biiru",id:"bir"},{jp:"うどん",romaji:"udon",id:"udon"},
+      {jp:"そば",romaji:"soba",id:"soba"},{jp:"てんぷら",romaji:"tenpura",id:"tempura"},{jp:"おかゆ",romaji:"okayu",id:"bubur"},
+      {jp:"チーズ",romaji:"chiizu",id:"keju"},{jp:"バター",romaji:"bataa",id:"mentega"}
+    ],
+    grammar: [
+      { pattern:"[waktu] に [kegiatan] ます", meaning:"Melakukan kegiatan pada waktu tertentu",
+        examples:[
+          {jp:"ろくじに あさごはんを たべます。",romaji:"rokuji ni asagohan o tabemasu.",id:"Saya makan pagi jam 6."},
+          {jp:"じゅうにに ひるごはんを たべます。",romaji:"juuini ni hirugohan o tabemasu.",id:"Saya makan siang jam 12."},
+          {jp:"ななじに ばんごはんを たべます。",romaji:"nanaji ni bangohan o tabemasu.",id:"Saya makan malam jam 7."}
+        ]},
+      { pattern:"よく / ときどき / あまり～ません / ぜんぜん～ません", meaning:"Frekuensi kegiatan (sering / kadang-kadang / jarang / sama sekali tidak)",
+        examples:[
+          {jp:"よく ラーメンを たべます。",romaji:"yoku raamen o tabemasu.",id:"Saya sering makan ramen."},
+          {jp:"ときどき すしを たべます。",romaji:"tokidoki sushi o tabemasu.",id:"Saya kadang-kadang makan sushi."},
+          {jp:"あまり カレーを たべません。",romaji:"amari karee o tabemasen.",id:"Saya jarang makan kari."},
+          {jp:"ぜんぜん ビールを のみません。",romaji:"zenzen biiru o nomimasen.",id:"Saya sama sekali tidak minum bir."}
+        ]},
+      { pattern:"～て、～て、～ます", meaning:"Melakukan beberapa kegiatan secara berurutan",
+        examples:[
+          {jp:"あさごはんを たべて、がっこうへ いきます。",romaji:"asagohan o tabete, gakkou e ikimasu.",id:"Sarapan lalu pergi ke sekolah."},
+          {jp:"みずを のんで、パンを たべます。",romaji:"mizu o nonde, pan o tabemasu.",id:"Minum air lalu makan roti."}
+        ]}
+    ]
+  },
+  kaimono: {
+    title: "Kaimono", jp: "買い物", icon: "🛍️", semester: "ganjil",
+    description: "Mempelajari kosakata berbelanja, menanyakan harga, memilih dan membeli barang, serta membandingkan dua benda.",
+    vocab: [
+      {jp:"みせ",romaji:"mise",id:"toko"},{jp:"スーパー",romaji:"suupaa",id:"supermarket"},{jp:"コンビニ",romaji:"konbini",id:"minimarket"},
+      {jp:"デパート",romaji:"depaato",id:"toko serba ada"},{jp:"ほんや",romaji:"honya",id:"toko buku"},{jp:"くつや",romaji:"kutsuya",id:"toko sepatu"},
+      {jp:"おかね",romaji:"okane",id:"uang"},{jp:"えん",romaji:"en",id:"yen"},{jp:"レシート",romaji:"reshiito",id:"struk"},
+      {jp:"ふく",romaji:"fuku",id:"baju"},{jp:"くつ",romaji:"kutsu",id:"sepatu"},{jp:"かばん",romaji:"kaban",id:"tas"},
+      {jp:"ぼうし",romaji:"boushi",id:"topi"},{jp:"とけい",romaji:"tokei",id:"jam"},{jp:"かさ",romaji:"kasa",id:"payung"},
+      {jp:"ノート",romaji:"nooto",id:"buku tulis"},{jp:"ペン",romaji:"pen",id:"pulpen"},{jp:"カメラ",romaji:"kamera",id:"kamera"}
+    ],
+    grammar: [
+      { pattern:"これはいくらですか。～円です。", meaning:"Menanyakan dan menjawab harga barang",
+        examples:[
+          {jp:"これはいくらですか。",romaji:"kore wa ikura desu ka.",id:"Ini berapa harganya?"},
+          {jp:"せん円です。",romaji:"sen en desu.",id:"Seribu yen."},
+          {jp:"ごせんえんです。",romaji:"gosen en desu.",id:"Lima ribu yen."}
+        ]},
+      { pattern:"～をください。/ ～がほしいです。", meaning:"Meminta barang / menginginkan barang",
+        examples:[
+          {jp:"みずを ください。",romaji:"mizu o kudasai.",id:"Tolong beri saya air."},
+          {jp:"あたらしい くつが ほしいです。",romaji:"atarashii kutsu ga hoshii desu.",id:"Saya ingin sepatu baru."}
+        ]},
+      { pattern:"A は B より ～ です。", meaning:"Membandingkan dua benda (A lebih ~ dari B)",
+        examples:[
+          {jp:"このかばんは あのかばんより たかいです。",romaji:"kono kaban wa ano kaban yori takai desu.",id:"Tas ini lebih mahal dari tas itu."},
+          {jp:"にほんごは えいごより むずかしいです。",romaji:"nihongo wa eigo yori muzukashii desu.",id:"Bahasa Jepang lebih sulit dari bahasa Inggris."}
+        ]},
+      { pattern:"～や～などがあります。", meaning:"Menyebutkan beberapa contoh barang",
+        examples:[
+          {jp:"このみせには ノートや ペンなどがあります。",romaji:"kono mise ni wa nooto ya pen nado ga arimasu.",id:"Di toko ini ada buku tulis, pulpen, dll."}
+        ]}
+    ]
+  },
+  norimono: {
+    title: "Norimono", jp: "乗り物", icon: "🚃", semester: "ganjil",
+    description: "Mempelajari kosakata alat transportasi dan cara menggunakannya dalam kalimat sederhana.",
+    vocab: [
+      {jp:"でんしゃ",romaji:"densha",id:"kereta"},{jp:"バス",romaji:"basu",id:"bus"},{jp:"タクシー",romaji:"takushii",id:"taksi"},
+      {jp:"くるま",romaji:"kuruma",id:"mobil"},{jp:"じてんしゃ",romaji:"jitensha",id:"sepeda"},{jp:"ひこうき",romaji:"hikouki",id:"pesawat"},
+      {jp:"ふね",romaji:"fune",id:"kapal"},{jp:"しんかんせん",romaji:"shinkansen",id:"kereta peluru"},
+      {jp:"えき",romaji:"eki",id:"stasiun"},{jp:"きっぷ",romaji:"kippu",id:"karcis"}
+    ],
+    grammar: [
+      { pattern:"～で ～へ ～ます", meaning:"Pergi ke suatu tempat dengan alat transportasi",
+        examples:[
+          {jp:"でんしゃで がっこうへ いきます。",romaji:"densha de gakkou e ikimasu.",id:"Pergi ke sekolah naik kereta."},
+          {jp:"ひこうきで とうきょうへ いきます。",romaji:"hikouki de toukyou e ikimasu.",id:"Pergi ke Tokyo naik pesawat."}
+        ]},
+      { pattern:"～から ～まで ～で ～ます", meaning:"Dari ~ sampai ~ naik ~",
+        examples:[
+          {jp:"うちから がっこうまで でんしゃで いきます。",romaji:"uchi kara gakkou made densha de ikimasu.",id:"Dari rumah ke sekolah naik kereta."}
+        ]}
+    ]
+  },
+  ryokou: {
+    title: "Ryokou", jp: "旅行", icon: "✈️", semester: "ganjil",
+    description: "Mempelajari cara menceritakan rencana dan pengalaman perjalanan, serta menyampaikan kesan.",
+    vocab: [
+      {jp:"りょこう",romaji:"ryokou",id:"perjalanan"},{jp:"おんせん",romaji:"onsen",id:"pemandian air panas"},
+      {jp:"てら",romaji:"tera",id:"kuil"},{jp:"ホテル",romaji:"hoteru",id:"hotel"},{jp:"おみやげ",romaji:"omiyage",id:"oleh-oleh"},
+      {jp:"おもいで",romaji:"omoide",id:"kenangan"},{jp:"さいこう",romaji:"saikou",id:"terbaik"}
+    ],
+    grammar: [
+      { pattern:"～たことがあります", meaning:"Pernah melakukan sesuatu",
+        examples:[
+          {jp:"とうきょうへ いったことが あります。",romaji:"toukyou e itta koto ga arimasu.",id:"Saya pernah pergi ke Tokyo."},
+          {jp:"にほんへ いったことが ありません。",romaji:"nihon e itta koto ga arimasen.",id:"Saya belum pernah ke Jepang."}
+        ]},
+      { pattern:"い-adj ～かったです / な-adj ～でした", meaning:"Bentuk lampau kata sifat (kesan)",
+        examples:[
+          {jp:"りょこうは たのしかったです。",romaji:"ryokou wa tanoshikatta desu.",id:"Perjalanannya menyenangkan."},
+          {jp:"たべものが おいしかったです。",romaji:"tabemono ga oishikatta desu.",id:"Makanannya enak."}
+        ]},
+      { pattern:"～ましょう", meaning:"Ajakan (mari ~)",
+        examples:[
+          {jp:"いっしょに りょこうしましょう。",romaji:"issho ni ryokou shimashou.",id:"Mari pergi wisata bersama."}
+        ]}
+    ]
+  },
+  kisetsu: {
+    title: "Kisetsu", jp: "季節", icon: "🍂", semester: "ganjil",
+    description: "Mempelajari kosakata perubahan musim di Jepang menggunakan pola ～になります／～くなります。",
+    vocab: [
+      {jp:"はる",romaji:"haru",id:"musim semi"},{jp:"なつ",romaji:"natsu",id:"musim panas"},
+      {jp:"あき",romaji:"aki",id:"musim gugur"},{jp:"ふゆ",romaji:"fuyu",id:"musim dingin"},
+      {jp:"さくら",romaji:"sakura",id:"bunga sakura"},{jp:"ゆき",romaji:"yuki",id:"salju"},
+      {jp:"あたたかい",romaji:"atatakai",id:"hangat"},{jp:"あつい",romaji:"atsui",id:"panas"},
+      {jp:"すずしい",romaji:"suzushii",id:"sejuk"},{jp:"さむい",romaji:"samui",id:"dingin"}
+    ],
+    grammar: [
+      { pattern:"[musim] に なります", meaning:"Menjadi musim ~",
+        examples:[
+          {jp:"さんがつに はるに なります。",romaji:"sangatsu ni haru ni narimasu.",id:"Bulan Maret menjadi musim semi."}
+        ]},
+      { pattern:"～く なります", meaning:"Menjadi ~ (perubahan keadaan)",
+        examples:[
+          {jp:"なつに なると、あつく なります。",romaji:"natsu ni naru to, atsuku narimasu.",id:"Ketika musim panas, menjadi panas."}
+        ]}
+    ]
+  },
+  shumi: {
+    title: "Shumi", jp: "趣味", icon: "🎨", semester: "ganjil",
+    description: "Mempelajari cara menyampaikan hobi menggunakan pola ～しゅみは～ことです dan ～がすきです。",
+    vocab: [
+      {jp:"どくしょ",romaji:"dokusho",id:"membaca"},{jp:"おんがく",romaji:"ongaku",id:"musik"},
+      {jp:"えいが",romaji:"eiga",id:"film"},{jp:"りょこう",romaji:"ryokou",id:"wisata"},
+      {jp:"スポーツ",romaji:"supootsu",id:"olahraga"},{jp:"りょうり",romaji:"ryouri",id:"memasak"},
+      {jp:"しゃしん",romaji:"shashin",id:"fotografi"},{jp:"アニメ",romaji:"anime",id:"anime"}
+    ],
+    grammar: [
+      { pattern:"しゅみは ～[bentuk kamus] ことです", meaning:"Hobi saya adalah ~",
+        examples:[
+          {jp:"しゅみは どくしょする ことです。",romaji:"shumi wa dokusho suru koto desu.",id:"Hobi saya membaca."},
+          {jp:"しゅみは おんがくを きく ことです。",romaji:"shumi wa ongaku o kiku koto desu.",id:"Hobi saya mendengarkan musik."}
+        ]},
+      { pattern:"～が すきです", meaning:"Suka ~",
+        examples:[
+          {jp:"おんがくが すきです。",romaji:"ongaku ga suki desu.",id:"Saya suka musik."},
+          {jp:"アニメが すきです。",romaji:"anime ga suki desu.",id:"Saya suka anime."}
+        ]}
+    ]
+  },
+  shourai: {
+    title: "Shourai", jp: "将来", icon: "🚀", semester: "genap",
+    description: "Mempelajari cara mengungkapkan keinginan, tujuan, serta rencana masa depan.",
+    vocab: [
+      {jp:"しょうらい",romaji:"shourai",id:"masa depan"},{jp:"ゆめ",romaji:"yume",id:"mimpi"},
+      {jp:"せんせい",romaji:"sensei",id:"guru"},{jp:"いしゃ",romaji:"isha",id:"dokter"},
+      {jp:"エンジニア",romaji:"enjinia",id:"insinyur"},{jp:"だいがく",romaji:"daigaku",id:"universitas"}
+    ],
+    grammar: [
+      { pattern:"～たいです", meaning:"Ingin melakukan ~",
+        examples:[
+          {jp:"せんせいに なりたいです。",romaji:"sensei ni naritai desu.",id:"Saya ingin menjadi guru."},
+          {jp:"にほんで はたらきたいです。",romaji:"nihon de hatarakitai desu.",id:"Saya ingin bekerja di Jepang."}
+        ]},
+      { pattern:"～ために、～ます", meaning:"Untuk ~, maka ~",
+        examples:[
+          {jp:"いしゃに なるために、たくさん べんきょうします。",romaji:"isha ni naru tame ni, takusan benkyou shimasu.",id:"Untuk menjadi dokter, saya belajar banyak."}
+        ]},
+      { pattern:"～たら、+[keinginan]", meaning:"Jika ~, maka ~",
+        examples:[
+          {jp:"そつぎょうしたら、にほんへ いきたいです。",romaji:"sotsugyou shitara, nihon e ikitai desu.",id:"Jika lulus, saya ingin ke Jepang."}
+        ]}
+    ]
+  },
+  kenkou: {
+    title: "Kenkou", jp: "健康", icon: "💊", semester: "genap",
+    description: "Mempelajari kosakata bagian tubuh, keluhan kesehatan, serta saran dan larangan untuk hidup sehat.",
+    vocab: [
+      {jp:"あたま",romaji:"atama",id:"kepala"},{jp:"おなか",romaji:"onaka",id:"perut"},{jp:"のど",romaji:"nodo",id:"tenggorokan"},
+      {jp:"は",romaji:"ha",id:"gigi"},{jp:"あし",romaji:"ashi",id:"kaki"},{jp:"て",romaji:"te",id:"tangan"},
+      {jp:"ねつ",romaji:"netsu",id:"demam"},{jp:"かぜ",romaji:"kaze",id:"flu"},{jp:"いたい",romaji:"itai",id:"sakit"},
+      {jp:"くすり",romaji:"kusuri",id:"obat"},{jp:"びょういん",romaji:"byouin",id:"rumah sakit"}
+    ],
+    grammar: [
+      { pattern:"[bagian tubuh] が いたいです。", meaning:"Bagian tubuh ~ sakit.",
+        examples:[
+          {jp:"あたまが いたいです。",romaji:"atama ga itai desu.",id:"Kepala saya sakit."},
+          {jp:"おなかが いたいです。",romaji:"onaka ga itai desu.",id:"Perut saya sakit."}
+        ]},
+      { pattern:"～ないでください。", meaning:"Tolong jangan ~",
+        examples:[
+          {jp:"たばこを すわないで ください。",romaji:"tabako o suwanaide kudasai.",id:"Tolong jangan merokok."}
+        ]},
+      { pattern:"～たほうがいいです。", meaning:"Sebaiknya ~",
+        examples:[
+          {jp:"くすりを のんだほうが いいです。",romaji:"kusuri o nonda hou ga ii desu.",id:"Sebaiknya minum obat."}
+        ]},
+      { pattern:"～ので、～ほうがいいです。", meaning:"Karena ~, sebaiknya ~",
+        examples:[
+          {jp:"ねつが あるので、やすんだほうが いいです。",romaji:"netsu ga aru node, yasunda hou ga ii desu.",id:"Karena demam, sebaiknya istirahat."}
+        ]}
+    ]
+  }
+};
+// ==================== GAME QUESTIONS with SPICE LEVELS ====================
+// Spice: mild, medium, hot, extra
+const SPICE_LEVELS = {
+  mild: { label:"Mild 🌱", color:"var(--mild)", points:5, desc:"Wasabi sedikit - Mudah" },
+  medium: { label:"Medium 🌶️", color:"var(--medium)", points:10, desc:"Wasabi sedang - Sedang" },
+  hot: { label:"Hot 🔥", color:"var(--hot)", points:15, desc:"Wasabi banyak - Sulit" },
+  extra: { label:"Extra Hot 💥", color:"var(--extra-hot)", points:25, desc:"Wasabi melimpah - Sangat Sulit" }
+};
+let gameQuestions = {
+  tabemono: [
+    {q:"「ご飯」のいみは？",options:["Nasi","Roti","Ikan","Daging"],answer:0,spice:"mild"},
+    {q:"「みず」は どんないみですか？",options:["Teh","Air","Susu","Kopi"],answer:1,spice:"mild"},
+    {q:"「よく たべます」のいみは？",options:["Jarang makan","Sering makan","Kadang makan","Tidak makan"],answer:1,spice:"mild"},
+    {q:"「ぎゅうにゅう」のいみは？",options:["Jus","Teh","Susu","Kopi"],answer:2,spice:"mild"},
+    {q:"「ぜんぜん のみません」のいみは？",options:["Sering minum","Kadang minum","Sama sekali tidak minum","Jarang minum"],answer:2,spice:"medium"},
+    {q:"「ろくじに たべます」は いつですか？",options:["Jam 5","Jam 6","Jam 7","Jam 8"],answer:1,spice:"medium"},
+    {q:"Kalimat 「ときどき すしを たべます」 berarti?",options:["Sering makan sushi","Kadang-kadang makan sushi","Tidak pernah makan sushi","Setiap hari makan sushi"],answer:1,spice:"medium"},
+    {q:"Manakah yang merupakan bentuk ～て连接 yang benar?",options:["たべて いきます","たべます て いきます","たべて いくます","たべます ていきます"],answer:0,spice:"hot"},
+    {q:"「あさごはんを たべて、がっこうへ いきます」terjemahan yang tepat?",options:["Makan malam lalu tidur","Sarapan lalu pergi ke sekolah","Minum teh lalu makan","Pergi ke sekolah lalu sarapan"],answer:1,spice:"hot"},
+    {q:"Bentuk negatif dari 「のみます」 adalah?",options:["のみません","のむません","のんでません","のみませんでした"],answer:0,spice:"extra"},
+    {q:"「ぜんぜん」 biasanya dipasangkan dengan?",options:["Bentuk positif","Bentuk negatif","Bentuk lampau","Bentuk perintah"],answer:1,spice:"extra"},
+    {q:"「じゅうにじ」 adalah jam?",options:["10:00","11:00","12:00","13:00"],answer:2,spice:"extra"}
+  ],
+  kaimono: [
+    {q:"「これはいくらですか」のいみは？",options:["Ini apa?","Ini berapa?","Ini milik siapa?","Ini di mana?"],answer:1,spice:"mild"},
+    {q:"「スーパー」は どんなところですか？",options:["Sekolah","Supermarket","Rumah sakit","Stasiun"],answer:1,spice:"mild"},
+    {q:"「みずを ください」のいみは？",options:["Tolong ambilkan air","Tolong beri saya air","Air ini enak","Air ini mahal"],answer:1,spice:"mild"},
+    {q:"「せんえん」は いくらですか？",options:["100 yen","1.000 yen","10.000 yen","100.000 yen"],answer:1,spice:"medium"},
+    {q:"「AはBよりたかい」のいみは？",options:["A sama dengan B","A lebih murah dari B","A lebih mahal dari B","A dan B mahal"],answer:2,spice:"medium"},
+    {q:"「あたらしいくつが ほしいです」のいみは？",options:["Sepatu baru sudah ada","Saya ingin sepatu baru","Sepatu baru mahal","Sepatu baru bagus"],answer:1,spice:"medium"},
+    {q:"「ごせんえん」は いくらですか？",options:["500 yen","5.000 yen","50.000 yen","50 yen"],answer:1,spice:"hot"},
+    {q:"「ノートやペンなどがあります」の「など」のいみは？",options:["Hanya","Dan lain-lain","Atau","Tetapi"],answer:1,spice:"hot"},
+    {q:"Pola 「～をください」 digunakan untuk?",options:["Menanyakan harga","Meminta barang","Membandingkan barang","Menawar barang"],answer:1,spice:"extra"},
+    {q:"「かばん」のいみは?",options:["Tas","Topi","Sepatu","Jam"],answer:0,spice:"extra"}
+  ],
+  norimono: [
+    {q:"「でんしゃ」のいみは？",options:["Bus","Kereta","Taksi","Pesawat"],answer:1,spice:"mild"},
+    {q:"「ひこうき」のいみは？",options:["Kereta","Kapal","Pesawat","Bus"],answer:2,spice:"mild"},
+    {q:"「えき」は どこですか？",options:["Toko","Stasiun","Sekolah","Rumah sakit"],answer:1,spice:"mild"},
+    {q:"「でんしゃで いきます」の「で」は？",options:["Ke","Dengan (alat)","Di","Dari"],answer:1,spice:"medium"},
+    {q:"「しんかんせん」は どんなのりものですか？",options:["Bus biasa","Kereta peluru","Taksi","Kapal"],answer:1,spice:"medium"},
+    {q:"「うちから がっこうまで」の「から～まで」のいみは？",options:["Dan","Atau","Dari ~ sampai","Tetapi"],answer:2,spice:"medium"},
+    {q:"「くるま」のいみは？",options:["Sepeda","Mobil","Motor","Bus"],answer:1,spice:"hot"},
+    {q:"「きっぷ」のいみは？",options:["Uang","Karcis","Tas","Jam"],answer:1,spice:"hot"},
+    {q:"Pola 「～で～へ～ます」 urutan yang benar?",options:["Tempat で Alat へ ます","Alat で Tempat へ ます","Alat へ Tempat で ます","Tempat へ Alat で ます"],answer:1,spice:"extra"},
+    {q:"「じてんしゃ」は 何ですか?",options:["Motor","Mobil","Sepeda","Bus"],answer:2,spice:"extra"}
+  ],
+  ryokou: [
+    {q:"「りょこう」のいみは？",options:["Makan","Perjalanan","Belajar","Bekerja"],answer:1,spice:"mild"},
+    {q:"「おみやげ」のいみは？",options:["Kenangan","Oleh-oleh","Foto","Tiket"],answer:1,spice:"mild"},
+    {q:"「おんせん」は どんなところですか？",options:["Taman","Pemandian air panas","Kuil","Toko"],answer:1,spice:"mild"},
+    {q:"「とうきょうへ いったことが あります」のいみは？",options:["Ingin ke Tokyo","Pernah ke Tokyo","Akan ke Tokyo","Tidak pernah ke Tokyo"],answer:1,spice:"medium"},
+    {q:"「たのしかったです」のいみは？",options:["Menyenangkan (sekarang)","Menyenangkan (lampau)","Menyusahkan (lampau)","Biasa saja"],answer:1,spice:"medium"},
+    {q:"「いっしょに りょこうしましょう」のいみは？",options:["Pergi sendiri","Mari pergi bersama","Jangan pergi","Sudah pergi"],answer:1,spice:"medium"},
+    {q:"「てんきが よかったです」の「よかった」は bentuk lampau dari?",options:["わるい","よい","おおきい","ちいさい"],answer:1,spice:"hot"},
+    {q:"「ふじさんに のぼったことが あります」の「のぼった」のいみは？",options:["Turun","Mendaki","Melihat","Foto"],answer:1,spice:"hot"},
+    {q:"Bentuk lampau い-adjektiva ～い menjadi?",options:["～かったです","～かったです","～でした","～ます"],answer:1,spice:"extra"},
+    {q:"「りょかん」のいみは？",options:["Hotel barat","Penginapan Jepang","Restoran","Toko"],answer:1,spice:"extra"}
+  ],
+  kisetsu: [
+    {q:"「はる」のいみは？",options:["Musim panas","Musim semi","Musim gugur","Musim dingin"],answer:1,spice:"mild"},
+    {q:"「ふゆ」のいみは？",options:["Musim semi","Musim panas","Musim gugur","Musim dingin"],answer:3,spice:"mild"},
+    {q:"「ゆき」のいみは？",options:["Hujan","Salju","Angin","Awan"],answer:1,spice:"mild"},
+    {q:"「さくら」は いつ さきますか？",options:["Musim panas","Musim semi","Musim gugur","Musim dingin"],answer:1,spice:"medium"},
+    {q:"「あつく なります」のいみは？",options:["Menjadi dingin","Menjadi sejuk","Menjadi panas","Menjadi hangat"],answer:2,spice:"medium"},
+    {q:"「すずしく なります」のいみは？",options:["Menjadi panas","Menjadi dingin","Menjadi sejuk","Menjadi hangat"],answer:2,spice:"medium"},
+    {q:"「はなび」は いつ あげますか？",options:["Musim semi","Musim panas","Musim gugur","Musim dingin"],answer:1,spice:"hot"},
+    {q:"「もみじ」は いつ きれいですか？",options:["Musim semi","Musim panas","Musim gugur","Musim dingin"],answer:2,spice:"hot"},
+    {q:"Pola 「～くなります」 digunakan untuk?",options:["Kata benda","い-adjektiva","な-adjektiva","Kata kerja"],answer:1,spice:"extra"},
+    {q:"「あたたかい」→「あたたかく」perubahan ini disebut?",options:["Konjugasi nai","Konjugasi ku","Konjugasi te","Konjugasi ta"],answer:1,spice:"extra"}
+  ],
+  shumi: [
+    {q:"「しゅみ」のいみは？",options:["Mimpi","Hobi","Pekerjaan","Keluarga"],answer:1,spice:"mild"},
+    {q:"「おんがくが すきです」のいみは？",options:["Suka musik","Suka film","Suka olahraga","Suka memasak"],answer:0,spice:"mild"},
+    {q:"「アニメが すきです」のいみは？",options:["Suka anime","Suka manga","Suka drama","Suka berita"],answer:0,spice:"mild"},
+    {q:"「どくしょ」のいみは？",options:["Menulis","Membaca","Menggambar","Bernyanyi"],answer:1,spice:"medium"},
+    {q:"「ひまなときに」のいみは？",options:["Ketika sibuk","Ketika waktu luang","Ketika tidur","Ketika makan"],answer:1,spice:"medium"},
+    {q:"「しゃしんを とる」のいみは？",options:["Menonton foto","Mengambil foto","Menggambar foto","Melihat foto"],answer:1,spice:"medium"},
+    {q:"「りょうりする ことです」の「りょうり」のいみは？",options:["Membaca","Memasak","Berenang","Berlari"],answer:1,spice:"hot"},
+    {q:"「すいえい」のいみは？",options:["Berenang","Berlari","Bersepeda","Bermain bola"],answer:0,spice:"hot"},
+    {q:"Pola 「しゅみは～ことです」 kata kerja harus dalam bentuk?",options:["Bentuk mas","Bentuk kamus","Bentuk nai","Bentuk te"],answer:1,spice:"extra"},
+    {q:"「えを かくこと」のいみは?",options:["Menyanyi","Menari","Menggambar","Memasak"],answer:2,spice:"extra"}
+  ],
+  shourai: [
+    {q:"「しょうらい」のいみは？",options:["Masa lalu","Masa kini","Masa depan","Masa kecil"],answer:2,spice:"mild"},
+    {q:"「ゆめ」のいみは？",options:["Mimpi","Kenangan","Rencana","Masalah"],answer:0,spice:"mild"},
+    {q:"「いしゃ」のいみは？",options:["Guru","Dokter","Polisi","Perawat"],answer:1,spice:"mild"},
+    {q:"「せんせいに なりたいです」のいみは？",options:["Ingin jadi dokter","Ingin jadi guru","Ingin jadi polisi","Ingin jadi insinyur"],answer:1,spice:"medium"},
+    {q:"「～ために」のいみは？",options:["Karena","Untuk (tujuan)","Jika","Ketika"],answer:1,spice:"medium"},
+    {q:"「にほんで はたらきたいです」のいみは？",options:["Ingin belajar di Jepang","Ingin bekerja di Jepang","Ingin wisata ke Jepang","Ingin tinggal di Jepang"],answer:1,spice:"medium"},
+    {q:"「そつぎょうしたら」のいみは？",options:["Jika sudah masuk","Jika sudah lulus","Jika sudah bekerja","Jika sudah menikah"],answer:1,spice:"hot"},
+    {q:"「だいがくに はいりたいです」の「はいりたい」のいみは？",options:["Ingin keluar","Ingin masuk","Ingin lulus","Ingin pergi"],answer:1,spice:"hot"},
+    {q:"Pola 「～たら」 menunjukkan?",options:["Sebab","Kondisi (jika)","Tujuan","Waktu"],answer:1,spice:"extra"},
+    {q:"「～たいです」 digunakan untuk menyatakan?",options:["Larangan","Keinginan","Kewajiban","Kemampuan"],answer:1,spice:"extra"}
+  ],
+  kenkou: [
+    {q:"「ねつ」のいみは？",options:["Flu","Demam","Batuk","Pilek"],answer:1,spice:"mild"},
+    {q:"「くすり」のいみは？",options:["Makanan","Obat","Minuman","Vitamin"],answer:1,spice:"mild"},
+    {q:"「びょういん」は どこですか？",options:["Sekolah","Toko","Rumah sakit","Stasiun"],answer:2,spice:"mild"},
+    {q:"「あたまが いたいです」のいみは？",options:["Perut sakit","Kepala sakit","Kaki sakit","Gigi sakit"],answer:1,spice:"medium"},
+    {q:"「つかれました」のいみは？",options:["Sehat","Lelah","Lapar","Haus"],answer:1,spice:"medium"},
+    {q:"「のどが いたいです」の「のど」は？",options:["Kepala","Perut","Tenggorokan","Punggung"],answer:2,spice:"medium"},
+    {q:"「たばこを すわないで ください」のいみは？",options:["Tolong merokok","Tolong jangan merokok","Tolong berhenti","Tolong ambil rokok"],answer:1,spice:"hot"},
+    {q:"「くすりを のんだほうが いいです」のいみは？",options:["Sebaiknya makan","Sebaiknya minum obat","Sebaiknya tidur","Sebaiknya olahraga"],answer:1,spice:"hot"},
+    {q:"「おだいじに」のいみは？",options:["Terima kasih","Maaf","Semoga cepat sembuh","Selamat pagi"],answer:2,spice:"extra"},
+    {q:"Pola 「～ので」 menunjukkan?",options:["Larangan","Alasan (karena)","Tujuan","Kondisi"],answer:1,spice:"extra"}
+  ]
+};
+// WORD SEARCH DATA
+const WORDSEARCH_DATA = {
+  tabemono: {words:["GOHAN","MIZU","NIKU","SAKANA","PAN","CHA","SUSHI","UDON"],title:"Makanan & Minuman"},
+  kaimono: {words:["KABAN","KUTSU","MISE","EN","TAKAI","YASUI","ATARASHII","FURUI"],title:"Belanja"},
+  norimono: {words:["DENSHA","BASU","KURUMA","FUNE","EKI","KIPPU","MICHI","HAYAI"],title:"Transportasi"},
+  ryokou: {words:["RYOKOU","ONSEN","TERA","HOTERU","OMIYAGE","TANOSII","KIREI","SAIKOU"],title:"Perjalanan"},
+  kisetsu: {words:["HARU","NATSU","AKI","FUYU","SAKURA","YUKI","AME","KAZE"],title:"Musim"},
+  shumi: {words:["ONGAKU","EIGA","SHASHIN","RYORI","SUPORTSU","DOKUSHO","ANIME","SUPEI"],title:"Hobi"},
+  shourai: {words:["YUME","SENSEI","ISHA","DAIGAKU","HATARAKU","NARU","BENKYOU","SHOURAI"],title:"Masa Depan"},
+  kenkou: {words:["ATAMA","ONAKA","NODO","NETSU","KAZE","KUSURI","GENKI","ITAI"],title:"Kesehatan"}
+};
+// ==================== STATE ====================
+let currentPage = 'dashboard';
+let currentMaterial = null;
+let editMode = false;
+let gameScore = 0;
+let gameCorrect = 0;
+let gameTotal = 0;
+let openedBoxes = new Set();
+let wsTeams = [{name:"Tim A",score:0},{name:"Tim B",score:0},{name:"Tim C",score:0},{name:"Tim D",score:0}];
+let wsCurrentTopic = 'tabemono';
+let wsFoundWords = [];
+let wsSelecting = false;
+let wsSelectedCells = [];
+let currentGameTopic = 'all';
+let currentGameSpice = 'all';
+// Hand raise system
+let handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
+let currentGameType = null; // 'individual' or 'group'
+// ==================== CHECK IF STUDENT VIEW ====================
+function checkStudentView() {
+  const params = new URLSearchParams(window.location.search);
+  const game = params.get('game');
+  if (game === 'individual' || game === 'group') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('studentView').classList.add('active');
+    currentGameType = game;
+    renderStudentView(game);
+    return true;
+  }
+  return false;
+}
+function renderStudentView(gameType) {
+  const formArea = document.getElementById('studentFormArea');
+  const title = document.getElementById('studentTitle');
+  const subtitle = document.getElementById('studentSubtitle');
+  if (gameType === 'individual') {
+    title.textContent = '🙋 Angkat Tangan';
+    subtitle.textContent = 'GAME INDIVIDU • WAS4BI';
+    formArea.innerHTML = `
+      <input type="text" id="studentName" placeholder="✍️ Tulis nama lengkapmu..." style="text-align:center">
+      <button class="raise-hand-btn" onclick="raiseHandIndividual()">
+        <i class="fas fa-hand-paper"></i> Angkat Tangan! 🙋
+      </button>
+    `;
+  } else {
+    title.textContent = '👥 Pilih Kelompok';
+    subtitle.textContent = 'GAME KELOMPOK • WAS4BI';
+    formArea.innerHTML = `
+      <input type="text" id="studentName" placeholder="✍️ Nama wakil kelompok..." style="text-align:center">
+      <select id="studentGroup">
+        <option value="">-- Pilih Kelompok --</option>
+        <option value="Tim A">🍣 Tim A (Sushi)</option>
+        <option value="Tim B">🍱 Tim B (Bento)</option>
+        <option value="Tim C">🍙 Tim C (Onigiri)</option>
+        <option value="Tim D">🍜 Tim D (Ramen)</option>
+        <option value="Tim E">🥟 Tim E (Gyoza)</option>
+        <option value="Tim F">🍡 Tim F (Dango)</option>
+      </select>
+      <button class="raise-hand-btn" onclick="raiseHandGroup()">
+        <i class="fas fa-users"></i> Angkat Tangan Kelompok! 🙋‍♂️
+      </button>
+    `;
+  }
+}
+function raiseHandIndividual() {
+  const name = document.getElementById('studentName').value.trim();
+  if (!name) { alert('Tulis namamu dulu ya!'); return; }
+  const entry = {
+    id: Date.now(),
+    type: 'individual',
+    name: name,
+    group: null,
+    time: new Date().toLocaleTimeString('id-ID'),
+    timestamp: Date.now(),
+    status: 'raised'
+  };
+  handRaiseList.push(entry);
+  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+  const btn = document.querySelector('.raise-hand-btn');
+  btn.classList.add('raised');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
+  const status = document.getElementById('studentStatus');
+  status.classList.add('show');
+  status.innerHTML = `✅ <strong>${name}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+}
+function raiseHandGroup() {
+  const name = document.getElementById('studentName').value.trim();
+  const group = document.getElementById('studentGroup').value;
+  if (!name) { alert('Tulis namamu dulu ya!'); return; }
+  if (!group) { alert('Pilih kelompokmu dulu ya!'); return; }
+  const entry = {
+    id: Date.now(),
+    type: 'group',
+    name: name,
+    group: group,
+    time: new Date().toLocaleTimeString('id-ID'),
+    timestamp: Date.now(),
+    status: 'raised'
+  };
+  handRaiseList.push(entry);
+  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+  const btn = document.querySelector('.raise-hand-btn');
+  btn.classList.add('raised');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
+  const status = document.getElementById('studentStatus');
+  status.classList.add('show');
+  status.innerHTML = `✅ <strong>group</strong>({name}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+}
+// Refresh hand list periodically
+setInterval(() => {
+  handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
+  if (currentPage === 'gameIndividual' || currentPage === 'gameGroup') {
+    renderHandList();
+  }
+}, 2000);
+// ==================== LOGIN ====================
+function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if(u === 'guru' && p === 'guru123') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    showPage('dashboard');
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+function doLogout() {
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+// ==================== NAVIGATION ====================
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const area = document.getElementById('contentArea');
+  if(page === 'dashboard') {
+    document.getElementById('pageTitle').innerHTML = '🏮 Dashboard';
+    renderDashboard();
+  } else if(page === 'gameIndividual') {
+    document.getElementById('pageTitle').innerHTML = '🎮 Game Individu';
+    renderIndividualGame();
+  } else if(page === 'gameGroup') {
+    document.getElementById('pageTitle').innerHTML = '👥 Game Kelompok';
+    renderGroupGame();
+  } else if(page === 'admin') {
+    document.getElementById('pageTitle').innerHTML = '⚙️ Kelola Konten';
+    renderAdmin();
+  }
+  area.scrollTop = 0;
+}
+function showMaterial(key) {
+  currentMaterial = key;
+  currentPage = 'material';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('pageTitle').innerHTML = MATERIALS[key].icon + ' ' + MATERIALS[key].title;
+  renderMaterial(key);
+}
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('editToggle');
+  btn.classList.toggle('active', editMode);
+  document.body.classList.toggle('edit-mode', editMode);
+  if(currentPage === 'material' && currentMaterial) renderMaterial(currentMaterial);
+  notify(editMode ? '✏️ Mode Edit aktif' : 'Mode Edit nonaktif');
+}
+// ==================== RENDER DASHBOARD ====================
+function renderDashboard() {
+  const area = document.getElementById('contentArea');
+  const ganjil = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'ganjil');
+  const genap = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'genap');
+  const totalQ = Object.values(gameQuestions).reduce((a,b) => a+b.length, 0);
+  area.innerHTML = `
+    <div class="fade-in">
+      <div class="dashboard-hero">
+        <h1>いらっしゃいませ！</h1>
+        <p>Selamat datang di <strong>Was4bi</strong> — Media Pembelajaran Bahasa Jepang Kelas XII SMA Negeri 4 Malang. 
+        Seperti wasabi yang memberikan sensasi pedas bertahap, media ini menyajikan materi dengan tingkat kesulitan bertingkat. 
+        Selamat mengajar, Sensei! 🍣</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(192,57,43,0.2);color:var(--sushi-red-light)"><i class="fas fa-book"></i></div>
+          <h3>8</h3>
+          <p>Sub-Tema (Ikan Sushi)</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(212,160,23,0.2);color:var(--gold)"><i class="fas fa-pepper-hot"></i></div>
+          <h3>${totalQ}</h3>
+          <p>Soal (Biji Wasabi)</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(127,176,105,0.2);color:var(--wasabi)"><i class="fas fa-gamepad"></i></div>
+          <h3>2</h3>
+          <p>Jenis Permainan</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(255,182,193,0.2);color:var(--ginger)"><i class="fas fa-hand-paper"></i></div>
+          <h3 id="handCountDash">${handRaiseList.filter(h=>h.status==='raised').length}</h3>
+          <p>Tangan Terangkat</p>
+        </div>
+      </div>
+      <h2 style="margin-bottom:14px;font-size:17px;color:var(--cream)">🍣 Semester Ganjil <span style="color:var(--cream-dark);font-size:12px">(Mainichi no Seikatsu & Hima na Toki — 60 JP)</span></h2>
+      <div class="material-grid" style="margin-bottom:28px">
+        ${ganjil.map(([k,v], i) => `
+          <div class="material-card" onclick="showMaterial('${k}')">
+            <div class="card-num">${i+1}</div>
+            <div class="card-icon">${v.icon}</div>
+            <h3>${v.title}</h3>
+            <div class="card-jp">${v.jp}</div>
+            <p>${v.description}</p>
+            <span class="card-tag">${gameQuestions[k]?.length || 0} soal</span>
+          </div>
+        `).join('')}
+      </div>
+      <h2 style="margin-bottom:14px;font-size:17px;color:var(--cream)">🍱 Semester Genap <span style="color:var(--cream-dark);font-size:12px">(Shourai & Kenkou — 25 JP)</span></h2>
+      <div class="material-grid">
+        ${genap.map(([k,v], i) => `
+          <div class="material-card" onclick="showMaterial('${k}')">
+            <div class="card-num">${i+7}</div>
+            <div class="card-icon">${v.icon}</div>
+            <h3>${v.title}</h3>
+            <div class="card-jp">${v.jp}</div>
+            <p>${v.description}</p>
+            <span class="card-tag">${gameQuestions[k]?.length || 0} soal</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+// ==================== RENDER MATERIAL ====================
+function renderMaterial(key) {
+  const m = MATERIALS[key];
+  const area = document.getElementById('contentArea');
+  area.innerHTML = `
+    <div class="fade-in">
+      <div class="detail-header">
+        <div class="back-btn" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Kembali ke Menu</div>
+        <h1>${m.icon} ${m.title}</h1>
+        <div class="jp-title">${m.jp}</div>
+        <p class="editable-field" contenteditable="editMode">{m.description}</p>
+      </div>
+      <div class="section-block">
+        <h2><i class="fas fa-spell-check"></i> Kosakata (言葉)</h2>
+        <p style="color:var(--cream-dark);font-size:12px;margin-bottom:10px">Kosakata yang perlu dipelajari pada sub-tema ini:</p>
+        <table class="vocab-table">
+          <thead><tr><th>No</th><th>Bahasa Jepang</th><th>Romaji</th><th>Arti</th></tr></thead>
+          <tbody>
+            ${m.vocab.map((v,i) => `
+              <tr>
+                <td>${i+1}</td>
+                <td class="jp editable-field" contenteditable="editMode">{v.jp}</td>
+                <td class="romaji editable-field" contenteditable="editMode">{v.romaji}</td>
+                <td class="editable-field" contenteditable="editMode">{v.id}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="section-block">
+        <h2><i class="fas fa-pen-fancy"></i> Tata Bahasa (文法)</h2>
+        <p style="color:var(--cream-dark);font-size:12px;margin-bottom:14px">Pola kalimat yang dipelajari:</p>
+        ${m.grammar.map(g => `
+          <div class="grammar-box">
+            <div class="pattern editable-field" contenteditable="${editMode}">📌 ${g.pattern}</div>
+            <div class="meaning editable-field" contenteditable="editMode">{g.meaning}</div>
+            <h3>Contoh Kalimat:</h3>
+            ${g.examples.map(e => `
+              <div class="example">
+                <div class="jp-sentence editable-field" contenteditable="editMode">{e.jp}</div>
+                <div class="romaji-sentence editable-field" contenteditable="editMode">{e.romaji}</div>
+                <div class="id-sentence editable-field" contenteditable="editMode">{e.id}</div>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="section-block">
+        <h2><i class="fas fa-torii-gate"></i> Catatan Budaya (文化)</h2>
+        ${getCultureNote(key)}
+      </div>
+    </div>
+  `;
+}
+function getCultureNote(key) {
+  const notes = {
+    tabemono: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🍚 Di Jepang, orang mengucapkan <span style="color:var(--sushi-red-light)">「いただきます」</span> sebelum makan dan <span style="color:var(--sushi-red-light)">「ごちそうさまでした」</span> setelah makan sebagai rasa terima kasih. Nasi (ご飯) adalah makanan pokok utama.</p>`,
+    kaimono: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🏪 Jepang terkenal dengan minimarket (コンビニ) yang buka 24 jam. Harga sudah termasuk pajak dan tidak ada tawar-menawar. Ada tradisi <span style="color:var(--sushi-red-light)">お土産 (omiyage)</span> membawa oleh-oleh saat bepergian.</p>`,
+    norimono: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🚅 Jepang terkenal dengan <span style="color:var(--sushi-red-light)">新幹線 (Shinkansen)</span> kereta peluru yang sangat cepat dan tepat waktu. Keterlambatan 1 menit saja akan disertai permintaan maaf.</p>`,
+    ryokou: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🏯 Jepang memiliki banyak kuil (寺) dan kuil Shinto (神社). Wisata onsen sangat populer. Gunung Fuji (富士山) adalah destinasi paling terkenal.</p>`,
+    kisetsu: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🌸 Jepang memiliki 4 musim. Musim semi dengan sakura dan hanami. Musim panas dengan festival kembang api. Musim gugur dengan daun maple merah. Musim dingin dengan salju.</p>`,
+    shumi: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🎌 Karaoke (カラオケ) adalah aktivitas favorit saat berkumpul. Origami dan upacara teh (茶道) merupakan hobi tradisional yang masih dilestarikan.</p>`,
+    shourai: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🎓 Siswa Jepang mulai memikirkan masa depan sejak SMP. Ada tradisi <span style="color:var(--sushi-red-light)">就職活動 (shuukatsu)</span> kegiatan mencari kerja bagi lulusan baru.</p>`,
+    kenkou: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🏥 Setiap warga Jepang wajib memiliki asuransi kesehatan. Saat seseorang sakit, diucapkan <span style="color:var(--sushi-red-light)">「お大事に」</span> (odaiji ni) — semoga cepat sembuh.</p>`
+  };
+  return notes[key] || '';
+}
+// ==================== INDIVIDUAL GAME ====================
+function renderIndividualGame() {
+  const area = document.getElementById('contentArea');
+  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
+  // Generate QR URL for student
+  const baseUrl = window.location.href.split('?')[0].split('#')[0];
+  const qrUrl = baseUrl + '?game=individual';
+  area.innerHTML = `
+    <div class="fade-in">
+      <div class="section-block" style="text-align:center;margin-bottom:20px">
+        <h2><i class="fas fa-gamepad"></i> Game Individu - Kotak Misteri Wasabi 🌶️</h2>
+        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Pilih kotak secara acak. Semakin pedas wasabi, semakin tinggi poinnya!</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+          <span class="spice-indicator" style="background:rgba(129,199,132,0.2);color:var(--mild)">🌱 Mild = 5 poin</span>
+          <span class="spice-indicator" style="background:rgba(255,213,79,0.2);color:var(--medium)">🌶️ Medium = 10 poin</span>
+          <span class="spice-indicator" style="background:rgba(255,138,101,0.2);color:var(--hot)">🔥 Hot = 15 poin</span>
+          <span class="spice-indicator" style="background:rgba(229,57,53,0.2);color:var(--extra-hot)">💥 Extra Hot = 25 poin</span>
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Individu)</h3>
+        <div class="qr-container">
+          <div class="qr-box" id="qrIndividual"></div>
+          <div class="qr-info">
+            <h4>📱 Scan untuk Murid</h4>
+            <p>Murid scan QR ini, tulis nama, lalu klik "Angkat Tangan". Daftar tangan terangkat muncul di bawah.</p>
+            <div class="qr-url">${qrUrl}</div>
+          </div>
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat <span class="hand-count-badge" id="handCountBadge">0</span></h3>
+        <div class="hand-list" id="handList">
+          <p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn-secondary" onclick="lowerAllHands()"><i class="fas fa-hand-paper-slash"></i> Turunkan Semua</button>
+          <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2 style="border:none;padding:0;margin-bottom:12px">🎯 Pilih Filter Soal</h2>
+        <div class="topic-selector" id="gameTopicSelector">
+          ${Object.entries(MATERIALS).map(([k,v]) => `
+            <button class="topic-btn" onclick="setGameTopic('k',this)">{v.icon} ${v.title}</button>
+          `).join('')}
+          <button class="topic-btn active" onclick="setGameTopic('all',this)">🎲 Semua</button>
+        </div>
+        <div class="difficulty-selector" id="gameSpiceSelector">
+          <button class="diff-btn mild" onclick="setGameSpice('mild',this)">🌱 Mild</button>
+          <button class="diff-btn medium" onclick="setGameSpice('medium',this)">🌶️ Medium</button>
+          <button class="diff-btn hot" onclick="setGameSpice('hot',this)">🔥 Hot</button>
+          <button class="diff-btn extra" onclick="setGameSpice('extra',this)">💥 Extra Hot</button>
+          <button class="diff-btn active" style="color:var(--cream);background:var(--sushi-red);border-color:var(--sushi-red)" onclick="setGameSpice('all',this)">🎲 Semua Level</button>
+        </div>
+      </div>
+      <div class="game-score">
+        <h3>Skor Anda</h3>
+        <div class="score-num" id="gameScoreDisplay">0 / 0</div>
+      </div>
+      <div class="game-board" id="gameBoard">
+        ${Array.from({length:16}, (_,i) => `
+          <div class="game-box" id="boxi"onclick="openBox({i})">
+            <span class="box-num">${i+1}</span>
+            <span>🍣</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-secondary" onclick="resetGame()"><i class="fas fa-redo"></i> Reset Game</button>
+      </div>
+    </div>
+  `;
+  // Generate QR
+  setTimeout(() => {
+    const qrContainer = document.getElementById('qrIndividual');
+    if (qrContainer) {
+      new QRCode(qrContainer, {
+        text: qrUrl,
+        width: 140,
+        height: 140,
+        colorDark: "#c0392b",
+        colorLight: "#FFFAF0",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+    renderHandList();
+  }, 100);
+}
+function setGameTopic(topic, btn) {
+  currentGameTopic = topic;
+  document.querySelectorAll('#gameTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  resetGame();
+}
+function setGameSpice(spice, btn) {
+  currentGameSpice = spice;
+  document.querySelectorAll('#gameSpiceSelector .diff-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'transparent';
+  });
+  btn.classList.add('active');
+  resetGame();
+}
+function getGameQuestion() {
+  let pool = [];
+  const topics = currentGameTopic === 'all' ? Object.keys(gameQuestions) : [currentGameTopic];
+  topics.forEach(t => {
+    const qs = gameQuestions[t] || [];
+    qs.forEach(q => {
+      if (currentGameSpice === 'all' || q.spice === currentGameSpice) {
+        pool.push({ ...q, topic: MATERIALS[t].title, topicKey: t });
+      }
+    });
+  });
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function openBox(idx) {
+  if(openedBoxes.has(idx)) return;
+  const q = getGameQuestion();
+  if(!q) { notify('Tidak ada soal untuk filter ini!', true); return; }
+  const modal = document.getElementById('quizModal');
+  const content = document.getElementById('quizContent');
+  const spiceInfo = SPICE_LEVELS[q.spice];
+  content.innerHTML = `
+    <h3>🍣 Soal #${gameTotal + 1}</h3>
+    <div class="q-meta">
+      <span class="q-tag topic">${q.topic}</span>
+      <span class="q-tag spice spice-q.spice==='extra'?'extra':q.spice">{spiceInfo.label}</span>
+      <span class="q-tag" style="background:rgba(212,160,23,0.2);color:var(--gold)">+${spiceInfo.points} poin</span>
+    </div>
+    <div class="question">${q.q}</div>
+    <div class="quiz-options">
+      ${q.options.map((o,i) => `
+        <div class="quiz-option" onclick="selectOption(this,i)"data-idx="{i}">${String.fromCharCode(65+i)}. ${o}</div>
+      `).join('')}
+    </div>
+    <button class="quiz-submit" onclick="submitAnswer(q.answer,{idx},${spiceInfo.points})">Jawab</button>
+    <div class="quiz-result" id="quizResult"></div>
+  `;
+  modal.classList.add('show');
+}
+function selectOption(el, idx) {
+  document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function submitAnswer(correct, boxIdx, points) {
+  const selected = document.querySelector('.quiz-option.selected');
+  if(!selected) { notify('Pilih jawaban terlebih dahulu!', true); return; }
+  const selIdx = parseInt(selected.dataset.idx);
+  const result = document.getElementById('quizResult');
+  const box = document.getElementById('box' + boxIdx);
+  openedBoxes.add(boxIdx);
+  gameTotal++;
+  document.querySelectorAll('.quiz-option').forEach(o => {
+    o.style.pointerEvents = 'none';
+    if(parseInt(o.dataset.idx) === correct) o.classList.add('correct-answer');
+  });
+  if(selIdx === correct) {
+    gameCorrect++;
+    gameScore += points;
+    box.classList.add('opened','correct');
+    box.innerHTML = `<span class="box-num">${boxIdx+1}</span><span>✅</span>`;
+    result.className = 'quiz-result show correct';
+    result.innerHTML = `🎉 Benar! +${points} poin`;
+  } else {
+    selected.classList.add('wrong-answer');
+    box.classList.add('opened','wrong');
+    box.innerHTML = `<span class="box-num">${boxIdx+1}</span><span>❌</span>`;
+    result.className = 'quiz-result show wrong';
+    result.innerHTML = '❌ Salah! Jawaban yang benar ditandai hijau.';
+  }
+  document.getElementById('gameScoreDisplay').textContent = `gameScore({gameCorrect}/${gameTotal})`;
+  setTimeout(() => {
+    document.getElementById('quizModal').classList.remove('show');
+  }, 2200);
+}
+function resetGame() {
+  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
+  const board = document.getElementById('gameBoard');
+  if(board) {
+    board.innerHTML = Array.from({length:16}, (_,i) => `
+      <div class="game-box" id="boxi"onclick="openBox({i})">
+        <span class="box-num">${i+1}</span>
+        <span>🍣</span>
+      </div>
+    `).join('');
+  }
+  const score = document.getElementById('gameScoreDisplay');
+  if(score) score.textContent = '0 / 0';
+}
+// ==================== HAND RAISE MANAGEMENT ====================
+function renderHandList() {
+  const list = document.getElementById('handList');
+  const badge = document.getElementById('handCountBadge');
+  if (!list) return;
+  const raised = handRaiseList.filter(h => h.status === 'raised').sort((a,b) => a.timestamp - b.timestamp);
+  if (badge) badge.textContent = raised.length;
+  // Update dashboard count if visible
+  const dashCount = document.getElementById('handCountDash');
+  if (dashCount) dashCount.textContent = raised.length;
+  if (raised.length === 0) {
+    list.innerHTML = '<p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p>';
+    return;
+  }
+  list.innerHTML = raised.map((h, idx) => `
+    <div class="hand-item raised">
+      <div class="hand-info">
+        <div class="hand-icon">${h.type === 'group' ? '👥' : '🙋'}</div>
+        <div>
+          <div class="hand-name">${h.name} ${h.group ? `<span style="color:var(--wasabi);font-size:11px">• ${h.group}</span>` : ''}</div>
+          <div class="hand-meta">h.type==='group'?'Kelompok':'Individu'•Urutan#{idx + 1}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="hand-time">${h.time}</div>
+        <div class="hand-actions">
+          <button class="hand-btn call" onclick="callStudent(${h.id})"><i class="fas fa-bullhorn"></i> Panggil</button>
+          <button class="hand-btn lower" onclick="lowerHand(${h.id})"><i class="fas fa-hand-paper-slash"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function callStudent(id) {
+  const entry = handRaiseList.find(h => h.id === id);
+  if (entry) {
+    notify(`📢 Memanggil entry.name{entry.group ? ' (' + entry.group + ')' : ''}!`);
+  }
+}
+function lowerHand(id) {
+  const entry = handRaiseList.find(h => h.id === id);
+  if (entry) {
+    entry.status = 'lowered';
+    localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+    renderHandList();
+    notify(`Tangan ${entry.name} diturunkan`);
+  }
+}
+function lowerAllHands() {
+  handRaiseList.forEach(h => h.status = 'lowered');
+  localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+  renderHandList();
+  notify('Semua tangan diturunkan');
+}
+function clearHandHistory() {
+  if (confirm('Hapus semua riwayat angkat tangan?')) {
+    handRaiseList = [];
+    localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
+    renderHandList();
+    notify('Riwayat dihapus');
+  }
+}
+// ==================== GROUP GAME ====================
+function renderGroupGame() {
+  const area = document.getElementById('contentArea');
+  wsFoundWords = [];
+  wsTeams = [
+    {name:"Tim Sushi 🍣",score:0},
+    {name:"Tim Bento 🍱",score:0},
+    {name:"Tim Onigiri 🍙",score:0},
+    {name:"Tim Ramen 🍜",score:0}
+  ];
+  const baseUrl = window.location.href.split('?')[0].split('#')[0];
+  const qrUrl = baseUrl + '?game=group';
+  area.innerHTML = `
+    <div class="fade-in">
+      <div class="section-block" style="margin-bottom:20px">
+        <h2><i class="fas fa-users"></i> Game Kelompok - Word Search 🍣</h2>
+        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Cari kata-kata tersembunyi di dalam kotak! Setiap tim bergiliran menemukan kata.</p>
+        <div class="topic-selector" id="wsTopicSelector">
+          ${Object.entries(MATERIALS).map(([k,v]) => `
+            <button class="topic-btn k==='tabemono'?'active':''"onclick="setWsTopic('{k}',this)">${v.icon} ${v.title}</button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Kelompok)</h3>
+        <div class="qr-container">
+          <div class="qr-box" id="qrGroup"></div>
+          <div class="qr-info">
+            <h4>📱 Scan untuk Kelompok</h4>
+            <p>Kelompok scan QR ini, tulis nama wakil, pilih kelompok, lalu klik "Angkat Tangan".</p>
+            <div class="qr-url">${qrUrl}</div>
+          </div>
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat (Kelompok) <span class="hand-count-badge" id="handCountBadge">0</span></h3>
+        <div class="hand-list" id="handList">
+          <p style="color:var(--cream-dark);font-size:12px">Belum ada kelompok yang mengangkat tangan.</p>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn-secondary" onclick="lowerAllHands()"><i class="fas fa-hand-paper-slash"></i> Turunkan Semua</button>
+          <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
+        </div>
+      </div>
+      <div id="wsGameArea"></div>
+    </div>
+  `;
+  setTimeout(() => {
+    const qrContainer = document.getElementById('qrGroup');
+    if (qrContainer) {
+      new QRCode(qrContainer, {
+        text: qrUrl,
+        width: 140,
+        height: 140,
+        colorDark: "#c0392b",
+        colorLight: "#FFFAF0",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+    renderHandList();
+    startWordSearch();
+  }, 100);
+}
+function setWsTopic(topic, btn) {
+  wsCurrentTopic = topic;
+  document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  startWordSearch();
+}
+function startWordSearch() {
+  const data = WORDSEARCH_DATA[wsCurrentTopic];
+  if(!data) return;
+  wsFoundWords = [];
+  const gridSize = 10;
+  const grid = generateWordGrid(data.words, gridSize);
+  const wsArea = document.getElementById('wsGameArea');
+  wsArea.innerHTML = `
+    <div class="section-block">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 style="font-size:16px;margin-bottom:4px">${data.title}</h3>
+          <p style="color:var(--cream-dark);font-size:12px">Temukan ${data.words.length} kata tersembunyi!</p>
+        </div>
+        <button class="btn-secondary" onclick="startWordSearch()"><i class="fas fa-redo"></i> Acak Ulang</button>
+      </div>
+      <div class="ws-words" id="wsWords">
+        ${data.words.map(w => `<div class="ws-word" id="wsw_${w}">${w}</div>`).join('')}
+      </div>
+      <div class="ws-grid-wrapper">
+        <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${gridSize},36px)">
+          ${grid.map((row,r) => row.map((cell,c) => `
+            <div class="ws-cell" data-r="r"data-c="{c}" 
+                 onmousedown="wsStartSelect(r,{c})" 
+                 onmouseover="wsMoveSelect(r,{c})" 
+                 onmouseup="wsEndSelect()">${cell}</div>
+          `).join('')).join('')}
+        </div>
+        <div class="ws-info">
+          <h4>📊 Skor Tim</h4>
+          ${wsTeams.map((t,i) => `
+            <div class="ws-team-score">
+              <span style="font-size:13px">${t.name}</span>
+              <span style="font-weight:700;color:var(--gold)" id="teamScorei">{t.score}</span>
+            </div>
+          `).join('')}
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Pilih tim yang menemukan kata:</p>
+            <div class="topic-selector" id="wsTeamSelector">
+              ${wsTeams.map((t,i) => `
+                <button class="topic-btn i===0?'active':''"onclick="selectWsTeam({i},this)">${t.name}</button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+let wsCurrentTeam = 0;
+function selectWsTeam(idx, btn) {
+  wsCurrentTeam = idx;
+  document.querySelectorAll('#wsTeamSelector .topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function generateWordGrid(words, size) {
+  let grid = Array.from({length:size}, () => Array(size).fill(''));
+  const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1]];
+  const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  words.forEach(word => {
+    let placed = false;
+    for(let attempt = 0; attempt < 100 && !placed; attempt++) {
+      const dir = directions[Math.floor(Math.random() * directions.length)];
+      const startR = Math.floor(Math.random() * size);
+      const startC = Math.floor(Math.random() * size);
+      let canPlace = true;
+      for(let i = 0; i < word.length; i++) {
+        const nr = startR + dir[0] * i;
+        const nc = startC + dir[1] * i;
+        if(nr < 0 || nr >= size || nc < 0 || nc >= size) { canPlace = false; break; }
+        if(grid[nr][nc] !== '' && grid[nr][nc] !== word[i]) { canPlace = false; break; }
+      }
+      if(canPlace) {
+        for(let i = 0; i < word.length; i++) {
+          grid[startR + dir[0]*i][startC + dir[1]*i] = word[i];
+        }
+        placed = true;
+      }
+    }
+  });
+  for(let r = 0; r < size; r++) {
+    for(let c = 0; c < size; c++) {
+      if(grid[r][c] === '') {
+        grid[r][c] = katakana[Math.floor(Math.random() * katakana.length)];
+      }
+    }
+  }
+  return grid;
+}
+function wsStartSelect(r, c) {
+  wsSelecting = true;
+  wsSelectedCells = [{r, c}];
+  updateWsSelection();
+}
+function wsMoveSelect(r, c) {
+  if(!wsSelecting) return;
+  const first = wsSelectedCells[0];
+  const dr = r - first.r;
+  const dc = c - first.c;
+  if(dr === 0 && dc === 0) {
+    wsSelectedCells = [{r, c}];
+  } else if(Math.abs(dr) === Math.abs(dc) || dr === 0 || dc === 0) {
+    const steps = Math.max(Math.abs(dr), Math.abs(dc));
+    const sr = dr === 0 ? 0 : dr / Math.abs(dr);
+    const sc = dc === 0 ? 0 : dc / Math.abs(dc);
+    wsSelectedCells = [];
+    for(let i = 0; i <= steps; i++) {
+      wsSelectedCells.push({r: first.r + sr*i, c: first.c + sc*i});
+    }
+  }
+  updateWsSelection();
+}
+function wsEndSelect() {
+  if(!wsSelecting) return;
+  wsSelecting = false;
+  const word = wsSelectedCells.map(({r,c}) => {
+    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+    return cell ? cell.textContent : '';
+  }).join('');
+  const data = WORDSEARCH_DATA[wsCurrentTopic];
+  if(data && data.words.includes(word) && !wsFoundWords.includes(word)) {
+    wsFoundWords.push(word);
+    wsSelectedCells.forEach(({r,c}) => {
+      const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+      if(cell) cell.classList.add('found-cell');
+    });
+    const wordEl = document.getElementById('wsw_' + word);
+    if(wordEl) wordEl.classList.add('found');
+    wsTeams[wsCurrentTeam].score += 10;
+    const scoreEl = document.getElementById('teamScore' + wsCurrentTeam);
+    if(scoreEl) scoreEl.textContent = wsTeams[wsCurrentTeam].score;
+    notify(`wsTeams[wsCurrentTeam].namemenemukan"{word}"! +10 poin`);
+    if(wsFoundWords.length === data.words.length) {
+      setTimeout(() => {
+        const winner = wsTeams.reduce((a,b) => a.score > b.score ? a : b);
+        notify(`🏆 Permainan selesai! Pemenang: ${winner.name} dengan ${winner.score} poin!`);
+      }, 500);
+    }
+  }
+  document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
+  wsSelectedCells = [];
+}
+function updateWsSelection() {
+  document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
+  wsSelectedCells.forEach(({r,c}) => {
+    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
+    if(cell && !cell.classList.contains('found-cell')) cell.classList.add('selecting');
+  });
+}
+// ==================== ADMIN PANEL ====================
+function renderAdmin() {
+  const area = document.getElementById('contentArea');
+  area.innerHTML = `
+    <div class="fade-in">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="showAdminTab('questions',this)">📝 Kelola Soal</button>
+        <button class="admin-tab" onclick="showAdminTab('addQuestion',this)">➕ Tambah Soal</button>
+        <button class="admin-tab" onclick="showAdminTab('editMaterial',this)">📚 Edit Materi</button>
+      </div>
+      <div id="adminContent"></div>
+    </div>
+  `;
+  showAdminTab('questions');
+}
+function showAdminTab(tab, btn) {
+  if(btn) {
+    document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const content = document.getElementById('adminContent');
+  if(tab === 'questions') {
+    content.innerHTML = `
+      <div class="admin-form">
+        <h3>📝 Daftar Soal per Sub-Tema (dengan Tingkat Kepedasan)</h3>
+        <div class="topic-selector" style="margin-bottom:14px">
+          ${Object.entries(MATERIALS).map(([k,v]) => `
+            <button class="topic-btn" onclick="showQuestionsFor('k',this)">{v.icon} v.title({gameQuestions[k]?.length || 0})</button>
+          `).join('')}
+        </div>
+        <div id="questionListArea">
+          <p style="color:var(--cream-dark);font-size:13px">Pilih sub-tema untuk melihat daftar soal.</p>
+        </div>
+      </div>
+    `;
+  } else if(tab === 'addQuestion') {
+    content.innerHTML = `
+      <div class="admin-form">
+        <h3>➕ Tambah Soal Baru (Pilih Tingkat Kepedasan)</h3>
+        <div class="form-group">
+          <label>Sub-Tema</label>
+          <select id="newQTopic">
+            ${Object.entries(MATERIALS).map(([k,v]) => `<option value="${k}">${v.icon} ${v.title}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tingkat Kepedasan (Wasabi Level)</label>
+          <select id="newQSpice">
+            <option value="mild">🌱 Mild (Mudah) — 5 poin</option>
+            <option value="medium" selected>🌶️ Medium (Sedang) — 10 poin</option>
+            <option value="hot">🔥 Hot (Sulit) — 15 poin</option>
+            <option value="extra">💥 Extra Hot (Sangat Sulit) — 25 poin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pertanyaan</label>
+          <textarea id="newQText" placeholder="Tulis pertanyaan di sini..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Pilihan A</label>
+          <input type="text" id="newQA" placeholder="Pilihan A">
+        </div>
+        <div class="form-group">
+          <label>Pilihan B</label>
+          <input type="text" id="newQB" placeholder="Pilihan B">
+        </div>
+        <div class="form-group">
+          <label>Pilihan C</label>
+          <input type="text" id="newQC" placeholder="Pilihan C">
+        </div>
+        <div class="form-group">
+          <label>Pilihan D</label>
+          <input type="text" id="newQD" placeholder="Pilihan D">
+        </div>
+        <div class="form-group">
+          <label>Jawaban Benar</label>
+          <select id="newQAnswer">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="addQuestion()"><i class="fas fa-plus"></i> Tambahkan Soal</button>
+      </div>
+    `;
+  } else if(tab === 'editMaterial') {
+    content.innerHTML = `
+      <div class="admin-form">
+        <h3>📚 Edit Materi</h3>
+        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Aktifkan "Mode Edit" di pojok kanan atas, lalu pilih sub-tema yang ingin diedit:</p>
+        <div class="topic-selector">
+          ${Object.entries(MATERIALS).map(([k,v]) => `
+            <button class="topic-btn" onclick="showMaterial('k');if(!editMode)toggleEditMode()">{v.icon} ${v.title}</button>
+          `).join('')}
+        </div>
+        <div style="margin-top:16px;padding:14px;background:rgba(0,0,0,0.3);border-radius:10px;border-left:3px solid var(--wasabi)">
+          <p style="font-size:12px;color:var(--cream-dark)"><i class="fas fa-info-circle" style="color:var(--wasabi)"></i> <strong>Tips:</strong> Saat Mode Edit aktif, Anda dapat mengklik langsung pada teks untuk mengeditnya.</p>
+        </div>
+      </div>
+    `;
+  }
+}
+function showQuestionsFor(topic, btn) {
+  document.querySelectorAll('.topic-selector .topic-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const qs = gameQuestions[topic] || [];
+  const listArea = document.getElementById('questionListArea');
+  if(qs.length === 0) {
+    listArea.innerHTML = '<p style="color:var(--cream-dark);font-size:13px">Belum ada soal untuk sub-tema ini.</p>';
+    return;
+  }
+  listArea.innerHTML = `
+    <div class="question-list">
+      ${qs.map((q,i) => `
+        <div class="question-item">
+          <div class="q-text">
+            <strong>${i+1}.</strong> ${q.q}<br>
+            <span class="spice-indicator spice-q.spice==='extra'?'extra':q.spice"style="margin-top:4px">{SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
+            <small style="color:var(--wasabi);margin-left:8px">Jawaban: ${q.options[q.answer]}</small>
+          </div>
+          <div class="q-actions">
+            <button class="btn-danger" onclick="deleteQuestion('topic',{i})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function addQuestion() {
+  const topic = document.getElementById('newQTopic').value;
+  const spice = document.getElementById('newQSpice').value;
+  const text = document.getElementById('newQText').value.trim();
+  const a = document.getElementById('newQA').value.trim();
+  const b = document.getElementById('newQB').value.trim();
+  const c = document.getElementById('newQC').value.trim();
+  const d = document.getElementById('newQD').value.trim();
+  const answer = parseInt(document.getElementById('newQAnswer').value);
+  if(!text || !a || !b || !c || !d) {
+    notify('Semua field harus diisi!', true);
+    return;
+  }
+  if(!gameQuestions[topic]) gameQuestions[topic] = [];
+  gameQuestions[topic].push({q:text, options:[a,b,c,d], answer, spice});
+  document.getElementById('newQText').value = '';
+  document.getElementById('newQA').value = '';
+  document.getElementById('newQB').value = '';
+  document.getElementById('newQC').value = '';
+  document.getElementById('newQD').value = '';
+  notify('✅ Soal berhasil ditambahkan!');
+}
+function deleteQuestion(topic, idx) {
+  if(confirm('Yakin ingin menghapus soal ini?')) {
+    gameQuestions[topic].splice(idx, 1);
+    showQuestionsFor(topic);
+    notify('Soal berhasil dihapus');
+  }
+}
+// ==================== UTILITIES ====================
+function notify(msg, isError = false) {
+  const n = document.getElementById('notification');
+  n.textContent = msg;
+  n.classList.toggle('error', isError);
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3000);
+}
+document.getElementById('quizModal').addEventListener('click', function(e) {
+  if(e.target === this) this.classList.remove('show');
+});
+document.addEventListener('mouseup', () => { if(wsSelecting) wsEndSelect(); });
+// ==================== INIT ====================
+if (!checkStudentView()) {
+  // Normal teacher flow
+}
+</script>
+</body>
+</html>
