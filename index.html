@@ -592,6 +592,14 @@ body{transition:background .3s,color .3s}
 .vocab-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:16px;font-size:12px;cursor:pointer;background:var(--nori-soft)}
 .vocab-chip small{color:var(--cream-dark);font-size:11px}
 .vocab-chip input{accent-color:var(--sushi-red)}
+.pack-item{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:rgba(0,0,0,.12)}
+.pack-item.active{border-color:var(--wasabi);box-shadow:0 0 0 1px var(--wasabi) inset}
+.pack-info{flex:1;min-width:200px;font-size:14px}
+.pack-info small{display:block;color:var(--cream-dark);font-size:11px;margin-top:2px}
+.pack-words{font-size:11px;color:var(--cream-dark);margin-top:4px;opacity:.85;word-break:break-word}
+.pack-badge{background:var(--wasabi-dark);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:6px}
+.pack-actions{display:flex;gap:6px;flex-wrap:wrap}
+.pack-actions button{padding:6px 12px;font-size:12px}
 .vocab-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--nori-soft);padding:10px 0 2px;font-size:12px}
 .hand-more{font-size:11px;color:var(--cream-dark);margin-top:8px;text-align:center}
 </style>
@@ -658,6 +666,7 @@ body{transition:background .3s,color .3s}
       <div class="nav-section">
         <div class="nav-section-title">🎮 Permainan</div>
         <div class="nav-item" onclick="showPage('game')"><i class="fas fa-th"></i> Game Word Search</div>
+        <div class="nav-item" onclick="showPage('vocab')"><i class="fas fa-list-check"></i> Atur Kosakata</div>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">⚙️ Admin</div>
@@ -1238,7 +1247,7 @@ function restoreSession() {
   if (n.topic && WORDSEARCH_DATA[n.topic]) wsCurrentTopic = n.topic;
   wsUseCustom = !!n.custom && wsSel.size >= 3;
   if (n.page === 'material' && MATERIALS[n.material]) showMaterial(n.material);
-  else showPage(['dashboard','game','admin'].includes(n.page) ? n.page : 'dashboard');
+  else showPage(['dashboard','game','vocab','admin'].includes(n.page) ? n.page : 'dashboard');
 }
 function showPage(page) {
   currentPage = page; saveNav();
@@ -1252,6 +1261,9 @@ function showPage(page) {
   } else if(page === 'game') {
     document.getElementById('pageTitle').innerHTML = '🔍 Game Word Search';
     renderWordSearchGame();
+  } else if(page === 'vocab') {
+    document.getElementById('pageTitle').innerHTML = '📚 Atur Kosakata';
+    renderVocabPage();
   } else if(page === 'admin') {
     document.getElementById('pageTitle').innerHTML = '⚙️ Kelola Konten';
     renderAdmin();
@@ -1455,7 +1467,7 @@ function clearHandHistory() {
 }
 // ==================== GROUP GAME ====================
 function setWsTopic(topic, btn) {
-  wsCurrentTopic = topic; wsUseCustom = false; saveNav(); wsVocabInfo();
+  wsCurrentTopic = topic; wsUseCustom = false; saveNav(); wsVocabInfo(); renderActivePackBox();
   document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   startWordSearch();
@@ -1599,8 +1611,8 @@ function renderWordSearchGame() {
         </div>
       </div>
       <div class="hand-raise-section">
-        <button class="panel-toggle ${wsVocabOpen ? 'open' : ''}" onclick="toggleVocabPanel(this)"><span>📚 Atur Kosakata yang Dimainkan <span class="hand-count-badge" id="vocabCount">0</span></span><i class="fas fa-chevron-down"></i></button>
-        <div class="panel-body" id="vocabBody" style="max-height:440px" ${wsVocabOpen ? '' : 'hidden'}></div>
+        <h3><i class="fas fa-list-check"></i> Kosakata yang Dimainkan</h3>
+        <div id="activePackBox"></div>
       </div>
       <div class="hand-raise-section">
         <h3><i class="fas fa-qrcode"></i> QR Angkat Tangan (${isG ? 'Kelompok' : 'Individu'})</h3>
@@ -1628,7 +1640,7 @@ function renderWordSearchGame() {
       </div>
       <div id="wsGameArea"></div>
     </div>`;
-  syncPlayers(); checkDb(); renderPlayersPanel(); renderVocabPanel();
+  syncPlayers(); checkDb(); renderPlayersPanel(); renderActivePackBox();
   setTimeout(() => {
     const q = document.getElementById('qrGame');
     if (q && typeof QRCode !== 'undefined') new QRCode(q, {text: qrUrl, width:140, height:140, colorDark:"#c0392b", colorLight:"#FFFAF0", correctLevel: QRCode.CorrectLevel.M});
@@ -1729,7 +1741,7 @@ function renderVocabPanel() {
   const b = document.getElementById('vocabBody'); if (!b) return;
   b.innerHTML = Object.entries(WORDSEARCH_DATA).map(([k,v]) => `<div class="vocab-group"><div class="vocab-head"><b>${MATERIALS[k] ? MATERIALS[k].icon + ' ' : ''}${esc(v.title)}</b><span><button class="btn-secondary" onclick="wsSelTopic('${k}',true)">Pilih semua</button> <button class="btn-secondary" onclick="wsSelTopic('${k}',false)">Kosongkan</button></span></div>
     <div class="vocab-list">${[...new Set(v.words)].map(w => `<label class="vocab-chip"><input type="checkbox" value="${w}" onchange="wsToggleWord(this)" ${wsSel.has(w) ? 'checked' : ''}> <b>${w}</b> <small>${esc(wsClue(w))}</small></label>`).join('')}</div></div>`).join('')
-    + `<div class="vocab-foot"><span id="vocabInfo"></span><button class="btn-primary" onclick="wsStartCustom()"><i class="fas fa-play"></i> Mulai dengan Kosakata Terpilih</button><button class="btn-secondary" onclick="wsClearSel()">Hapus Semua Pilihan</button></div>`;
+    + `<div class="vocab-foot"><span id="vocabInfo"></span><button class="btn-primary" onclick="wsStartCustom()"><i class="fas fa-play"></i> Mainkan Sekarang</button><button class="btn-secondary" onclick="wsClearSel()">Hapus Semua Pilihan</button></div>`;
   wsVocabInfo();
 }
 function wsVocabInfo() {
@@ -1746,9 +1758,110 @@ function toggleVocabPanel(btn) { wsVocabOpen = !wsVocabOpen; btn.classList.toggl
 function wsStartCustom() {
   const all = wsAllWords(); wsSel = new Set([...wsSel].filter(w => all.has(w)));
   const n = wsSel.size; if (n < 3 || n > 15) { notify('Pilih 3–15 kata dulu ya', true); wsVocabInfo(); return; }
-  wsUseCustom = true; saveNav(); wsSaveSel(); wsVocabInfo();
+  wsUseCustom = true;
+  const same = wsPacks.find(p => p.words.length === n && p.words.every(w => wsSel.has(w)));
+  wsActivePack = same ? same.id : '';
+  wsSaveSel(); savePacks(); showPage('game');
+  notify('✅ Game dimulai dengan ' + n + ' kosakata pilihan');
+}
+// ==================== PAKET KOSAKATA ====================
+let wsPacks = (() => { try { return JSON.parse(localStorage.getItem('was4bi_packs') || '[]') || []; } catch(e) { return []; } })();
+let wsActivePack = (() => { try { return localStorage.getItem('was4bi_pack_active') || ''; } catch(e) { return ''; } })();
+function savePacks() { try { localStorage.setItem('was4bi_packs', JSON.stringify(wsPacks)); localStorage.setItem('was4bi_pack_active', wsActivePack || ''); } catch(e) {} }
+const packWords = p => { const all = wsAllWords(); return p.words.filter(w => all.has(w)); };
+function renderVocabPage() {
+  document.getElementById('contentArea').innerHTML = `<div class="fade-in">
+    <div class="section-block" style="margin-bottom:20px">
+      <h2><i class="fas fa-list-check"></i> Atur Kosakata <span class="hand-count-badge" id="vocabCount">0</span></h2>
+      <p style="color:var(--cream-dark);font-size:13px;margin-bottom:12px">Centang kata yang ingin dimainkan (3–15 kata). Langsung mainkan, atau simpan sebagai paket supaya bisa dipakai lagi.</p>
+      <div id="activePackBox" style="margin-bottom:12px"></div>
+      <div id="vocabBody" style="max-height:460px;overflow-y:auto"></div>
+    </div>
+    <div class="section-block" style="margin-bottom:20px">
+      <h2><i class="fas fa-floppy-disk"></i> Simpan sebagai Paket</h2>
+      <p style="color:var(--cream-dark);font-size:12px;margin-bottom:10px">Pakai nama yang sama untuk memperbarui paket yang sudah ada.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="packName" maxlength="40" placeholder="Nama paket, mis. Ulangan Bab 1" style="flex:1;min-width:200px;padding:10px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--cream)">
+        <button class="btn-primary" onclick="savePack()"><i class="fas fa-save"></i> Simpan Paket</button>
+      </div>
+    </div>
+    <div class="section-block">
+      <h2><i class="fas fa-box-archive"></i> Paket Tersimpan <span class="hand-count-badge" id="packCount">0</span></h2>
+      <div id="packList" style="margin-top:12px"></div>
+    </div>
+  </div>`;
+  renderVocabPanel(); renderPackList(); renderActivePackBox();
+}
+function renderActivePackBox() {
+  const box = document.getElementById('activePackBox'); if (!box) return;
+  const d = wsData(), p = wsUseCustom ? wsPacks.find(x => x.id === wsActivePack) : null;
+  const label = !wsUseCustom ? 'Topik: ' + d.title : (p ? 'Paket: ' + p.name : 'Kosakata pilihan (belum disimpan sebagai paket)');
+  const onGame = currentPage === 'game';
+  box.innerHTML = `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(0,0,0,.12)">
+    <span style="font-size:13px;flex:1;min-width:180px">🎯 Aktif: <b style="color:var(--wasabi)">${esc(label)}</b> • ${d.words.length} kata</span>
+    ${onGame ? `${wsPacks.length ? `<select onchange="usePackFromGame(this.value)" style="padding:7px;border-radius:8px;border:1px solid var(--border);background:var(--nori-soft);color:var(--cream)"><option value="">Ganti paket…</option>${wsPacks.map(x => `<option value="${x.id}">${esc(x.name)} (${packWords(x).length})</option>`).join('')}</select>` : ''}
+    <button class="btn-secondary" onclick="showPage('vocab')"><i class="fas fa-list-check"></i> Atur Kosakata</button>` : ''}
+  </div>`;
+}
+function renderPackList() {
+  const el = document.getElementById('packList'), c = document.getElementById('packCount'); if (c) c.textContent = wsPacks.length;
+  if (!el) return;
+  if (!wsPacks.length) { el.innerHTML = '<p style="font-size:12px;color:var(--cream-dark)">Belum ada paket. Pilih kata di atas, beri nama, lalu simpan.</p>'; return; }
+  el.innerHTML = wsPacks.map(p => {
+    const w = packWords(p), active = wsUseCustom && wsActivePack === p.id;
+    return `<div class="pack-item${active ? ' active' : ''}">
+      <div class="pack-info"><b>${esc(p.name)}</b> ${active ? '<span class="pack-badge">aktif</span>' : ''}<small>${w.length} kata${w.length < p.words.length ? ' (' + (p.words.length - w.length) + ' kata sudah dihapus dari daftar)' : ''}</small>
+        <div class="pack-words">${esc(w.join(', '))}</div></div>
+      <div class="pack-actions">
+        <button class="btn-primary" onclick="usePack('${p.id}',true)"><i class="fas fa-play"></i> Pakai</button>
+        <button class="btn-secondary" onclick="loadPack('${p.id}')" title="Muat ke daftar centang untuk diubah"><i class="fas fa-pen-to-square"></i> Ubah isi</button>
+        <button class="btn-secondary" onclick="renamePack('${p.id}')"><i class="fas fa-i-cursor"></i> Nama</button>
+        <button class="btn-danger" onclick="deletePack('${p.id}')"><i class="fas fa-trash"></i></button>
+      </div></div>`;
+  }).join('');
+}
+function savePack() {
+  const inp = document.getElementById('packName'), name = (inp.value || '').trim();
+  const all = wsAllWords(); wsSel = new Set([...wsSel].filter(w => all.has(w)));
+  if (!name) { notify('Isi nama paket dulu', true); inp.focus(); return; }
+  if (wsSel.size < 3 || wsSel.size > 15) { notify('Pilih 3–15 kata dulu ya', true); wsVocabInfo(); return; }
+  const words = [...wsSel], ex = wsPacks.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (ex) { ex.words = words; ex.name = name; } else wsPacks.push({id: 'p' + Date.now(), name, words});
+  savePacks(); inp.value = ''; renderPackList(); renderActivePackBox();
+  notify(ex ? '✅ Paket diperbarui: ' + name : '✅ Paket disimpan: ' + name);
+}
+function usePack(id, goGame) {
+  const p = wsPacks.find(x => x.id === id); if (!p) return;
+  const w = packWords(p);
+  if (w.length < 3) { notify('Paket ini kurang dari 3 kata yang valid', true); return; }
+  wsSel = new Set(w); wsActivePack = id; wsUseCustom = true;
+  wsSaveSel(); savePacks();
+  if (goGame) { showPage('game'); notify('✅ Memainkan paket: ' + p.name); }
+}
+function usePackFromGame(id) {
+  if (!id) return;
+  usePack(id, false); saveNav();
   document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
-  startWordSearch(); notify('✅ Game dimulai dengan ' + n + ' kosakata pilihan');
+  renderActivePackBox(); startWordSearch();
+  const p = wsPacks.find(x => x.id === id); if (p) notify('✅ Memainkan paket: ' + p.name);
+}
+function loadPack(id) {
+  const p = wsPacks.find(x => x.id === id); if (!p) return;
+  wsSel = new Set(packWords(p)); wsSaveSel(); wsVocabInfo();
+  const inp = document.getElementById('packName'); if (inp) inp.value = p.name;
+  notify('Paket dimuat ke daftar centang. Ubah lalu simpan lagi.');
+  const b = document.getElementById('vocabBody'); if (b) b.scrollTop = 0;
+  window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('contentArea').scrollTop = 0;
+}
+function renamePack(id) {
+  const p = wsPacks.find(x => x.id === id); if (!p) return;
+  const n = (prompt('Nama baru paket:', p.name) || '').trim(); if (!n) return;
+  p.name = n.slice(0, 40); savePacks(); renderPackList(); renderActivePackBox();
+}
+function deletePack(id) {
+  const p = wsPacks.find(x => x.id === id); if (!p || !confirm('Hapus paket "' + p.name + '"?')) return;
+  wsPacks = wsPacks.filter(x => x.id !== id); if (wsActivePack === id) wsActivePack = '';
+  savePacks(); renderPackList(); renderActivePackBox(); notify('Paket dihapus');
 }
 function togglePlayersPanel(btn) { wsPlayersOpen = !wsPlayersOpen; btn.classList.toggle('open', wsPlayersOpen); document.getElementById('playersBody').hidden = !wsPlayersOpen; }
 function renderPlayersPanel() {
