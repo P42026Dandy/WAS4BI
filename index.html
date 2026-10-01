@@ -585,6 +585,14 @@ body{transition:background .3s,color .3s}
 .ws-question .q-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sushi-red-light);font-weight:700}
 .ws-question .q-clue{font-size:26px;font-weight:700;margin:8px 0;color:var(--cream)}
 .ws-question .q-meta{font-size:12px;color:var(--cream-dark);margin-bottom:10px}
+.vocab-group{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px;background:rgba(0,0,0,.12)}
+.vocab-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:13px}
+.vocab-head .btn-secondary{padding:3px 10px;font-size:11px}
+.vocab-list{display:flex;flex-wrap:wrap;gap:6px}
+.vocab-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:16px;font-size:12px;cursor:pointer;background:var(--nori-soft)}
+.vocab-chip small{color:var(--cream-dark);font-size:11px}
+.vocab-chip input{accent-color:var(--sushi-red)}
+.vocab-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--nori-soft);padding:10px 0 2px;font-size:12px}
 .hand-more{font-size:11px;color:var(--cream-dark);margin-top:8px;text-align:center}
 </style>
 </head>
@@ -1024,7 +1032,13 @@ const WS_CLUES = {
   ATAMA:"Kepala", ONAKA:"Perut", NODO:"Tenggorokan", NETSU:"Demam", KUSURI:"Obat", GENKI:"Sehat / bersemangat", ITAI:"Sakit / nyeri"
 };
 const wsClue = w => WS_CLUES[w] || ('Kata ' + w.length + ' huruf, diawali huruf "' + w[0] + '"');
-let wsQueue = [], wsPlayersOpen = false;
+let wsQueue = [], wsPlayersOpen = false, wsEndTime = 0, wsVocabOpen = false, wsUseCustom = false;
+let wsSel = (() => { try { return new Set(JSON.parse(localStorage.getItem('was4bi_ws_sel') || '[]')); } catch(e) { return new Set(); } })();
+const wsAllWords = () => new Set(Object.values(WORDSEARCH_DATA).flatMap(d => d.words));
+function wsData() {
+  if (wsUseCustom) { const all = wsAllWords(); return {title:'Kosakata Pilihan Guru', words:[...wsSel].filter(w => all.has(w))}; }
+  const d = WORDSEARCH_DATA[wsCurrentTopic]; return {title:d.title, words:[...new Set(d.words)]};
+}
 // ==================== STATE ====================
 let currentPage = 'dashboard';
 let currentMaterial = null;
@@ -1202,18 +1216,32 @@ function doLogin() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('loginError').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
+    try { localStorage.setItem('was4bi_auth', '1'); } catch(e) {}
     showPage('dashboard');
   } else {
     document.getElementById('loginError').style.display = 'block';
   }
 }
 function doLogout() {
+  try { localStorage.removeItem('was4bi_auth'); localStorage.removeItem('was4bi_nav'); } catch(e) {}
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
 }
 // ==================== NAVIGATION ====================
+function saveNav() { try { localStorage.setItem('was4bi_nav', JSON.stringify({page:currentPage, material:currentMaterial, mode:gameMode, topic:wsCurrentTopic, custom:wsUseCustom})); } catch(e) {} }
+function restoreSession() {
+  if (localStorage.getItem('was4bi_auth') !== '1') return;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  let n = {}; try { n = JSON.parse(localStorage.getItem('was4bi_nav') || '{}') || {}; } catch(e) {}
+  if (n.mode === 'group' || n.mode === 'individual') gameMode = n.mode;
+  if (n.topic && WORDSEARCH_DATA[n.topic]) wsCurrentTopic = n.topic;
+  wsUseCustom = !!n.custom && wsSel.size >= 3;
+  if (n.page === 'material' && MATERIALS[n.material]) showMaterial(n.material);
+  else showPage(['dashboard','game','admin'].includes(n.page) ? n.page : 'dashboard');
+}
 function showPage(page) {
-  currentPage = page;
+  currentPage = page; saveNav();
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sidebar').classList.remove('open');
   { const nv=[...document.querySelectorAll('.nav-item')].find(n=>(n.getAttribute('onclick')||'')==="showPage('"+page+"')"); if(nv) nv.classList.add('active'); }
@@ -1232,7 +1260,7 @@ function showPage(page) {
 }
 function showMaterial(key) {
   currentMaterial = key;
-  currentPage = 'material';
+  currentPage = 'material'; saveNav();
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sidebar').classList.remove('open');
   { const nv=[...document.querySelectorAll('.nav-item')].find(n=>(n.getAttribute('onclick')||'')==="showMaterial('"+key+"')"); if(nv) nv.classList.add('active'); }
@@ -1427,7 +1455,7 @@ function clearHandHistory() {
 }
 // ==================== GROUP GAME ====================
 function setWsTopic(topic, btn) {
-  wsCurrentTopic = topic;
+  wsCurrentTopic = topic; wsUseCustom = false; saveNav(); wsVocabInfo();
   document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   startWordSearch();
@@ -1475,6 +1503,7 @@ function generateWordGrid(words, size) {
   return res.grid;
 }
 function wsStartSelect(r, c) {
+  if (wsFinished) return;
   wsSelecting = true;
   wsSelectedCells = [{r, c}];
   updateWsSelection();
@@ -1504,7 +1533,7 @@ function wsEndSelect() {
     const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
     return cell ? cell.textContent : '';
   }).join('');
-  const data = WORDSEARCH_DATA[wsCurrentTopic];
+  const data = wsData();
   if(data && !data.words.includes(word)) { const rv=[...word].reverse().join(''); if(data.words.includes(rv)) word=rv; }
   if(data && data.words.includes(word) && !wsFoundWords.includes(word)) {
     if(word !== wsQueue[0]) {
@@ -1550,7 +1579,7 @@ let wsIndiv = (() => { try { return JSON.parse(localStorage.getItem('was4bi_play
 let wsGroup = GROUP_NAMES.map(n => ({name:n, score:0}));
 let wsTimerId = null, wsStartTime = 0, wsFinished = false;
 const wsScorers = () => gameMode === 'group' ? wsGroup : wsIndiv;
-function setGameMode(m) { gameMode = m; wsCurrentTeam = -1; renderWordSearchGame(); }
+function setGameMode(m) { gameMode = m; saveNav(); wsCurrentTeam = -1; renderWordSearchGame(); }
 function renderWordSearchGame() {
   const area = document.getElementById('contentArea');
   if (gameMode === 'individual') wsCurrentTeam = -1;
@@ -1566,8 +1595,12 @@ function renderWordSearchGame() {
           <button class="topic-btn ${isG ? 'active' : ''}" onclick="setGameMode('group')">👥 Mode Kelompok</button>
         </div>
         <div class="topic-selector" id="wsTopicSelector">
-          ${Object.entries(MATERIALS).map(([k,v]) => `<button class="topic-btn ${k===wsCurrentTopic?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>`).join('')}
+          ${Object.entries(MATERIALS).map(([k,v]) => `<button class="topic-btn ${k===wsCurrentTopic && !wsUseCustom?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>`).join('')}
         </div>
+      </div>
+      <div class="hand-raise-section">
+        <button class="panel-toggle ${wsVocabOpen ? 'open' : ''}" onclick="toggleVocabPanel(this)"><span>📚 Atur Kosakata yang Dimainkan <span class="hand-count-badge" id="vocabCount">0</span></span><i class="fas fa-chevron-down"></i></button>
+        <div class="panel-body" id="vocabBody" style="max-height:440px" ${wsVocabOpen ? '' : 'hidden'}></div>
       </div>
       <div class="hand-raise-section">
         <h3><i class="fas fa-qrcode"></i> QR Angkat Tangan (${isG ? 'Kelompok' : 'Individu'})</h3>
@@ -1595,7 +1628,7 @@ function renderWordSearchGame() {
       </div>
       <div id="wsGameArea"></div>
     </div>`;
-  syncPlayers(); checkDb(); renderPlayersPanel();
+  syncPlayers(); checkDb(); renderPlayersPanel(); renderVocabPanel();
   setTimeout(() => {
     const q = document.getElementById('qrGame');
     if (q && typeof QRCode !== 'undefined') new QRCode(q, {text: qrUrl, width:140, height:140, colorDark:"#c0392b", colorLight:"#FFFAF0", correctLevel: QRCode.CorrectLevel.M});
@@ -1603,11 +1636,11 @@ function renderWordSearchGame() {
   }, 100);
 }
 function startWordSearch() {
-  const data = WORDSEARCH_DATA[wsCurrentTopic];
-  if (!data) return;
+  const data = wsData();
+  if (!data || !data.words.length) return;
   wsFoundWords = []; wsFinished = false;
   wsQueue = [...new Set(data.words)].sort(() => Math.random() - 0.5);
-  const size = 10, grid = generateWordGrid(data.words, size);
+  const size = data.words.length > 10 ? 12 : 10, grid = generateWordGrid(data.words, size);
   document.getElementById('wsGameArea').innerHTML = `
     <div class="section-block">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -1615,6 +1648,7 @@ function startWordSearch() {
           <p style="color:var(--cream-dark);font-size:12px">Jawab ${wsQueue.length} soal • ⏱ <span id="wsTimer">00:00</span></p></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-secondary" onclick="startWordSearch()"><i class="fas fa-redo"></i> Acak Ulang</button>
+          <button class="btn-danger" onclick="wsEnd()"><i class="fas fa-flag-checkered"></i> Akhiri Permainan</button>
           <button class="btn-secondary" onclick="resetWsScores()">Reset Skor</button>
           ${gameMode === 'individual' ? '<button class="btn-secondary" onclick="clearWsPlayers()">Hapus Semua Pemain</button>' : ''}
         </div>
@@ -1640,12 +1674,27 @@ function startWordSearch() {
 }
 function renderWsQuestion() {
   const el = document.getElementById('wsQuestion'); if (!el) return;
-  const w = wsQueue[0], total = new Set(WORDSEARCH_DATA[wsCurrentTopic].words).size;
+  if (wsFinished) { el.innerHTML = wsResultHtml(); return; }
+  const w = wsQueue[0], total = wsData().words.length;
   if (!w) { el.innerHTML = '<div class="q-label">🎉 Semua soal selesai</div>'; return; }
   el.innerHTML = `<div class="q-label">📝 Soal ${wsFoundWords.length + 1} dari ${total}</div><div class="q-clue">${esc(wsClue(w))}</div>
     <div class="q-meta">${w.length} huruf • Murid yang sudah tahu jawabannya angkat tangan, yang tercepat dipanggil untuk menemukan kata di grid</div>
     <button class="btn-secondary" onclick="wsSkip()"><i class="fas fa-forward"></i> Lewati Soal</button>`;
 }
+function wsResultHtml() {
+  const s = Math.floor((wsEndTime - wsStartTime) / 1000), r = wsScorers().filter(x => x.score > 0).sort((a,b) => b.score - a.score), medal = ['🥇','🥈','🥉'];
+  return `<div class="q-label">🏁 Permainan Selesai • ⏱ ${Math.floor(s/60)}m ${s%60}d</div>
+    <div style="margin:10px auto;max-width:360px;max-height:260px;overflow-y:auto;text-align:left">${r.length ? r.map((p,i) => `<div class="ws-team-score"><span style="font-size:13px">${medal[i] || (i+1) + '.'} ${esc(p.name)}</span><span style="font-weight:700;color:var(--gold)">${p.score}</span></div>`).join('') : '<p style="text-align:center;font-size:12px;color:var(--cream-dark)">Belum ada yang mendapat poin.</p>'}</div>
+    <button class="btn-secondary" onclick="wsRestart()"><i class="fas fa-redo"></i> Main Lagi (skor direset)</button>`;
+}
+function wsEnd() {
+  if (wsFinished) { notify('Permainan sudah berakhir'); return; }
+  if (!confirm('Akhiri permainan sekarang? Skor akhir akan ditampilkan.')) return;
+  wsFinished = true; wsEndTime = Date.now(); wsSelecting = false; wsSelectedCells = []; wsCurrentTeam = -1;
+  document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
+  wsNewRound(); renderWsScores(); notify('🏁 Permainan diakhiri');
+}
+function wsRestart() { resetWsScores(); startWordSearch(); }
 function wsNewRound() {
   handIgnoreUntil = Date.now() + 4000;
   handRaiseList.forEach(h => { if (h.status === 'raised') { h.status = 'lowered'; dbUpdate(h.id, {status:'lowered'}); } });
@@ -1675,6 +1724,31 @@ function renderWsScores() {
   }
   el.innerHTML = '<div id="wsBoard"></div><div id="wsPicker"></div>';
   renderWsBoard(); renderWsPicker();
+}
+function renderVocabPanel() {
+  const b = document.getElementById('vocabBody'); if (!b) return;
+  b.innerHTML = Object.entries(WORDSEARCH_DATA).map(([k,v]) => `<div class="vocab-group"><div class="vocab-head"><b>${MATERIALS[k] ? MATERIALS[k].icon + ' ' : ''}${esc(v.title)}</b><span><button class="btn-secondary" onclick="wsSelTopic('${k}',true)">Pilih semua</button> <button class="btn-secondary" onclick="wsSelTopic('${k}',false)">Kosongkan</button></span></div>
+    <div class="vocab-list">${[...new Set(v.words)].map(w => `<label class="vocab-chip"><input type="checkbox" value="${w}" onchange="wsToggleWord(this)" ${wsSel.has(w) ? 'checked' : ''}> <b>${w}</b> <small>${esc(wsClue(w))}</small></label>`).join('')}</div></div>`).join('')
+    + `<div class="vocab-foot"><span id="vocabInfo"></span><button class="btn-primary" onclick="wsStartCustom()"><i class="fas fa-play"></i> Mulai dengan Kosakata Terpilih</button><button class="btn-secondary" onclick="wsClearSel()">Hapus Semua Pilihan</button></div>`;
+  wsVocabInfo();
+}
+function wsVocabInfo() {
+  document.querySelectorAll('#vocabBody input[type=checkbox]').forEach(i => i.checked = wsSel.has(i.value));
+  const n = wsSel.size, c = document.getElementById('vocabCount'), i = document.getElementById('vocabInfo');
+  if (c) c.textContent = n + ' dipilih' + (wsUseCustom ? ' • aktif' : '');
+  if (i) { i.textContent = `Terpilih: ${n} kata (minimal 3, maksimal 15)`; i.style.color = (n < 3 || n > 15) ? 'var(--sushi-red-light)' : 'var(--cream-dark)'; }
+}
+function wsSaveSel() { try { localStorage.setItem('was4bi_ws_sel', JSON.stringify([...wsSel])); } catch(e) {} }
+function wsToggleWord(el) { if (el.checked) wsSel.add(el.value); else wsSel.delete(el.value); wsSaveSel(); wsVocabInfo(); }
+function wsSelTopic(k, on) { WORDSEARCH_DATA[k].words.forEach(w => on ? wsSel.add(w) : wsSel.delete(w)); wsSaveSel(); wsVocabInfo(); }
+function wsClearSel() { wsSel.clear(); wsSaveSel(); wsVocabInfo(); }
+function toggleVocabPanel(btn) { wsVocabOpen = !wsVocabOpen; btn.classList.toggle('open', wsVocabOpen); document.getElementById('vocabBody').hidden = !wsVocabOpen; }
+function wsStartCustom() {
+  const all = wsAllWords(); wsSel = new Set([...wsSel].filter(w => all.has(w)));
+  const n = wsSel.size; if (n < 3 || n > 15) { notify('Pilih 3–15 kata dulu ya', true); wsVocabInfo(); return; }
+  wsUseCustom = true; saveNav(); wsSaveSel(); wsVocabInfo();
+  document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
+  startWordSearch(); notify('✅ Game dimulai dengan ' + n + ' kosakata pilihan');
 }
 function togglePlayersPanel(btn) { wsPlayersOpen = !wsPlayersOpen; btn.classList.toggle('open', wsPlayersOpen); document.getElementById('playersBody').hidden = !wsPlayersOpen; }
 function renderPlayersPanel() {
@@ -1707,7 +1781,7 @@ function pickWsPlayer(name) {
   wsCurrentTeam = i; renderWsPicker(); renderWsBoard();
 }
 function wsFinish() {
-  wsFinished = true;
+  wsFinished = true; wsEndTime = Date.now();
   const s = Math.floor((Date.now() - wsStartTime) / 1000), r = wsScorers().filter(x => x.score > 0).sort((a,b) => b.score - a.score);
   notify(`🏆 Selesai dalam ${Math.floor(s/60)}m ${s%60}d! ` + (r.length ? `Juara 1: ${r[0].name} (${r[0].score} poin)` : 'Belum ada poin.'));
 }
@@ -1794,7 +1868,7 @@ document.addEventListener('touchend', () => { if (wsSelecting) wsEndSelect(); })
 // ==================== INIT ====================
 updateThemeBtn();
 if (!checkStudentView()) {
-  // Normal teacher flow
+  restoreSession();
 }
 </script>
 </body>
