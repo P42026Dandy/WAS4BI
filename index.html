@@ -1040,10 +1040,13 @@ const WS_CLUES = {
   YUME:"Mimpi / cita-cita", SENSEI:"Guru", ISHA:"Dokter", DAIGAKU:"Universitas", HATARAKU:"Bekerja", NARU:"Menjadi", BENKYOU:"Belajar", SHOURAI:"Masa depan",
   ATAMA:"Kepala", ONAKA:"Perut", NODO:"Tenggorokan", NETSU:"Demam", KUSURI:"Obat", GENKI:"Sehat / bersemangat", ITAI:"Sakit / nyeri"
 };
-const wsClue = w => WS_CLUES[w] || ('Kata ' + w.length + ' huruf, diawali huruf "' + w[0] + '"');
+const wsClue = w => WS_CLUES[w] || (matVocab()[w] && matVocab()[w].id) || ('Kata ' + w.length + ' huruf, diawali huruf "' + w[0] + '"');
 let wsQueue = [], wsPlayersOpen = false, wsEndTime = 0, wsVocabOpen = false, wsUseCustom = false;
 let wsSel = (() => { try { return new Set(JSON.parse(localStorage.getItem('was4bi_ws_sel') || '[]')); } catch(e) { return new Set(); } })();
-const wsAllWords = () => new Set(Object.values(WORDSEARCH_DATA).flatMap(d => d.words));
+// Kosakata dari MATERI (romaji huruf besar -> {jp, id}); dipakai sebagai daftar pilihan di menu Atur Kosakata
+const matVocab = () => { const o = {}; Object.values(MATERIALS).forEach(m => (m.vocab || []).forEach(x => { const w = String(x.romaji).toUpperCase(); if (/^[A-Z]{2,10}$/.test(w) && !o[w]) o[w] = {jp: x.jp, id: x.id}; })); return o; };
+const topicWords = k => MATERIALS[k] ? [...new Set((MATERIALS[k].vocab || []).map(x => String(x.romaji).toUpperCase()).filter(w => /^[A-Z]{2,10}$/.test(w)))] : [];
+const wsAllWords = () => new Set([...Object.values(WORDSEARCH_DATA).flatMap(d => d.words), ...Object.keys(matVocab())]);
 function wsData() {
   if (wsUseCustom) { const all = wsAllWords(); return {title:'Kosakata Pilihan Guru', words:[...wsSel].filter(w => all.has(w))}; }
   const d = WORDSEARCH_DATA[wsCurrentTopic]; return {title:d.title, words:[...new Set(d.words)]};
@@ -1737,22 +1740,40 @@ function renderWsScores() {
   el.innerHTML = '<div id="wsBoard"></div><div id="wsPicker"></div>';
   renderWsBoard(); renderWsPicker();
 }
+let wsVocabTopic = '';
+function setVocabTopic(k) { wsVocabTopic = k; renderVocabPanel(); }
 function renderVocabPanel() {
   const b = document.getElementById('vocabBody'); if (!b) return;
-  b.innerHTML = Object.entries(WORDSEARCH_DATA).map(([k,v]) => `<div class="vocab-group"><div class="vocab-head"><b>${MATERIALS[k] ? MATERIALS[k].icon + ' ' : ''}${esc(v.title)}</b><span><button class="btn-secondary" onclick="wsSelTopic('${k}',true)">Pilih semua</button> <button class="btn-secondary" onclick="wsSelTopic('${k}',false)">Kosongkan</button></span></div>
-    <div class="vocab-list">${[...new Set(v.words)].map(w => `<label class="vocab-chip"><input type="checkbox" value="${w}" onchange="wsToggleWord(this)" ${wsSel.has(w) ? 'checked' : ''}> <b>${w}</b> <small>${esc(wsClue(w))}</small></label>`).join('')}</div></div>`).join('')
-    + `<div class="vocab-foot"><span id="vocabInfo"></span><button class="btn-primary" onclick="wsStartCustom()"><i class="fas fa-play"></i> Mainkan Sekarang</button><button class="btn-secondary" onclick="wsClearSel()">Hapus Semua Pilihan</button></div>`;
+  if (!MATERIALS[wsVocabTopic]) wsVocabTopic = MATERIALS[wsCurrentTopic] ? wsCurrentTopic : Object.keys(MATERIALS)[0];
+  const k = wsVocabTopic, m = MATERIALS[k], mv = matVocab(), words = topicWords(k);
+  b.innerHTML = `<div class="topic-selector" style="margin-bottom:10px">${Object.entries(MATERIALS).map(([tk,tv]) => `<button class="topic-btn ${tk === k ? 'active' : ''}" onclick="setVocabTopic('${tk}')">${tv.icon} ${esc(tv.title)}<span class="vtab-count" data-k="${tk}"></span></button>`).join('')}</div>
+    <div class="vocab-group"><div class="vocab-head"><b>${m.icon} ${esc(m.title)} <small style="color:var(--cream-dark);font-weight:400">• ${words.length} kosakata dari materi</small></b><span><button class="btn-secondary" onclick="wsSelTopic('${k}',true)">Pilih semua</button> <button class="btn-secondary" onclick="wsRandTopic('${k}')">🎲 Acak 10</button> <button class="btn-secondary" onclick="wsSelTopic('${k}',false)">Kosongkan</button></span></div>
+    <div class="vocab-list">${words.map(w => `<label class="vocab-chip"><input type="checkbox" value="${w}" onchange="wsToggleWord(this)" ${wsSel.has(w) ? 'checked' : ''}> <b>${esc(mv[w].jp)}</b> <span style="font-size:12px;font-style:italic">${w.toLowerCase()}</span> <small>${esc(mv[w].id)}</small></label>`).join('')}</div></div>
+    <p style="font-size:11px;color:var(--cream-dark);margin:6px 0 0">Daftar ini diambil dari materi tema yang dipilih. Pilihan dari tema lain tetap tersimpan, jadi bisa digabung dalam satu paket.</p>
+    <div class="vocab-foot"><span id="vocabInfo"></span><button class="btn-primary" onclick="wsStartCustom()"><i class="fas fa-play"></i> Mainkan Sekarang</button><button class="btn-secondary" onclick="wsClearSel()">Hapus Semua Pilihan</button></div>`;
   wsVocabInfo();
 }
 function wsVocabInfo() {
   document.querySelectorAll('#vocabBody input[type=checkbox]').forEach(i => i.checked = wsSel.has(i.value));
   const n = wsSel.size, c = document.getElementById('vocabCount'), i = document.getElementById('vocabInfo');
   if (c) c.textContent = n + ' dipilih' + (wsUseCustom ? ' • aktif' : '');
+  document.querySelectorAll('.vtab-count').forEach(e => { const m = new Set(topicWords(e.dataset.k)); const x = [...wsSel].filter(w => m.has(w)).length; e.textContent = x ? ' (' + x + ')' : ''; });
   if (i) { i.textContent = `Terpilih: ${n} kata (minimal 3, maksimal 15)`; i.style.color = (n < 3 || n > 15) ? 'var(--sushi-red-light)' : 'var(--cream-dark)'; }
 }
 function wsSaveSel() { try { localStorage.setItem('was4bi_ws_sel', JSON.stringify([...wsSel])); } catch(e) {} }
 function wsToggleWord(el) { if (el.checked) wsSel.add(el.value); else wsSel.delete(el.value); wsSaveSel(); wsVocabInfo(); }
-function wsSelTopic(k, on) { WORDSEARCH_DATA[k].words.forEach(w => on ? wsSel.add(w) : wsSel.delete(w)); wsSaveSel(); wsVocabInfo(); }
+function wsSelTopic(k, on) {
+  let capped = false;
+  topicWords(k).forEach(w => { if (!on) wsSel.delete(w); else if (wsSel.size < 15) wsSel.add(w); else if (!wsSel.has(w)) capped = true; });
+  wsSaveSel(); wsVocabInfo(); if (capped) notify('Maksimal 15 kata, sisanya tidak ikut dipilih', true);
+  const b = document.getElementById('vocabBody'); if (b && document.querySelector('#vocabBody .vocab-chip')) { const sc = b.scrollTop; renderVocabPanel(); b.scrollTop = sc; }
+}
+function wsRandTopic(k) {
+  const ws = topicWords(k); ws.forEach(w => wsSel.delete(w));
+  const room = Math.max(0, 15 - wsSel.size), pick = ws.sort(() => Math.random() - 0.5).slice(0, Math.min(10, room));
+  pick.forEach(w => wsSel.add(w)); wsSaveSel(); renderVocabPanel();
+  notify('🎲 ' + pick.length + ' kata diacak dari tema ini');
+}
 function wsClearSel() { wsSel.clear(); wsSaveSel(); wsVocabInfo(); }
 function toggleVocabPanel(btn) { wsVocabOpen = !wsVocabOpen; btn.classList.toggle('open', wsVocabOpen); document.getElementById('vocabBody').hidden = !wsVocabOpen; }
 function wsStartCustom() {
@@ -1790,6 +1811,8 @@ function renderVocabPage() {
       <div id="packList" style="margin-top:12px"></div>
     </div>
   </div>`;
+  wsVocabTopic = MATERIALS[wsCurrentTopic] ? wsCurrentTopic : '';
+  { const mv = matVocab(); wsSel = new Set([...wsSel].filter(w => mv[w])); wsSaveSel(); }
   renderVocabPanel(); renderPackList(); renderActivePackBox();
 }
 function renderActivePackBox() {
