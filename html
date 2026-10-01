@@ -38,7 +38,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 ::-webkit-scrollbar { width:8px; }
 ::-webkit-scrollbar-track { background:var(--nori-soft); }
 ::-webkit-scrollbar-thumb { background:var(--sushi-red); border-radius:4px; }
-
 /* ===== BACKGROUND PATTERN ===== */
 .sushi-bg {
   position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:0.04;
@@ -47,7 +46,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
     radial-gradient(circle at 80% 70%, var(--sushi-red) 1px, transparent 1px);
   background-size: 60px 60px;
 }
-
 /* ===== LOGIN ===== */
 .login-screen {
   display:flex; align-items:center; justify-content:center; min-height:100vh;
@@ -74,7 +72,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .lantern-2 { top:80px; right:12%; animation-delay:1s; }
 .lantern-3 { top:40px; left:45%; animation-delay:2s; transform:scale(0.7); }
 @keyframes lanternSwing { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
-
 .login-box {
   background: linear-gradient(180deg, var(--nori-soft), var(--nori));
   border:2px solid var(--sushi-red);
@@ -108,10 +105,8 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .login-box button:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(192,57,43,0.6); }
 .login-error { color:var(--sushi-red-light); font-size:12px; margin-top:8px; display:none; }
 .login-footer { margin-top:24px; font-size:10px; color:var(--cream-dark); opacity:0.5; }
-
 /* ===== MAIN APP ===== */
 .app { display:none; min-height:100vh; position:relative; z-index:1; }
-
 /* SIDEBAR */
 .sidebar {
   position:fixed; left:0; top:0; width:280px; height:100vh;
@@ -151,7 +146,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   margin-left:auto; background:var(--wasabi-dark); color:var(--cream);
   font-size:10px; padding:2px 8px; border-radius:10px;
 }
-
 /* MAIN CONTENT */
 .main-content { margin-left:280px; min-height:100vh; }
 .topbar {
@@ -172,9 +166,7 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   background:transparent; color:var(--sushi-red-light); font-size:12px; cursor:pointer; transition:0.3s;
 }
 .topbar-actions .logout-btn:hover { background:var(--sushi-red); color:var(--cream); }
-
 .content-area { padding:32px; }
-
 /* ===== DASHBOARD ===== */
 .dashboard-hero {
   background:linear-gradient(135deg, rgba(192,57,43,0.15), rgba(127,176,105,0.08));
@@ -191,7 +183,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
 }
 .dashboard-hero p { color:var(--cream-dark); font-size:14px; max-width:600px; line-height:1.7; }
-
 .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:28px; }
 .stat-card {
   background:linear-gradient(135deg, var(--nori-soft), var(--nori));
@@ -205,7 +196,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 }
 .stat-card h3 { font-size:26px; margin-bottom:4px; color:var(--gold); }
 .stat-card p { color:var(--cream-dark); font-size:12px; }
-
 .material-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
 .material-card {
   background:linear-gradient(135deg, var(--nori-soft), var(--nori));
@@ -225,7 +215,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   display:inline-block; padding:3px 10px; border-radius:10px; font-size:10px;
   background:rgba(127,176,105,0.15); color:var(--wasabi); margin-top:8px;
 }
-
 /* ===== MATERIAL DETAIL ===== */
 .detail-header {
   background:linear-gradient(135deg, rgba(192,57,43,0.12), rgba(139,69,19,0.08));
@@ -244,7 +233,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .detail-header h1 { font-family:'Shippori Mincho',serif; font-size:26px; margin-bottom:4px; }
 .detail-header .jp-title { font-size:16px; color:var(--sushi-red-light); margin-bottom:10px; }
 .detail-header p { color:var(--cream-dark); font-size:13px; line-height:1.7; }
-
 .section-block {
   background:var(--nori-soft); border:1px solid var(--border);
   border-radius:14px; padding:24px; margin-bottom:18px;
@@ -255,7 +243,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 }
 .section-block h2 i { color:var(--sushi-red-light); }
 .section-block h3 { font-size:14px; margin:14px 0 8px; color:var(--wasabi); }
-
 .vocab-table { width:100%; border-collapse:collapse; margin:10px 0; }
 .vocab-table th {
   background:rgba(192,57,43,0.15); padding:10px 14px; text-align:left;
@@ -266,7 +253,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .vocab-table tr:hover td { background:rgba(192,57,43,0.05); }
 .vocab-table .jp { font-size:16px; color:var(--sushi-red-light); }
 .vocab-table .romaji { color:var(--cream-dark); font-size:12px; font-style:italic; }
-
 .grammar-box {
   background:rgba(0,0,0,0.3); border:1px solid var(--border); border-left:3px solid var(--gold);
   border-radius:10px; padding:18px; margin:12px 0;
@@ -283,7 +269,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .grammar-box .example .jp-sentence { font-size:15px; color:var(--sushi-red-light); margin-bottom:4px; }
 .grammar-box .example .romaji-sentence { font-size:12px; color:var(--cream-dark); font-style:italic; margin-bottom:4px; }
 .grammar-box .example .id-sentence { font-size:12px; color:var(--wasabi); }
-
 /* ===== GAME - INDIVIDUAL ===== */
 .game-container { display:none; }
 .game-board { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; max-width:600px; margin:0 auto 24px; }
@@ -300,7 +285,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .game-box.wrong { border-color:var(--sushi-red); background:linear-gradient(135deg,rgba(192,57,43,0.15),rgba(192,57,43,0.05)); }
 .game-box .box-num { position:absolute; top:6px; left:8px; font-size:10px; color:var(--cream-dark); }
 .game-box .box-spice { position:absolute; bottom:6px; right:8px; font-size:10px; }
-
 .quiz-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center; }
 .quiz-modal.show { display:flex; }
 .quiz-content {
@@ -320,7 +304,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .spice-medium { background:rgba(255,213,79,0.2); color:var(--medium); }
 .spice-hot { background:rgba(255,138,101,0.2); color:var(--hot); }
 .spice-extra { background:rgba(229,57,53,0.2); color:var(--extra-hot); }
-
 .quiz-content .question { font-size:16px; margin-bottom:18px; line-height:1.6; }
 .quiz-options { display:flex; flex-direction:column; gap:8px; }
 .quiz-option {
@@ -341,7 +324,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .quiz-result.show { display:block; }
 .quiz-result.correct { background:rgba(127,176,105,0.1); border:1px solid var(--wasabi); color:var(--wasabi); }
 .quiz-result.wrong { background:rgba(192,57,43,0.1); border:1px solid var(--sushi-red); color:var(--sushi-red-light); }
-
 .game-score {
   text-align:center; padding:18px; background:var(--nori-soft);
   border:1px solid var(--border); border-radius:14px; margin-bottom:20px;
@@ -352,7 +334,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   background:linear-gradient(135deg, var(--gold), var(--sushi-red-light));
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
 }
-
 /* ===== HAND RAISE FEATURE ===== */
 .hand-raise-section {
   background:linear-gradient(135deg, rgba(127,176,105,0.1), rgba(192,57,43,0.05));
@@ -375,7 +356,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px;
   display:inline-block; word-break:break-all;
 }
-
 /* Hand raise list (teacher view) */
 .hand-list {
   max-height:400px; overflow-y:auto;
@@ -407,7 +387,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .hand-btn.call:hover { background:var(--wasabi-dark); }
 .hand-btn.lower { background:rgba(192,57,43,0.2); color:var(--sushi-red-light); }
 .hand-btn.lower:hover { background:var(--sushi-red); color:var(--cream); }
-
 /* ===== STUDENT VIEW (QR scan result) ===== */
 .student-view {
   display:none; min-height:100vh;
@@ -453,7 +432,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   color:var(--wasabi); font-size:13px; display:none;
 }
 .student-status.show { display:block; }
-
 /* ===== WORD SEARCH ===== */
 .ws-words { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
 .ws-word {
@@ -481,7 +459,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   padding:8px 0; border-bottom:1px solid var(--border);
 }
 .ws-team-score:last-child { border:none; }
-
 /* ===== ADMIN ===== */
 .admin-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 .admin-tab {
@@ -519,7 +496,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   background:rgba(192,57,43,0.2); color:var(--sushi-red-light); font-size:11px; cursor:pointer; transition:0.3s;
 }
 .btn-danger:hover { background:var(--sushi-red); color:var(--cream); }
-
 .question-list { margin-top:14px; }
 .question-item {
   background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:10px;
@@ -527,12 +503,10 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 }
 .question-item .q-text { font-size:13px; flex:1; }
 .question-item .q-actions { display:flex; gap:6px; }
-
 .spice-indicator {
   display:inline-flex; align-items:center; gap:4px; padding:3px 10px;
   border-radius:10px; font-size:11px; font-weight:600;
 }
-
 .topic-selector { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
 .topic-btn {
   padding:8px 16px; border-radius:8px; border:1px solid var(--border);
@@ -540,7 +514,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 }
 .topic-btn.active { background:var(--sushi-red); color:var(--cream); border-color:transparent; }
 .topic-btn:hover { border-color:var(--sushi-red); }
-
 .difficulty-selector { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
 .diff-btn {
   padding:8px 14px; border-radius:8px; border:1px solid var(--border);
@@ -556,7 +529,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 .diff-btn.hot.active { background:var(--hot); border-color:var(--hot); }
 .diff-btn.extra { color:var(--extra-hot); }
 .diff-btn.extra.active { background:var(--extra-hot); border-color:var(--extra-hot); }
-
 /* ===== NOTIFICATION ===== */
 .notification {
   position:fixed; top:20px; right:20px; padding:14px 22px; border-radius:12px;
@@ -566,7 +538,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 }
 .notification.show { transform:translateX(0); }
 .notification.error { border-color:var(--sushi-red); color:var(--sushi-red-light); }
-
 /* ===== RESPONSIVE ===== */
 @media(max-width:768px) {
   .sidebar { transform:translateX(-100%); }
@@ -584,15 +555,12 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
   box-shadow:var(--shadow);
 }
 @media(max-width:768px) { .mobile-toggle { display:flex; align-items:center; justify-content:center; } }
-
 .fade-in { animation:fadeIn 0.3s ease; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
 .editable-field { position:relative; }
 .edit-mode .editable-field:hover { outline:2px dashed var(--wasabi); outline-offset:4px; border-radius:4px; }
 .edit-mode .editable-field::after { content:'✏️'; position:absolute; top:-8px; right:-8px; font-size:12px; opacity:0; transition:0.2s; }
 .edit-mode .editable-field:hover::after { opacity:1; }
-
 .hand-count-badge {
   background:var(--wasabi); color:var(--nori); font-size:10px;
   padding:2px 7px; border-radius:10px; margin-left:6px; font-weight:700;
@@ -602,9 +570,7 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
 </style>
 </head>
 <body>
-
 <div class="sushi-bg"></div>
-
 <!-- ===== STUDENT VIEW (QR Scan Result) ===== -->
 <div class="student-view" id="studentView">
   <div class="student-card">
@@ -615,7 +581,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
     <div class="student-status" id="studentStatus"></div>
   </div>
 </div>
-
 <!-- ===== LOGIN SCREEN ===== -->
 <div class="login-screen" id="loginScreen">
   <div class="lantern lantern-1"></div>
@@ -633,7 +598,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
     <div class="login-footer">Media Pembelajaran Bahasa Jepang Kelas XII</div>
   </div>
 </div>
-
 <!-- ===== MAIN APP ===== -->
 <div class="app" id="mainApp">
   <nav class="sidebar" id="sidebar">
@@ -674,7 +638,6 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
       </div>
     </div>
   </nav>
-
   <div class="main-content">
     <div class="topbar">
       <h2 id="pageTitle">🏮 Dashboard</h2>
@@ -686,18 +649,14 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
     <div class="content-area" id="contentArea"></div>
   </div>
 </div>
-
 <!-- QUIZ MODAL -->
 <div class="quiz-modal" id="quizModal">
   <div class="quiz-content" id="quizContent"></div>
 </div>
-
 <!-- NOTIFICATION -->
 <div class="notification" id="notification"></div>
-
 <!-- MOBILE TOGGLE -->
 <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
-
 <script>
 // ==================== DATA ====================
 const MATERIALS = {
@@ -912,7 +871,6 @@ const MATERIALS = {
     ]
   }
 };
-
 // ==================== GAME QUESTIONS with SPICE LEVELS ====================
 // Spice: mild, medium, hot, extra
 const SPICE_LEVELS = {
@@ -921,7 +879,6 @@ const SPICE_LEVELS = {
   hot: { label:"Hot 🔥", color:"var(--hot)", points:15, desc:"Wasabi banyak - Sulit" },
   extra: { label:"Extra Hot 💥", color:"var(--extra-hot)", points:25, desc:"Wasabi melimpah - Sangat Sulit" }
 };
-
 let gameQuestions = {
   tabemono: [
     {q:"「ご飯」のいみは？",options:["Nasi","Roti","Ikan","Daging"],answer:0,spice:"mild"},
@@ -1022,7 +979,6 @@ let gameQuestions = {
     {q:"Pola 「～ので」 menunjukkan?",options:["Larangan","Alasan (karena)","Tujuan","Kondisi"],answer:1,spice:"extra"}
   ]
 };
-
 // WORD SEARCH DATA
 const WORDSEARCH_DATA = {
   tabemono: {words:["GOHAN","MIZU","NIKU","SAKANA","PAN","CHA","SUSHI","UDON"],title:"Makanan & Minuman"},
@@ -1034,7 +990,6 @@ const WORDSEARCH_DATA = {
   shourai: {words:["YUME","SENSEI","ISHA","DAIGAKU","HATARAKU","NARU","BENKYOU","SHOURAI"],title:"Masa Depan"},
   kenkou: {words:["ATAMA","ONAKA","NODO","NETSU","KAZE","KUSURI","GENKI","ITAI"],title:"Kesehatan"}
 };
-
 // ==================== STATE ====================
 let currentPage = 'dashboard';
 let currentMaterial = null;
@@ -1050,11 +1005,9 @@ let wsSelecting = false;
 let wsSelectedCells = [];
 let currentGameTopic = 'all';
 let currentGameSpice = 'all';
-
 // Hand raise system
 let handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
 let currentGameType = null; // 'individual' or 'group'
-
 // ==================== CHECK IF STUDENT VIEW ====================
 function checkStudentView() {
   const params = new URLSearchParams(window.location.search);
@@ -1069,12 +1022,10 @@ function checkStudentView() {
   }
   return false;
 }
-
 function renderStudentView(gameType) {
   const formArea = document.getElementById('studentFormArea');
   const title = document.getElementById('studentTitle');
   const subtitle = document.getElementById('studentSubtitle');
-  
   if (gameType === 'individual') {
     title.textContent = '🙋 Angkat Tangan';
     subtitle.textContent = 'GAME INDIVIDU • WAS4BI';
@@ -1104,11 +1055,9 @@ function renderStudentView(gameType) {
     `;
   }
 }
-
 function raiseHandIndividual() {
   const name = document.getElementById('studentName').value.trim();
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
-  
   const entry = {
     id: Date.now(),
     type: 'individual',
@@ -1120,23 +1069,19 @@ function raiseHandIndividual() {
   };
   handRaiseList.push(entry);
   localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
-  
   const btn = document.querySelector('.raise-hand-btn');
   btn.classList.add('raised');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
-  
   const status = document.getElementById('studentStatus');
   status.classList.add('show');
   status.innerHTML = `✅ <strong>${name}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
 }
-
 function raiseHandGroup() {
   const name = document.getElementById('studentName').value.trim();
   const group = document.getElementById('studentGroup').value;
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
   if (!group) { alert('Pilih kelompokmu dulu ya!'); return; }
-  
   const entry = {
     id: Date.now(),
     type: 'group',
@@ -1148,17 +1093,14 @@ function raiseHandGroup() {
   };
   handRaiseList.push(entry);
   localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
-  
   const btn = document.querySelector('.raise-hand-btn');
   btn.classList.add('raised');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
-  
   const status = document.getElementById('studentStatus');
   status.classList.add('show');
-  status.innerHTML = `✅ <strong>${group}</strong> (${name}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  status.innerHTML = `✅ <strong>group</strong>({name}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
 }
-
 // Refresh hand list periodically
 setInterval(() => {
   handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
@@ -1166,7 +1108,6 @@ setInterval(() => {
     renderHandList();
   }
 }, 2000);
-
 // ==================== LOGIN ====================
 function doLogin() {
   const u = document.getElementById('loginUser').value;
@@ -1183,13 +1124,11 @@ function doLogout() {
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
 }
-
 // ==================== NAVIGATION ====================
 function showPage(page) {
   currentPage = page;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const area = document.getElementById('contentArea');
-  
   if(page === 'dashboard') {
     document.getElementById('pageTitle').innerHTML = '🏮 Dashboard';
     renderDashboard();
@@ -1205,7 +1144,6 @@ function showPage(page) {
   }
   area.scrollTop = 0;
 }
-
 function showMaterial(key) {
   currentMaterial = key;
   currentPage = 'material';
@@ -1213,7 +1151,6 @@ function showMaterial(key) {
   document.getElementById('pageTitle').innerHTML = MATERIALS[key].icon + ' ' + MATERIALS[key].title;
   renderMaterial(key);
 }
-
 function toggleEditMode() {
   editMode = !editMode;
   const btn = document.getElementById('editToggle');
@@ -1222,14 +1159,12 @@ function toggleEditMode() {
   if(currentPage === 'material' && currentMaterial) renderMaterial(currentMaterial);
   notify(editMode ? '✏️ Mode Edit aktif' : 'Mode Edit nonaktif');
 }
-
 // ==================== RENDER DASHBOARD ====================
 function renderDashboard() {
   const area = document.getElementById('contentArea');
   const ganjil = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'ganjil');
   const genap = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'genap');
   const totalQ = Object.values(gameQuestions).reduce((a,b) => a+b.length, 0);
-  
   area.innerHTML = `
     <div class="fade-in">
       <div class="dashboard-hero">
@@ -1238,7 +1173,6 @@ function renderDashboard() {
         Seperti wasabi yang memberikan sensasi pedas bertahap, media ini menyajikan materi dengan tingkat kesulitan bertingkat. 
         Selamat mengajar, Sensei! 🍣</p>
       </div>
-
       <div class="dashboard-grid">
         <div class="stat-card">
           <div class="stat-icon" style="background:rgba(192,57,43,0.2);color:var(--sushi-red-light)"><i class="fas fa-book"></i></div>
@@ -1261,7 +1195,6 @@ function renderDashboard() {
           <p>Tangan Terangkat</p>
         </div>
       </div>
-
       <h2 style="margin-bottom:14px;font-size:17px;color:var(--cream)">🍣 Semester Ganjil <span style="color:var(--cream-dark);font-size:12px">(Mainichi no Seikatsu & Hima na Toki — 60 JP)</span></h2>
       <div class="material-grid" style="margin-bottom:28px">
         ${ganjil.map(([k,v], i) => `
@@ -1275,7 +1208,6 @@ function renderDashboard() {
           </div>
         `).join('')}
       </div>
-
       <h2 style="margin-bottom:14px;font-size:17px;color:var(--cream)">🍱 Semester Genap <span style="color:var(--cream-dark);font-size:12px">(Shourai & Kenkou — 25 JP)</span></h2>
       <div class="material-grid">
         ${genap.map(([k,v], i) => `
@@ -1292,21 +1224,18 @@ function renderDashboard() {
     </div>
   `;
 }
-
 // ==================== RENDER MATERIAL ====================
 function renderMaterial(key) {
   const m = MATERIALS[key];
   const area = document.getElementById('contentArea');
-  
   area.innerHTML = `
     <div class="fade-in">
       <div class="detail-header">
         <div class="back-btn" onclick="showPage('dashboard')"><i class="fas fa-arrow-left"></i> Kembali ke Menu</div>
         <h1>${m.icon} ${m.title}</h1>
         <div class="jp-title">${m.jp}</div>
-        <p class="editable-field" contenteditable="${editMode}">${m.description}</p>
+        <p class="editable-field" contenteditable="editMode">{m.description}</p>
       </div>
-
       <div class="section-block">
         <h2><i class="fas fa-spell-check"></i> Kosakata (言葉)</h2>
         <p style="color:var(--cream-dark);font-size:12px;margin-bottom:10px">Kosakata yang perlu dipelajari pada sub-tema ini:</p>
@@ -1316,34 +1245,32 @@ function renderMaterial(key) {
             ${m.vocab.map((v,i) => `
               <tr>
                 <td>${i+1}</td>
-                <td class="jp editable-field" contenteditable="${editMode}">${v.jp}</td>
-                <td class="romaji editable-field" contenteditable="${editMode}">${v.romaji}</td>
-                <td class="editable-field" contenteditable="${editMode}">${v.id}</td>
+                <td class="jp editable-field" contenteditable="editMode">{v.jp}</td>
+                <td class="romaji editable-field" contenteditable="editMode">{v.romaji}</td>
+                <td class="editable-field" contenteditable="editMode">{v.id}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
       </div>
-
       <div class="section-block">
         <h2><i class="fas fa-pen-fancy"></i> Tata Bahasa (文法)</h2>
         <p style="color:var(--cream-dark);font-size:12px;margin-bottom:14px">Pola kalimat yang dipelajari:</p>
         ${m.grammar.map(g => `
           <div class="grammar-box">
             <div class="pattern editable-field" contenteditable="${editMode}">📌 ${g.pattern}</div>
-            <div class="meaning editable-field" contenteditable="${editMode}">${g.meaning}</div>
+            <div class="meaning editable-field" contenteditable="editMode">{g.meaning}</div>
             <h3>Contoh Kalimat:</h3>
             ${g.examples.map(e => `
               <div class="example">
-                <div class="jp-sentence editable-field" contenteditable="${editMode}">${e.jp}</div>
-                <div class="romaji-sentence editable-field" contenteditable="${editMode}">${e.romaji}</div>
-                <div class="id-sentence editable-field" contenteditable="${editMode}">${e.id}</div>
+                <div class="jp-sentence editable-field" contenteditable="editMode">{e.jp}</div>
+                <div class="romaji-sentence editable-field" contenteditable="editMode">{e.romaji}</div>
+                <div class="id-sentence editable-field" contenteditable="editMode">{e.id}</div>
               </div>
             `).join('')}
           </div>
         `).join('')}
       </div>
-
       <div class="section-block">
         <h2><i class="fas fa-torii-gate"></i> Catatan Budaya (文化)</h2>
         ${getCultureNote(key)}
@@ -1351,7 +1278,6 @@ function renderMaterial(key) {
     </div>
   `;
 }
-
 function getCultureNote(key) {
   const notes = {
     tabemono: `<p style="color:var(--cream-dark);font-size:13px;line-height:1.8">🍚 Di Jepang, orang mengucapkan <span style="color:var(--sushi-red-light)">「いただきます」</span> sebelum makan dan <span style="color:var(--sushi-red-light)">「ごちそうさまでした」</span> setelah makan sebagai rasa terima kasih. Nasi (ご飯) adalah makanan pokok utama.</p>`,
@@ -1365,16 +1291,13 @@ function getCultureNote(key) {
   };
   return notes[key] || '';
 }
-
 // ==================== INDIVIDUAL GAME ====================
 function renderIndividualGame() {
   const area = document.getElementById('contentArea');
   gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
-  
   // Generate QR URL for student
   const baseUrl = window.location.href.split('?')[0].split('#')[0];
   const qrUrl = baseUrl + '?game=individual';
-  
   area.innerHTML = `
     <div class="fade-in">
       <div class="section-block" style="text-align:center;margin-bottom:20px">
@@ -1387,7 +1310,6 @@ function renderIndividualGame() {
           <span class="spice-indicator" style="background:rgba(229,57,53,0.2);color:var(--extra-hot)">💥 Extra Hot = 25 poin</span>
         </div>
       </div>
-
       <div class="hand-raise-section">
         <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Individu)</h3>
         <div class="qr-container">
@@ -1399,7 +1321,6 @@ function renderIndividualGame() {
           </div>
         </div>
       </div>
-
       <div class="hand-raise-section">
         <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat <span class="hand-count-badge" id="handCountBadge">0</span></h3>
         <div class="hand-list" id="handList">
@@ -1410,12 +1331,11 @@ function renderIndividualGame() {
           <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
         </div>
       </div>
-
       <div class="section-block">
         <h2 style="border:none;padding:0;margin-bottom:12px">🎯 Pilih Filter Soal</h2>
         <div class="topic-selector" id="gameTopicSelector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="setGameTopic('${k}',this)">${v.icon} ${v.title}</button>
+            <button class="topic-btn" onclick="setGameTopic('k',this)">{v.icon} ${v.title}</button>
           `).join('')}
           <button class="topic-btn active" onclick="setGameTopic('all',this)">🎲 Semua</button>
         </div>
@@ -1427,14 +1347,13 @@ function renderIndividualGame() {
           <button class="diff-btn active" style="color:var(--cream);background:var(--sushi-red);border-color:var(--sushi-red)" onclick="setGameSpice('all',this)">🎲 Semua Level</button>
         </div>
       </div>
-
       <div class="game-score">
         <h3>Skor Anda</h3>
         <div class="score-num" id="gameScoreDisplay">0 / 0</div>
       </div>
       <div class="game-board" id="gameBoard">
         ${Array.from({length:16}, (_,i) => `
-          <div class="game-box" id="box${i}" onclick="openBox(${i})">
+          <div class="game-box" id="boxi"onclick="openBox({i})">
             <span class="box-num">${i+1}</span>
             <span>🍣</span>
           </div>
@@ -1445,7 +1364,6 @@ function renderIndividualGame() {
       </div>
     </div>
   `;
-  
   // Generate QR
   setTimeout(() => {
     const qrContainer = document.getElementById('qrIndividual');
@@ -1462,14 +1380,12 @@ function renderIndividualGame() {
     renderHandList();
   }, 100);
 }
-
 function setGameTopic(topic, btn) {
   currentGameTopic = topic;
   document.querySelectorAll('#gameTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   resetGame();
 }
-
 function setGameSpice(spice, btn) {
   currentGameSpice = spice;
   document.querySelectorAll('#gameSpiceSelector .diff-btn').forEach(b => {
@@ -1479,7 +1395,6 @@ function setGameSpice(spice, btn) {
   btn.classList.add('active');
   resetGame();
 }
-
 function getGameQuestion() {
   let pool = [];
   const topics = currentGameTopic === 'all' ? Object.keys(gameQuestions) : [currentGameTopic];
@@ -1494,56 +1409,47 @@ function getGameQuestion() {
   if (pool.length === 0) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
-
 function openBox(idx) {
   if(openedBoxes.has(idx)) return;
   const q = getGameQuestion();
   if(!q) { notify('Tidak ada soal untuk filter ini!', true); return; }
-  
   const modal = document.getElementById('quizModal');
   const content = document.getElementById('quizContent');
   const spiceInfo = SPICE_LEVELS[q.spice];
-  
   content.innerHTML = `
     <h3>🍣 Soal #${gameTotal + 1}</h3>
     <div class="q-meta">
       <span class="q-tag topic">${q.topic}</span>
-      <span class="q-tag spice spice-${q.spice === 'extra' ? 'extra' : q.spice}">${spiceInfo.label}</span>
+      <span class="q-tag spice spice-q.spice==='extra'?'extra':q.spice">{spiceInfo.label}</span>
       <span class="q-tag" style="background:rgba(212,160,23,0.2);color:var(--gold)">+${spiceInfo.points} poin</span>
     </div>
     <div class="question">${q.q}</div>
     <div class="quiz-options">
       ${q.options.map((o,i) => `
-        <div class="quiz-option" onclick="selectOption(this,${i})" data-idx="${i}">${String.fromCharCode(65+i)}. ${o}</div>
+        <div class="quiz-option" onclick="selectOption(this,i)"data-idx="{i}">${String.fromCharCode(65+i)}. ${o}</div>
       `).join('')}
     </div>
-    <button class="quiz-submit" onclick="submitAnswer(${q.answer},${idx},${spiceInfo.points})">Jawab</button>
+    <button class="quiz-submit" onclick="submitAnswer(q.answer,{idx},${spiceInfo.points})">Jawab</button>
     <div class="quiz-result" id="quizResult"></div>
   `;
   modal.classList.add('show');
 }
-
 function selectOption(el, idx) {
   document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
 }
-
 function submitAnswer(correct, boxIdx, points) {
   const selected = document.querySelector('.quiz-option.selected');
   if(!selected) { notify('Pilih jawaban terlebih dahulu!', true); return; }
-  
   const selIdx = parseInt(selected.dataset.idx);
   const result = document.getElementById('quizResult');
   const box = document.getElementById('box' + boxIdx);
-  
   openedBoxes.add(boxIdx);
   gameTotal++;
-  
   document.querySelectorAll('.quiz-option').forEach(o => {
     o.style.pointerEvents = 'none';
     if(parseInt(o.dataset.idx) === correct) o.classList.add('correct-answer');
   });
-  
   if(selIdx === correct) {
     gameCorrect++;
     gameScore += points;
@@ -1558,20 +1464,17 @@ function submitAnswer(correct, boxIdx, points) {
     result.className = 'quiz-result show wrong';
     result.innerHTML = '❌ Salah! Jawaban yang benar ditandai hijau.';
   }
-  
-  document.getElementById('gameScoreDisplay').textContent = `${gameScore} (${gameCorrect}/${gameTotal})`;
-  
+  document.getElementById('gameScoreDisplay').textContent = `gameScore({gameCorrect}/${gameTotal})`;
   setTimeout(() => {
     document.getElementById('quizModal').classList.remove('show');
   }, 2200);
 }
-
 function resetGame() {
   gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
   const board = document.getElementById('gameBoard');
   if(board) {
     board.innerHTML = Array.from({length:16}, (_,i) => `
-      <div class="game-box" id="box${i}" onclick="openBox(${i})">
+      <div class="game-box" id="boxi"onclick="openBox({i})">
         <span class="box-num">${i+1}</span>
         <span>🍣</span>
       </div>
@@ -1580,33 +1483,27 @@ function resetGame() {
   const score = document.getElementById('gameScoreDisplay');
   if(score) score.textContent = '0 / 0';
 }
-
 // ==================== HAND RAISE MANAGEMENT ====================
 function renderHandList() {
   const list = document.getElementById('handList');
   const badge = document.getElementById('handCountBadge');
   if (!list) return;
-  
   const raised = handRaiseList.filter(h => h.status === 'raised').sort((a,b) => a.timestamp - b.timestamp);
-  
   if (badge) badge.textContent = raised.length;
-  
   // Update dashboard count if visible
   const dashCount = document.getElementById('handCountDash');
   if (dashCount) dashCount.textContent = raised.length;
-  
   if (raised.length === 0) {
     list.innerHTML = '<p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p>';
     return;
   }
-  
   list.innerHTML = raised.map((h, idx) => `
     <div class="hand-item raised">
       <div class="hand-info">
         <div class="hand-icon">${h.type === 'group' ? '👥' : '🙋'}</div>
         <div>
           <div class="hand-name">${h.name} ${h.group ? `<span style="color:var(--wasabi);font-size:11px">• ${h.group}</span>` : ''}</div>
-          <div class="hand-meta">${h.type === 'group' ? 'Kelompok' : 'Individu'} • Urutan #${idx + 1}</div>
+          <div class="hand-meta">h.type==='group'?'Kelompok':'Individu'•Urutan#{idx + 1}</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -1619,14 +1516,12 @@ function renderHandList() {
     </div>
   `).join('');
 }
-
 function callStudent(id) {
   const entry = handRaiseList.find(h => h.id === id);
   if (entry) {
-    notify(`📢 Memanggil ${entry.name}${entry.group ? ' (' + entry.group + ')' : ''}!`);
+    notify(`📢 Memanggil entry.name{entry.group ? ' (' + entry.group + ')' : ''}!`);
   }
 }
-
 function lowerHand(id) {
   const entry = handRaiseList.find(h => h.id === id);
   if (entry) {
@@ -1636,14 +1531,12 @@ function lowerHand(id) {
     notify(`Tangan ${entry.name} diturunkan`);
   }
 }
-
 function lowerAllHands() {
   handRaiseList.forEach(h => h.status = 'lowered');
   localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
   renderHandList();
   notify('Semua tangan diturunkan');
 }
-
 function clearHandHistory() {
   if (confirm('Hapus semua riwayat angkat tangan?')) {
     handRaiseList = [];
@@ -1652,7 +1545,6 @@ function clearHandHistory() {
     notify('Riwayat dihapus');
   }
 }
-
 // ==================== GROUP GAME ====================
 function renderGroupGame() {
   const area = document.getElementById('contentArea');
@@ -1663,10 +1555,8 @@ function renderGroupGame() {
     {name:"Tim Onigiri 🍙",score:0},
     {name:"Tim Ramen 🍜",score:0}
   ];
-  
   const baseUrl = window.location.href.split('?')[0].split('#')[0];
   const qrUrl = baseUrl + '?game=group';
-  
   area.innerHTML = `
     <div class="fade-in">
       <div class="section-block" style="margin-bottom:20px">
@@ -1674,11 +1564,10 @@ function renderGroupGame() {
         <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Cari kata-kata tersembunyi di dalam kotak! Setiap tim bergiliran menemukan kata.</p>
         <div class="topic-selector" id="wsTopicSelector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn ${k==='tabemono'?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>
+            <button class="topic-btn k==='tabemono'?'active':''"onclick="setWsTopic('{k}',this)">${v.icon} ${v.title}</button>
           `).join('')}
         </div>
       </div>
-
       <div class="hand-raise-section">
         <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Kelompok)</h3>
         <div class="qr-container">
@@ -1690,7 +1579,6 @@ function renderGroupGame() {
           </div>
         </div>
       </div>
-
       <div class="hand-raise-section">
         <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat (Kelompok) <span class="hand-count-badge" id="handCountBadge">0</span></h3>
         <div class="hand-list" id="handList">
@@ -1701,11 +1589,9 @@ function renderGroupGame() {
           <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
         </div>
       </div>
-
       <div id="wsGameArea"></div>
     </div>
   `;
-  
   setTimeout(() => {
     const qrContainer = document.getElementById('qrGroup');
     if (qrContainer) {
@@ -1722,22 +1608,18 @@ function renderGroupGame() {
     startWordSearch();
   }, 100);
 }
-
 function setWsTopic(topic, btn) {
   wsCurrentTopic = topic;
   document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   startWordSearch();
 }
-
 function startWordSearch() {
   const data = WORDSEARCH_DATA[wsCurrentTopic];
   if(!data) return;
   wsFoundWords = [];
-  
   const gridSize = 10;
   const grid = generateWordGrid(data.words, gridSize);
-  
   const wsArea = document.getElementById('wsGameArea');
   wsArea.innerHTML = `
     <div class="section-block">
@@ -1754,9 +1636,9 @@ function startWordSearch() {
       <div class="ws-grid-wrapper">
         <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${gridSize},36px)">
           ${grid.map((row,r) => row.map((cell,c) => `
-            <div class="ws-cell" data-r="${r}" data-c="${c}" 
-                 onmousedown="wsStartSelect(${r},${c})" 
-                 onmouseover="wsMoveSelect(${r},${c})" 
+            <div class="ws-cell" data-r="r"data-c="{c}" 
+                 onmousedown="wsStartSelect(r,{c})" 
+                 onmouseover="wsMoveSelect(r,{c})" 
                  onmouseup="wsEndSelect()">${cell}</div>
           `).join('')).join('')}
         </div>
@@ -1765,14 +1647,14 @@ function startWordSearch() {
           ${wsTeams.map((t,i) => `
             <div class="ws-team-score">
               <span style="font-size:13px">${t.name}</span>
-              <span style="font-weight:700;color:var(--gold)" id="teamScore${i}">${t.score}</span>
+              <span style="font-weight:700;color:var(--gold)" id="teamScorei">{t.score}</span>
             </div>
           `).join('')}
           <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
             <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Pilih tim yang menemukan kata:</p>
             <div class="topic-selector" id="wsTeamSelector">
               ${wsTeams.map((t,i) => `
-                <button class="topic-btn ${i===0?'active':''}" onclick="selectWsTeam(${i},this)">${t.name}</button>
+                <button class="topic-btn i===0?'active':''"onclick="selectWsTeam({i},this)">${t.name}</button>
               `).join('')}
             </div>
           </div>
@@ -1781,26 +1663,22 @@ function startWordSearch() {
     </div>
   `;
 }
-
 let wsCurrentTeam = 0;
 function selectWsTeam(idx, btn) {
   wsCurrentTeam = idx;
   document.querySelectorAll('#wsTeamSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 function generateWordGrid(words, size) {
   let grid = Array.from({length:size}, () => Array(size).fill(''));
   const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1]];
   const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-  
   words.forEach(word => {
     let placed = false;
     for(let attempt = 0; attempt < 100 && !placed; attempt++) {
       const dir = directions[Math.floor(Math.random() * directions.length)];
       const startR = Math.floor(Math.random() * size);
       const startC = Math.floor(Math.random() * size);
-      
       let canPlace = true;
       for(let i = 0; i < word.length; i++) {
         const nr = startR + dir[0] * i;
@@ -1808,7 +1686,6 @@ function generateWordGrid(words, size) {
         if(nr < 0 || nr >= size || nc < 0 || nc >= size) { canPlace = false; break; }
         if(grid[nr][nc] !== '' && grid[nr][nc] !== word[i]) { canPlace = false; break; }
       }
-      
       if(canPlace) {
         for(let i = 0; i < word.length; i++) {
           grid[startR + dir[0]*i][startC + dir[1]*i] = word[i];
@@ -1817,7 +1694,6 @@ function generateWordGrid(words, size) {
       }
     }
   });
-  
   for(let r = 0; r < size; r++) {
     for(let c = 0; c < size; c++) {
       if(grid[r][c] === '') {
@@ -1827,19 +1703,16 @@ function generateWordGrid(words, size) {
   }
   return grid;
 }
-
 function wsStartSelect(r, c) {
   wsSelecting = true;
   wsSelectedCells = [{r, c}];
   updateWsSelection();
 }
-
 function wsMoveSelect(r, c) {
   if(!wsSelecting) return;
   const first = wsSelectedCells[0];
   const dr = r - first.r;
   const dc = c - first.c;
-  
   if(dr === 0 && dc === 0) {
     wsSelectedCells = [{r, c}];
   } else if(Math.abs(dr) === Math.abs(dc) || dr === 0 || dc === 0) {
@@ -1853,32 +1726,26 @@ function wsMoveSelect(r, c) {
   }
   updateWsSelection();
 }
-
 function wsEndSelect() {
   if(!wsSelecting) return;
   wsSelecting = false;
-  
   const word = wsSelectedCells.map(({r,c}) => {
-    const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
+    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
     return cell ? cell.textContent : '';
   }).join('');
-  
   const data = WORDSEARCH_DATA[wsCurrentTopic];
   if(data && data.words.includes(word) && !wsFoundWords.includes(word)) {
     wsFoundWords.push(word);
     wsSelectedCells.forEach(({r,c}) => {
-      const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
+      const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
       if(cell) cell.classList.add('found-cell');
     });
     const wordEl = document.getElementById('wsw_' + word);
     if(wordEl) wordEl.classList.add('found');
-    
     wsTeams[wsCurrentTeam].score += 10;
     const scoreEl = document.getElementById('teamScore' + wsCurrentTeam);
     if(scoreEl) scoreEl.textContent = wsTeams[wsCurrentTeam].score;
-    
-    notify(`${wsTeams[wsCurrentTeam].name} menemukan "${word}"! +10 poin`);
-    
+    notify(`wsTeams[wsCurrentTeam].namemenemukan"{word}"! +10 poin`);
     if(wsFoundWords.length === data.words.length) {
       setTimeout(() => {
         const winner = wsTeams.reduce((a,b) => a.score > b.score ? a : b);
@@ -1886,19 +1753,16 @@ function wsEndSelect() {
       }, 500);
     }
   }
-  
   document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
   wsSelectedCells = [];
 }
-
 function updateWsSelection() {
   document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
   wsSelectedCells.forEach(({r,c}) => {
-    const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
+    const cell = document.querySelector(`.ws-cell[data-r="r"][data-c="{c}"]`);
     if(cell && !cell.classList.contains('found-cell')) cell.classList.add('selecting');
   });
 }
-
 // ==================== ADMIN PANEL ====================
 function renderAdmin() {
   const area = document.getElementById('contentArea');
@@ -1914,21 +1778,19 @@ function renderAdmin() {
   `;
   showAdminTab('questions');
 }
-
 function showAdminTab(tab, btn) {
   if(btn) {
     document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
   const content = document.getElementById('adminContent');
-  
   if(tab === 'questions') {
     content.innerHTML = `
       <div class="admin-form">
         <h3>📝 Daftar Soal per Sub-Tema (dengan Tingkat Kepedasan)</h3>
         <div class="topic-selector" style="margin-bottom:14px">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showQuestionsFor('${k}',this)">${v.icon} ${v.title} (${gameQuestions[k]?.length || 0})</button>
+            <button class="topic-btn" onclick="showQuestionsFor('k',this)">{v.icon} v.title({gameQuestions[k]?.length || 0})</button>
           `).join('')}
         </div>
         <div id="questionListArea">
@@ -1994,7 +1856,7 @@ function showAdminTab(tab, btn) {
         <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Aktifkan "Mode Edit" di pojok kanan atas, lalu pilih sub-tema yang ingin diedit:</p>
         <div class="topic-selector">
           ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showMaterial('${k}');if(!editMode)toggleEditMode()">${v.icon} ${v.title}</button>
+            <button class="topic-btn" onclick="showMaterial('k');if(!editMode)toggleEditMode()">{v.icon} ${v.title}</button>
           `).join('')}
         </div>
         <div style="margin-top:16px;padding:14px;background:rgba(0,0,0,0.3);border-radius:10px;border-left:3px solid var(--wasabi)">
@@ -2004,37 +1866,32 @@ function showAdminTab(tab, btn) {
     `;
   }
 }
-
 function showQuestionsFor(topic, btn) {
   document.querySelectorAll('.topic-selector .topic-btn').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
-  
   const qs = gameQuestions[topic] || [];
   const listArea = document.getElementById('questionListArea');
-  
   if(qs.length === 0) {
     listArea.innerHTML = '<p style="color:var(--cream-dark);font-size:13px">Belum ada soal untuk sub-tema ini.</p>';
     return;
   }
-  
   listArea.innerHTML = `
     <div class="question-list">
       ${qs.map((q,i) => `
         <div class="question-item">
           <div class="q-text">
             <strong>${i+1}.</strong> ${q.q}<br>
-            <span class="spice-indicator spice-${q.spice === 'extra' ? 'extra' : q.spice}" style="margin-top:4px">${SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
+            <span class="spice-indicator spice-q.spice==='extra'?'extra':q.spice"style="margin-top:4px">{SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
             <small style="color:var(--wasabi);margin-left:8px">Jawaban: ${q.options[q.answer]}</small>
           </div>
           <div class="q-actions">
-            <button class="btn-danger" onclick="deleteQuestion('${topic}',${i})"><i class="fas fa-trash"></i></button>
+            <button class="btn-danger" onclick="deleteQuestion('topic',{i})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       `).join('')}
     </div>
   `;
 }
-
 function addQuestion() {
   const topic = document.getElementById('newQTopic').value;
   const spice = document.getElementById('newQSpice').value;
@@ -2044,24 +1901,19 @@ function addQuestion() {
   const c = document.getElementById('newQC').value.trim();
   const d = document.getElementById('newQD').value.trim();
   const answer = parseInt(document.getElementById('newQAnswer').value);
-  
   if(!text || !a || !b || !c || !d) {
     notify('Semua field harus diisi!', true);
     return;
   }
-  
   if(!gameQuestions[topic]) gameQuestions[topic] = [];
   gameQuestions[topic].push({q:text, options:[a,b,c,d], answer, spice});
-  
   document.getElementById('newQText').value = '';
   document.getElementById('newQA').value = '';
   document.getElementById('newQB').value = '';
   document.getElementById('newQC').value = '';
   document.getElementById('newQD').value = '';
-  
   notify('✅ Soal berhasil ditambahkan!');
 }
-
 function deleteQuestion(topic, idx) {
   if(confirm('Yakin ingin menghapus soal ini?')) {
     gameQuestions[topic].splice(idx, 1);
@@ -2069,7 +1921,6 @@ function deleteQuestion(topic, idx) {
     notify('Soal berhasil dihapus');
   }
 }
-
 // ==================== UTILITIES ====================
 function notify(msg, isError = false) {
   const n = document.getElementById('notification');
@@ -2078,13 +1929,10 @@ function notify(msg, isError = false) {
   n.classList.add('show');
   setTimeout(() => n.classList.remove('show'), 3000);
 }
-
 document.getElementById('quizModal').addEventListener('click', function(e) {
   if(e.target === this) this.classList.remove('show');
 });
-
 document.addEventListener('mouseup', () => { if(wsSelecting) wsEndSelect(); });
-
 // ==================== INIT ====================
 if (!checkStudentView()) {
   // Normal teacher flow
