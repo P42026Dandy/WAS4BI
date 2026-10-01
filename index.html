@@ -677,7 +677,7 @@ const MATERIALS = {
       { pattern:"[waktu] に [kegiatan] ます", meaning:"Melakukan kegiatan pada waktu tertentu",
         examples:[
           {jp:"ろくじに あさごはんを たべます。",romaji:"rokuji ni asagohan o tabemasu.",id:"Saya makan pagi jam 6."},
-          {jp:"じゅうにに ひるごはんを たべます。",romaji:"juuini ni hirugohan o tabemasu.",id:"Saya makan siang jam 12."},
+          {jp:"じゅうにじに ひるごはんを たべます。",romaji:"juuiniji ni hirugohan o tabemasu.",id:"Saya makan siang jam 12."},
           {jp:"ななじに ばんごはんを たべます。",romaji:"nanaji ni bangohan o tabemasu.",id:"Saya makan malam jam 7."}
         ]},
       { pattern:"よく / ときどき / あまり～ません / ぜんぜん～ません", meaning:"Frekuensi kegiatan (sering / kadang-kadang / jarang / sama sekali tidak)",
@@ -797,7 +797,7 @@ const MATERIALS = {
   },
   shumi: {
     title: "Shumi", jp: "趣味", icon: "🎨", semester: "ganjil",
-    description: "Mempelajari cara menyampaikan hobi menggunakan pola ～しゅみは～ことです dan ～がすきです。",
+    description: "Mempelajari cara menyampaikan hobi menggunakan pola しゅみは～ことです dan ～がすきです。",
     vocab: [
       {jp:"どくしょ",romaji:"dokusho",id:"membaca"},{jp:"おんがく",romaji:"ongaku",id:"musik"},
       {jp:"えいが",romaji:"eiga",id:"film"},{jp:"りょこう",romaji:"ryokou",id:"wisata"},
@@ -927,7 +927,7 @@ let gameQuestions = {
     {q:"「いっしょに りょこうしましょう」のいみは？",options:["Pergi sendiri","Mari pergi bersama","Jangan pergi","Sudah pergi"],answer:1,spice:"medium"},
     {q:"「てんきが よかったです」の「よかった」は bentuk lampau dari?",options:["わるい","よい","おおきい","ちいさい"],answer:1,spice:"hot"},
     {q:"「ふじさんに のぼったことが あります」の「のぼった」のいみは？",options:["Turun","Mendaki","Melihat","Foto"],answer:1,spice:"hot"},
-    {q:"Bentuk lampau い-adjektiva ～い menjadi?",options:["～かったです","～かったです","～でした","～ます"],answer:1,spice:"extra"},
+    {q:"Bentuk lampau い-adjektiva ～い menjadi?",options:["～くです","～かったです","～でした","～ます"],answer:1,spice:"extra"},
     {q:"「りょかん」のいみは？",options:["Hotel barat","Penginapan Jepang","Restoran","Toko"],answer:1,spice:"extra"}
   ],
   kisetsu: [
@@ -988,7 +988,7 @@ const WORDSEARCH_DATA = {
   norimono: {words:["DENSHA","BASU","KURUMA","FUNE","EKI","KIPPU","MICHI","HAYAI"],title:"Transportasi"},
   ryokou: {words:["RYOKOU","ONSEN","TERA","HOTERU","OMIYAGE","TANOSHII","KIREI","SAIKOU"],title:"Perjalanan"},
   kisetsu: {words:["HARU","NATSU","AKI","FUYU","SAKURA","YUKI","AME","KAZE"],title:"Musim"},
-  shumi: {words:["ONGAKU","EIGA","SHASHIN","RYORI","SUPORTSU","DOKUSHO","ANIME","SUPEI"],title:"Hobi"},
+  shumi: {words:["ONGAKU","EIGA","SHASHIN","RYOURI","SUPOOTSU","DOKUSHO","ANIME","RYOKOU"],title:"Hobi"},
   shourai: {words:["YUME","SENSEI","ISHA","DAIGAKU","HATARAKU","NARU","BENKYOU","SHOURAI"],title:"Masa Depan"},
   kenkou: {words:["ATAMA","ONAKA","NODO","NETSU","KAZE","KUSURI","GENKI","ITAI"],title:"Kesehatan"}
 };
@@ -1011,13 +1011,14 @@ let currentGameSpice = 'all';
 // Hand raise system
 let handRaiseList = JSON.parse(localStorage.getItem('was4bi_hands') || '[]');
 let usedQ = new Set();
+let handIgnoreUntil = 0, playersIgnoreUntil = 0;
 let currentGameType = null; // 'individual' or 'group'
 // ==================== KONFIGURASI ====================
 const TEACHER_USER = 'guru';
 const TEACHER_PASS = 'guru123'; // GANTI! (login ini hanya di sisi browser, bukan keamanan sungguhan)
 // Isi dengan URL Firebase Realtime Database agar angkat tangan bekerja lintas HP.
 // Contoh: 'https://nama-proyek-default-rtdb.firebaseio.com'  (kosong = hanya satu perangkat)
-const DB_URL = '';
+const DB_URL = 'https://wasabi-p4-default-rtdb.asia-southeast1.firebasedatabase.app'.trim().replace(/\/+$/, ''); // tempel URL di antara tanda kutip ''
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const saveLocal = () => localStorage.setItem('was4bi_hands', JSON.stringify(handRaiseList));
 async function dbLoad() {
@@ -1025,7 +1026,7 @@ async function dbLoad() {
   try { const d = await (await fetch(DB_URL + '/hands.json')).json(); return Object.values(d || {}); } catch(e) { return handRaiseList; }
 }
 async function dbAdd(entry) {
-  if (!DB_URL) { handRaiseList.push(entry); saveLocal(); return true; }
+  if (!DB_URL) { handRaiseList = handRaiseList.filter(h => String(h.id) !== String(entry.id)); handRaiseList.push(entry); saveLocal(); return true; }
   try { return (await fetch(DB_URL + '/hands/' + entry.id + '.json', {method:'PUT', body:JSON.stringify(entry)})).ok; }
   catch(e) { alert('Gagal mengirim, periksa koneksi lalu coba lagi.'); return false; }
 }
@@ -1034,6 +1035,24 @@ function dbUpdate(id, patch) {
   fetch(DB_URL + '/hands/' + id + '.json', {method:'PATCH', body:JSON.stringify(patch)}).catch(() => {});
 }
 function dbClear() { if (!DB_URL) return saveLocal(); fetch(DB_URL + '/hands.json', {method:'DELETE'}).catch(() => {}); }
+async function dbPlayersLoad() {
+  if (!DB_URL) return JSON.parse(localStorage.getItem('was4bi_roster') || '[]');
+  try { const d = await (await fetch(DB_URL + '/players.json')).json(); return Object.values(d || {}); } catch(e) { return null; }
+}
+async function dbPlayerAdd(p) {
+  if (!DB_URL) { const l = JSON.parse(localStorage.getItem('was4bi_roster') || '[]'); l.push(p); localStorage.setItem('was4bi_roster', JSON.stringify(l)); return true; }
+  try { return (await fetch(DB_URL + '/players/' + p.id + '.json', {method:'PUT', body:JSON.stringify(p)})).ok; }
+  catch(e) { alert('Gagal bergabung, periksa koneksi lalu coba lagi.'); return false; }
+}
+async function checkDb() {
+  const el = document.getElementById('dbStatus'); if (!el || !DB_URL) return;
+  try {
+    const r = await fetch(DB_URL + '/hands.json');
+    el.style.color = r.ok ? 'var(--wasabi)' : '#ff8a80';
+    el.textContent = r.ok ? '✅ Terhubung ke Firebase' : '❌ Firebase menolak akses (periksa tab Rules). Kode: ' + r.status;
+  } catch (e) { el.style.color = '#ff8a80'; el.textContent = '❌ Tidak bisa terhubung. Periksa kembali DB_URL.'; }
+}
+function dbPlayersClear() { if (!DB_URL) { localStorage.removeItem('was4bi_roster'); return Promise.resolve(); } return fetch(DB_URL + '/players.json', {method:'DELETE'}).catch(() => {}); }
 // ==================== CHECK IF STUDENT VIEW ====================
 function checkStudentView() {
   const params = new URLSearchParams(window.location.search);
@@ -1054,14 +1073,7 @@ function renderStudentView(gameType) {
   const title = document.getElementById('studentTitle');
   const subtitle = document.getElementById('studentSubtitle');
   if (gameType === 'individual') {
-    title.textContent = '🙋 Angkat Tangan';
-    subtitle.textContent = 'GAME INDIVIDU • WAS4BI';
-    formArea.innerHTML = `
-      <input type="text" id="studentName" placeholder="✍️ Tulis nama lengkapmu..." style="text-align:center">
-      <button class="raise-hand-btn" onclick="raiseHandIndividual()">
-        <i class="fas fa-hand-paper"></i> Angkat Tangan! 🙋
-      </button>
-    `;
+    renderStudentIndividual();
   } else {
     title.textContent = '👥 Pilih Kelompok';
     subtitle.textContent = 'GAME KELOMPOK • WAS4BI';
@@ -1082,26 +1094,40 @@ function renderStudentView(gameType) {
     `;
   }
 }
-async function raiseHandIndividual() {
-  const name = document.getElementById('studentName').value.trim();
+function getMe() { try { return JSON.parse(localStorage.getItem('was4bi_me') || 'null'); } catch(e) { return null; } }
+function renderStudentIndividual() {
+  document.getElementById('studentSubtitle').textContent = 'GAME INDIVIDU • WAS4BI';
+  const me = getMe(), title = document.getElementById('studentTitle'), area = document.getElementById('studentFormArea');
+  if (!me) {
+    title.textContent = '🍣 Gabung Game';
+    area.innerHTML = `<input type="text" id="studentName" maxlength="30" placeholder="✍️ Tulis nama lengkapmu..." style="text-align:center">
+      <button class="raise-hand-btn" onclick="joinPlayer()"><i class="fas fa-sign-in-alt"></i> Gabung! 🍣</button>`;
+  } else {
+    title.textContent = '🙋 Halo, ' + me.name;
+    area.innerHTML = `<button class="raise-hand-btn" id="raiseBtn" onclick="raiseHandIndividual()"><i class="fas fa-hand-paper"></i> Angkat Tangan! 🙋</button>
+      <p style="font-size:12px;margin-top:14px;opacity:.7"><a href="#" onclick="leaveGame();return false" style="color:inherit">Bukan kamu? Ganti nama</a></p>`;
+  }
+}
+async function joinPlayer() {
+  const name = document.getElementById('studentName').value.trim().replace(/\s+/g, ' ');
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
-  const entry = {
-    id: Date.now(),
-    type: 'individual',
-    name: name,
-    group: null,
-    time: new Date().toLocaleTimeString('id-ID'),
-    timestamp: Date.now(),
-    status: 'raised'
-  };
-  if (!(await dbAdd(entry))) return;
-  const btn = document.querySelector('.raise-hand-btn');
-  btn.classList.add('raised');
+  const roster = (await dbPlayersLoad()) || [];
+  if (roster.some(p => String(p.name).toLowerCase() === name.toLowerCase())) { alert('Nama itu sudah dipakai. Tambahkan inisial atau nomor absen ya.'); return; }
+  const me = {id: Date.now() + '' + Math.floor(Math.random() * 1000), name, joinedAt: Date.now()};
+  if (!(await dbPlayerAdd(me))) return;
+  localStorage.setItem('was4bi_me', JSON.stringify(me));
+  renderStudentIndividual();
+}
+function leaveGame() { localStorage.removeItem('was4bi_me'); renderStudentIndividual(); }
+async function raiseHandIndividual() {
+  const me = getMe(); if (!me) return;
+  const btn = document.getElementById('raiseBtn'), orig = btn.innerHTML, status = document.getElementById('studentStatus');
   btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
-  const status = document.getElementById('studentStatus');
-  status.classList.add('show');
-  status.innerHTML = `✅ <strong>${esc(name)}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  const entry = {id: 'p' + me.id, type:'individual', name: me.name, playerId: me.id, group: null, time: new Date().toLocaleTimeString('id-ID'), timestamp: Date.now(), status:'raised'};
+  if (!(await dbAdd(entry))) { btn.disabled = false; return; }
+  btn.classList.add('raised'); btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
+  status.classList.add('show'); status.innerHTML = `✅ <strong>${esc(me.name)}</strong>, tanganmu sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  setTimeout(() => { btn.disabled = false; btn.classList.remove('raised'); btn.innerHTML = orig; status.classList.remove('show'); }, 8000);
 }
 async function raiseHandGroup() {
   const name = document.getElementById('studentName').value.trim();
@@ -1109,7 +1135,7 @@ async function raiseHandGroup() {
   if (!name) { alert('Tulis namamu dulu ya!'); return; }
   if (!group) { alert('Pilih kelompokmu dulu ya!'); return; }
   const entry = {
-    id: Date.now(),
+    id: 'g' + GROUP_NAMES.indexOf(group),
     type: 'group',
     name: name,
     group: group,
@@ -1118,19 +1144,22 @@ async function raiseHandGroup() {
     status: 'raised'
   };
   if (!(await dbAdd(entry))) return;
-  const btn = document.querySelector('.raise-hand-btn');
+  const btn = document.querySelector('.raise-hand-btn'), orig = btn.innerHTML;
   btn.classList.add('raised');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-check"></i> Tangan Terangkat! ✨';
   const status = document.getElementById('studentStatus');
   status.classList.add('show');
   status.innerHTML = `✅ <strong>${esc(group)}</strong> (${esc(name)}), tangan kelompok sudah terangkat!<br><small>Tunggu dipanggil oleh guru ya~ 🍣</small>`;
+  setTimeout(() => { btn.disabled = false; btn.classList.remove('raised'); btn.innerHTML = orig; status.classList.remove('show'); }, 8000);
 }
 // Refresh hand list periodically
 setInterval(async () => {
-  if (currentPage === 'game' || currentPage === 'dashboard') {
-    handRaiseList = await dbLoad();
+  if (!currentGameType && document.getElementById('mainApp').style.display === 'block' && (currentPage === 'game' || currentPage === 'dashboard')) {
+    const fresh = await dbLoad();
+    if (Date.now() >= handIgnoreUntil) handRaiseList = fresh;
     renderHandList();
+    if (currentPage === 'game' && gameMode === 'individual') await syncPlayers();
   }
 }, 3000);
 // ==================== LOGIN ====================
@@ -1322,12 +1351,12 @@ function getCultureNote(key) {
 function renderHandList() {
   const list = document.getElementById('handList');
   const badge = document.getElementById('handCountBadge');
-  if (!list) return;
   const raised = handRaiseList.filter(h => h.status === 'raised' && (currentPage !== 'game' || h.type === gameMode)).sort((a,b) => a.timestamp - b.timestamp);
   if (badge) badge.textContent = raised.length;
   // Update dashboard count if visible
   const dashCount = document.getElementById('handCountDash');
   if (dashCount) dashCount.textContent = raised.length;
+  if (!list) return;
   if (raised.length === 0) {
     list.innerHTML = '<p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p>';
     return;
@@ -1342,25 +1371,26 @@ function renderHandList() {
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <div class="hand-time">${h.time}</div>
+        <div class="hand-time">${esc(h.time)}</div>
         <div class="hand-actions">
-          <button class="hand-btn call" onclick="callStudent(${h.id})"><i class="fas fa-bullhorn"></i> Panggil</button>
-          <button class="hand-btn lower" onclick="lowerHand(${h.id})"><i class="fas fa-hand-paper-slash"></i></button>
+          <button class="hand-btn call" onclick="callStudent('${esc(h.id)}')"><i class="fas fa-bullhorn"></i> Panggil</button>
+          <button class="hand-btn lower" onclick="lowerHand('${esc(h.id)}')"><i class="fas fa-hand-paper-slash"></i></button>
         </div>
       </div>
     </div>
   `).join('');
 }
 function lowerHand(id) {
-  const e = handRaiseList.find(h => h.id === id);
-  if (e) { e.status = 'lowered'; dbUpdate(id, {status:'lowered'}); renderHandList(); notify(`Tangan ${e.name} diturunkan`); }
+  const e = handRaiseList.find(h => String(h.id) === String(id));
+  if (e) { handIgnoreUntil = Date.now() + 4000; e.status = 'lowered'; dbUpdate(id, {status:'lowered'}); renderHandList(); notify(`Tangan ${e.name} diturunkan`); }
 }
 function lowerAllHands() {
+  handIgnoreUntil = Date.now() + 4000;
   handRaiseList.forEach(h => { if (h.status === 'raised') { h.status = 'lowered'; dbUpdate(h.id, {status:'lowered'}); } });
   renderHandList(); notify('Semua tangan diturunkan');
 }
 function clearHandHistory() {
-  if (confirm('Hapus semua riwayat angkat tangan?')) { handRaiseList = []; dbClear(); renderHandList(); notify('Riwayat dihapus'); }
+  if (confirm('Hapus semua riwayat angkat tangan?')) { handIgnoreUntil = Date.now() + 4000; handRaiseList = []; dbClear(); renderHandList(); notify('Riwayat dihapus'); }
 }
 // ==================== GROUP GAME ====================
 function setWsTopic(topic, btn) {
@@ -1369,10 +1399,11 @@ function setWsTopic(topic, btn) {
   btn.classList.add('active');
   startWordSearch();
 }
-let wsCurrentTeam = 0;
-function generateWordGrid(words, size) {
+let wsCurrentTeam = -1;
+function generateWordGridOnce(words, size) {
+  let allPlaced = true;
   let grid = Array.from({length:size}, () => Array(size).fill(''));
-  const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1]];
+  const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1],[1,-1],[-1,1]];
   const katakana = 'ABCDEFGHIJKLMNOPRSTUWYZ';
   [...words].sort((a,b)=>b.length-a.length).forEach(word => {
     let placed = false;
@@ -1394,6 +1425,7 @@ function generateWordGrid(words, size) {
         placed = true;
       }
     }
+    if(!placed) allPlaced = false;
   });
   for(let r = 0; r < size; r++) {
     for(let c = 0; c < size; c++) {
@@ -1402,7 +1434,12 @@ function generateWordGrid(words, size) {
       }
     }
   }
-  return grid;
+  return {grid, ok: allPlaced};
+}
+function generateWordGrid(words, size) {
+  let res;
+  for(let i = 0; i < 50; i++) { res = generateWordGridOnce(words, size); if(res.ok) break; }
+  return res.grid;
 }
 function wsStartSelect(r, c) {
   wsSelecting = true;
@@ -1437,6 +1474,11 @@ function wsEndSelect() {
   const data = WORDSEARCH_DATA[wsCurrentTopic];
   if(data && !data.words.includes(word)) { const rv=[...word].reverse().join(''); if(data.words.includes(rv)) word=rv; }
   if(data && data.words.includes(word) && !wsFoundWords.includes(word)) {
+    if(!wsScorers()[wsCurrentTeam]) {
+      notify(gameMode === 'group' ? 'Pilih dulu tim yang menemukan kata (tombol Panggil / pilih tim)' : 'Pilih dulu pemain yang menemukan kata (tombol Panggil / cari nama)', true);
+      document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
+      wsSelectedCells = []; return;
+    }
     wsFoundWords.push(word);
     wsSelectedCells.forEach(({r,c}) => {
       const cell = document.querySelector(`.ws-cell[data-r="${r}"][data-c="${c}"]`);
@@ -1446,6 +1488,7 @@ function wsEndSelect() {
     if(wordEl) wordEl.classList.add('found');
     const sc = wsScorers()[wsCurrentTeam] || wsScorers()[0];
     sc.score += 10;
+    if(gameMode === 'individual') { savePlayers(); wsCurrentTeam = -1; }
     renderWsScores();
     notify(`${sc.name} menemukan "${word}"! +10 poin`);
     if(wsFoundWords.length === data.words.length) wsFinish();
@@ -1463,13 +1506,14 @@ function updateWsSelection() {
 // ==================== GAME WORD SEARCH (INDIVIDU & KELOMPOK) ====================
 const GROUP_NAMES = ["Tim Sushi 🍣","Tim Bento 🍱","Tim Onigiri 🍙","Tim Ramen 🍜","Tim Gyoza 🥟","Tim Dango 🍡"];
 let gameMode = 'individual';
-let wsIndiv = [{name:'Pemain 1', score:0}];
+let wsIndiv = (() => { try { return JSON.parse(localStorage.getItem('was4bi_players') || '[]'); } catch(e) { return []; } })();
 let wsGroup = GROUP_NAMES.map(n => ({name:n, score:0}));
 let wsTimerId = null, wsStartTime = 0, wsFinished = false;
 const wsScorers = () => gameMode === 'group' ? wsGroup : wsIndiv;
-function setGameMode(m) { gameMode = m; wsCurrentTeam = 0; renderWordSearchGame(); }
+function setGameMode(m) { gameMode = m; wsCurrentTeam = -1; renderWordSearchGame(); }
 function renderWordSearchGame() {
   const area = document.getElementById('contentArea');
+  if (gameMode === 'individual') wsCurrentTeam = -1;
   const isG = gameMode === 'group';
   const qrUrl = window.location.href.split('?')[0].split('#')[0] + '?game=' + gameMode;
   area.innerHTML = `
@@ -1491,8 +1535,9 @@ function renderWordSearchGame() {
           <div class="qr-box" id="qrGame"></div>
           <div class="qr-info">
             <h4>📱 Scan untuk Murid</h4>
-            <p>${isG ? 'Wakil kelompok scan, tulis nama, pilih kelompok, lalu klik "Angkat Tangan".' : 'Murid scan, tulis nama, lalu klik "Angkat Tangan" saat menemukan kata.'} Tekan <b>Panggil</b> untuk menjadikannya ${isG ? 'tim' : 'pemain'} yang mendapat poin.</p>
+            <p>${isG ? 'Wakil kelompok scan, tulis nama, pilih kelompok, lalu klik "Angkat Tangan".' : 'Murid scan, tulis nama untuk bergabung (jumlah tidak dibatasi), lalu tekan "Angkat Tangan" saat menemukan kata.'} Tekan <b>Panggil</b> untuk menjadikannya ${isG ? 'tim' : 'pemain'} yang mendapat poin.</p>
             <div class="qr-url">${qrUrl}</div>
+            <p id="dbStatus" style="color:var(--gold);font-size:12px;margin-top:8px">${DB_URL ? '⏳ Mengecek koneksi Firebase…' : '⚠️ DB_URL belum diisi: angkat tangan & pendaftaran dari HP murid <b>tidak akan muncul</b> di layar ini.'}</p>
           </div>
         </div>
       </div>
@@ -1506,6 +1551,7 @@ function renderWordSearchGame() {
       </div>
       <div id="wsGameArea"></div>
     </div>`;
+  syncPlayers(); checkDb();
   setTimeout(() => {
     const q = document.getElementById('qrGame');
     if (q && typeof QRCode !== 'undefined') new QRCode(q, {text: qrUrl, width:140, height:140, colorDark:"#c0392b", colorLight:"#FFFAF0", correctLevel: QRCode.CorrectLevel.M});
@@ -1525,6 +1571,7 @@ function startWordSearch() {
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-secondary" onclick="startWordSearch()"><i class="fas fa-redo"></i> Acak Ulang</button>
           <button class="btn-secondary" onclick="resetWsScores()">Reset Skor</button>
+          ${gameMode === 'individual' ? '<button class="btn-secondary" onclick="clearWsPlayers()">Hapus Semua Pemain</button>' : ''}
         </div>
       </div>
       <div class="ws-words" id="wsWords">${data.words.map(w => `<div class="ws-word" id="wsw_${w}">${w}</div>`).join('')}</div>
@@ -1532,7 +1579,7 @@ function startWordSearch() {
         <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${size},36px)">
           ${grid.map((row,r) => row.map((cell,c) => `<div class="ws-cell" data-r="${r}" data-c="${c}" onmousedown="wsStartSelect(${r},${c})" onmouseover="wsMoveSelect(${r},${c})" onmouseup="wsEndSelect()">${cell}</div>`).join('')).join('')}
         </div>
-        <div class="ws-info"><h4>📊 Skor ${gameMode === 'group' ? 'Tim' : 'Pemain'}</h4><div id="wsScorePanel"></div></div>
+        <div class="ws-info"><h4>${gameMode === 'group' ? '📊 Skor Tim' : '🏆 Papan Skor'}</h4><div id="wsScorePanel"></div></div>
       </div>
     </div>`;
   renderWsScores();
@@ -1545,39 +1592,73 @@ function startWordSearch() {
     el.textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
   }, 1000);
 }
+function savePlayers() { try { localStorage.setItem('was4bi_players', JSON.stringify(wsIndiv)); } catch(e) {} }
+async function syncPlayers() {
+  const list = await dbPlayersLoad(); if (!list || Date.now() < playersIgnoreUntil) return;
+  let added = 0;
+  list.forEach(p => { if (!wsIndiv.some(x => x.id === p.id)) { wsIndiv.push({id:p.id, name:p.name, score:0}); added++; } });
+  if (added) { savePlayers(); if (currentPage === 'game' && gameMode === 'individual') { renderWsBoard(); updatePlayerList(); } }
+}
+async function clearWsPlayers() {
+  if (!confirm('Hapus semua pemain dan skornya?')) return;
+  playersIgnoreUntil = Date.now() + 4000;
+  wsIndiv = []; wsCurrentTeam = -1; savePlayers(); await dbPlayersClear(); wsIndiv = []; savePlayers(); renderWsScores(); notify('Semua pemain dihapus');
+}
 function renderWsScores() {
   const el = document.getElementById('wsScorePanel');
   if (!el) return;
-  const list = wsScorers(), isG = gameMode === 'group';
-  el.innerHTML = list.map((s,i) => `<div class="ws-team-score"><span style="font-size:13px">${esc(s.name)}</span><span style="font-weight:700;color:var(--gold)">${s.score}</span></div>`).join('') + `
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-      <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Poin untuk ${isG ? 'tim' : 'pemain'}:</p>
-      <div class="topic-selector">${list.map((s,i) => `<button class="topic-btn ${i===wsCurrentTeam?'active':''}" onclick="selectWsTeam(${i})">${esc(s.name)}</button>`).join('')}</div>
-      ${isG ? '' : `<div style="display:flex;gap:6px;margin-top:10px"><input type="text" id="wsNewPlayer" placeholder="Tambah pemain..." style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--cream)"><button class="btn-secondary" onclick="addWsPlayer()">+</button></div>`}
-    </div>`;
+  if (gameMode === 'group') {
+    el.innerHTML = wsGroup.map(s => `<div class="ws-team-score"><span style="font-size:13px">${esc(s.name)}</span><span style="font-weight:700;color:var(--gold)">${s.score}</span></div>`).join('') + `
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"><p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Poin untuk tim:</p>
+      <div class="topic-selector">${wsGroup.map((s,i) => `<button class="topic-btn ${i===wsCurrentTeam?'active':''}" onclick="selectWsTeam(${i})">${esc(s.name)}</button>`).join('')}</div></div>`;
+    return;
+  }
+  el.innerHTML = '<div id="wsBoard"></div><div id="wsPicker"></div>';
+  renderWsBoard(); renderWsPicker();
 }
-function selectWsTeam(i) { wsCurrentTeam = i; renderWsScores(); }
-function addWsPlayer() {
-  const inp = document.getElementById('wsNewPlayer'), n = inp.value.trim();
-  if (!n) return;
-  wsIndiv.push({name:n, score:0}); wsCurrentTeam = wsIndiv.length - 1; renderWsScores();
+function renderWsBoard() {
+  const el = document.getElementById('wsBoard'); if (!el) return;
+  const ranked = wsIndiv.filter(p => p.score > 0).sort((a,b) => b.score - a.score), medal = ['🥇','🥈','🥉'];
+  el.innerHTML = `<p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">👥 ${wsIndiv.length} pemain bergabung • 🏆 ${ranked.length} sudah dapat poin</p>
+    <div style="max-height:260px;overflow-y:auto">${ranked.length ? ranked.map((p,i) => `<div class="ws-team-score"><span style="font-size:13px">${medal[i] || (i+1) + '.'} ${esc(p.name)}</span><span style="font-weight:700;color:var(--gold)">${p.score}</span></div>`).join('') : '<p style="font-size:12px;color:var(--cream-dark)">Belum ada yang mendapat poin.</p>'}</div>`;
 }
-function resetWsScores() { wsScorers().forEach(s => s.score = 0); renderWsScores(); notify('Skor direset'); }
+function renderWsPicker() {
+  const el = document.getElementById('wsPicker'); if (!el) return;
+  const cur = wsIndiv[wsCurrentTeam];
+  el.innerHTML = `<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+    <p style="font-size:12px;margin-bottom:8px">🎯 Pemain aktif: ${cur ? `<b style="color:var(--wasabi)">${esc(cur.name)}</b>` : '<span style="color:var(--cream-dark)">belum dipilih</span>'}</p>
+    <input type="text" id="wsPick" list="wsPlayerList" placeholder="Cari / ketik nama pemain..." onchange="pickWsPlayer(this.value)" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--cream)">
+    <datalist id="wsPlayerList"></datalist>
+    <p style="font-size:11px;color:var(--cream-dark);margin-top:6px">Pilih lewat tombol "Panggil" atau cari nama. Setelah poin diberikan, pemain aktif dikosongkan otomatis.</p></div>`;
+  updatePlayerList();
+}
+function updatePlayerList() { const dl = document.getElementById('wsPlayerList'); if (dl) dl.innerHTML = wsIndiv.map(p => `<option value="${esc(p.name)}">`).join(''); }
+function pickWsPlayer(name) {
+  name = name.trim(); if (!name) return;
+  let i = wsIndiv.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+  if (i < 0) { wsIndiv.push({id:'m' + Date.now(), name, score:0}); i = wsIndiv.length - 1; savePlayers(); notify('Pemain baru ditambahkan: ' + name); }
+  wsCurrentTeam = i; renderWsPicker(); renderWsBoard();
+}
 function wsFinish() {
   wsFinished = true;
-  const s = Math.floor((Date.now() - wsStartTime) / 1000);
-  const w = wsScorers().reduce((a,b) => b.score > a.score ? b : a);
-  notify(`🏆 Selesai dalam ${Math.floor(s/60)}m ${s%60}d! Skor tertinggi: ${w.name} (${w.score} poin)`);
+  const s = Math.floor((Date.now() - wsStartTime) / 1000), r = wsScorers().filter(x => x.score > 0).sort((a,b) => b.score - a.score);
+  notify(`🏆 Selesai dalam ${Math.floor(s/60)}m ${s%60}d! ` + (r.length ? `Juara 1: ${r[0].name} (${r[0].score} poin)` : 'Belum ada poin.'));
 }
 function callStudent(id) {
-  const e = handRaiseList.find(h => h.id === id);
+  const e = handRaiseList.find(h => String(h.id) === String(id));
   if (!e) return;
   if (currentPage === 'game') {
     if (gameMode === 'group') { const i = wsGroup.findIndex(t => t.name === e.group); if (i >= 0) selectWsTeam(i); }
-    else { let i = wsIndiv.findIndex(p => p.name === e.name); if (i < 0) { wsIndiv.push({name:e.name, score:0}); i = wsIndiv.length - 1; } selectWsTeam(i); }
+    else {
+      let i = wsIndiv.findIndex(p => (e.playerId && p.id === e.playerId) || p.name === e.name);
+      if (i < 0) { wsIndiv.push({id: e.playerId || 'm' + Date.now(), name: e.name, score:0}); i = wsIndiv.length - 1; savePlayers(); }
+      wsCurrentTeam = i; renderWsPicker(); renderWsBoard();
+    }
   }
   notify(`📢 Memanggil ${e.name}${e.group ? ' (' + e.group + ')' : ''}!`);
 }
+function selectWsTeam(i) { wsCurrentTeam = i; renderWsScores(); }
+function resetWsScores() { wsScorers().forEach(s => s.score = 0); savePlayers(); renderWsScores(); notify('Skor direset'); }
 // ==================== ADMIN PANEL ====================
 function renderAdmin() {
   document.getElementById('contentArea').innerHTML = `
@@ -1625,7 +1706,7 @@ function notify(msg, isError = false) {
   n.textContent = msg;
   n.classList.toggle('error', isError);
   n.classList.add('show');
-  setTimeout(() => n.classList.remove('show'), 3000);
+  clearTimeout(notify.t); notify.t = setTimeout(() => n.classList.remove('show'), 3000);
 }
 document.getElementById('quizModal').addEventListener('click', function(e) {
   if(e.target === this) this.classList.remove('show');
