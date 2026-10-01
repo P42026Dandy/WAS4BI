@@ -630,8 +630,7 @@ body { font-family:'Noto Sans JP',sans-serif; background:var(--nori); color:var(
       </div>
       <div class="nav-section">
         <div class="nav-section-title">🎮 Permainan</div>
-        <div class="nav-item" onclick="showPage('gameIndividual')"><i class="fas fa-gamepad"></i> Game Individu</div>
-        <div class="nav-item" onclick="showPage('gameGroup')"><i class="fas fa-users"></i> Game Kelompok</div>
+        <div class="nav-item" onclick="showPage('game')"><i class="fas fa-th"></i> Game Word Search</div>
       </div>
       <div class="nav-section">
         <div class="nav-section-title">⚙️ Admin</div>
@@ -982,17 +981,6 @@ let gameQuestions = {
 };
 try { const sq = JSON.parse(localStorage.getItem('was4bi_questions') || 'null'); if (sq) gameQuestions = sq; } catch(e) {}
 function saveQuestions() { try { localStorage.setItem('was4bi_questions', JSON.stringify(gameQuestions)); } catch(e) {} }
-function exportQuestions() {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(gameQuestions, null, 2)], {type:'application/json'}));
-  a.download = 'soal-was4bi.json'; a.click();
-}
-function importQuestions(inp) {
-  const f = inp.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = () => { try { gameQuestions = JSON.parse(r.result); saveQuestions(); notify('✅ Soal berhasil diimpor'); showAdminTab('questions'); } catch(e) { notify('File JSON tidak valid', true); } };
-  r.readAsText(f);
-}
 // WORD SEARCH DATA
 const WORDSEARCH_DATA = {
   tabemono: {words:["GOHAN","MIZU","NIKU","SAKANA","PAN","CHA","SUSHI","UDON"],title:"Makanan & Minuman"},
@@ -1004,6 +992,7 @@ const WORDSEARCH_DATA = {
   shourai: {words:["YUME","SENSEI","ISHA","DAIGAKU","HATARAKU","NARU","BENKYOU","SHOURAI"],title:"Masa Depan"},
   kenkou: {words:["ATAMA","ONAKA","NODO","NETSU","KAZE","KUSURI","GENKI","ITAI"],title:"Kesehatan"}
 };
+try { const sw = JSON.parse(localStorage.getItem('was4bi_words') || 'null'); if (sw) for (const k in sw) if (WORDSEARCH_DATA[k]) WORDSEARCH_DATA[k].words = sw[k]; } catch(e) {}
 // ==================== STATE ====================
 let currentPage = 'dashboard';
 let currentMaterial = null;
@@ -1139,7 +1128,7 @@ async function raiseHandGroup() {
 }
 // Refresh hand list periodically
 setInterval(async () => {
-  if (currentPage === 'gameIndividual' || currentPage === 'gameGroup' || currentPage === 'dashboard') {
+  if (currentPage === 'game' || currentPage === 'dashboard') {
     handRaiseList = await dbLoad();
     renderHandList();
   }
@@ -1171,12 +1160,9 @@ function showPage(page) {
   if(page === 'dashboard') {
     document.getElementById('pageTitle').innerHTML = '🏮 Dashboard';
     renderDashboard();
-  } else if(page === 'gameIndividual') {
-    document.getElementById('pageTitle').innerHTML = '🎮 Game Individu';
-    renderIndividualGame();
-  } else if(page === 'gameGroup') {
-    document.getElementById('pageTitle').innerHTML = '👥 Game Kelompok';
-    renderGroupGame();
+  } else if(page === 'game') {
+    document.getElementById('pageTitle').innerHTML = '🔍 Game Word Search';
+    renderWordSearchGame();
   } else if(page === 'admin') {
     document.getElementById('pageTitle').innerHTML = '⚙️ Kelola Konten';
     renderAdmin();
@@ -1205,7 +1191,7 @@ function renderDashboard() {
   const area = document.getElementById('contentArea');
   const ganjil = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'ganjil');
   const genap = Object.entries(MATERIALS).filter(([k,v]) => v.semester === 'genap');
-  const totalQ = Object.values(gameQuestions).reduce((a,b) => a+b.length, 0);
+  const totalQ = Object.values(WORDSEARCH_DATA).reduce((a,b) => a+b.words.length, 0);
   area.innerHTML = `
     <div class="fade-in">
       <div class="dashboard-hero">
@@ -1223,12 +1209,12 @@ function renderDashboard() {
         <div class="stat-card">
           <div class="stat-icon" style="background:rgba(212,160,23,0.2);color:var(--gold)"><i class="fas fa-pepper-hot"></i></div>
           <h3>${totalQ}</h3>
-          <p>Soal (Biji Wasabi)</p>
+          <p>Kata Tersembunyi</p>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:rgba(127,176,105,0.2);color:var(--wasabi)"><i class="fas fa-gamepad"></i></div>
           <h3>2</h3>
-          <p>Jenis Permainan</p>
+          <p>Mode Word Search</p>
         </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:rgba(255,182,193,0.2);color:var(--ginger)"><i class="fas fa-hand-paper"></i></div>
@@ -1245,7 +1231,7 @@ function renderDashboard() {
             <h3>${v.title}</h3>
             <div class="card-jp">${v.jp}</div>
             <p>${v.description}</p>
-            <span class="card-tag">${gameQuestions[k]?.length || 0} soal</span>
+            <span class="card-tag">${WORDSEARCH_DATA[k]?.words.length || 0} kata</span>
           </div>
         `).join('')}
       </div>
@@ -1258,7 +1244,7 @@ function renderDashboard() {
             <h3>${v.title}</h3>
             <div class="card-jp">${v.jp}</div>
             <p>${v.description}</p>
-            <span class="card-tag">${gameQuestions[k]?.length || 0} soal</span>
+            <span class="card-tag">${WORDSEARCH_DATA[k]?.words.length || 0} kata</span>
           </div>
         `).join('')}
       </div>
@@ -1332,206 +1318,12 @@ function getCultureNote(key) {
   };
   return notes[key] || '';
 }
-// ==================== INDIVIDUAL GAME ====================
-function renderIndividualGame() {
-  const area = document.getElementById('contentArea');
-  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set();
-  // Generate QR URL for student
-  const baseUrl = window.location.href.split('?')[0].split('#')[0];
-  const qrUrl = baseUrl + '?game=individual';
-  area.innerHTML = `
-    <div class="fade-in">
-      <div class="section-block" style="text-align:center;margin-bottom:20px">
-        <h2><i class="fas fa-gamepad"></i> Game Individu - Kotak Misteri Wasabi 🌶️</h2>
-        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Pilih kotak secara acak. Semakin pedas wasabi, semakin tinggi poinnya!</p>
-        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
-          <span class="spice-indicator" style="background:rgba(129,199,132,0.2);color:var(--mild)">🌱 Mild = 5 poin</span>
-          <span class="spice-indicator" style="background:rgba(255,213,79,0.2);color:var(--medium)">🌶️ Medium = 10 poin</span>
-          <span class="spice-indicator" style="background:rgba(255,138,101,0.2);color:var(--hot)">🔥 Hot = 15 poin</span>
-          <span class="spice-indicator" style="background:rgba(229,57,53,0.2);color:var(--extra-hot)">💥 Extra Hot = 25 poin</span>
-        </div>
-      </div>
-      <div class="hand-raise-section">
-        <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Individu)</h3>
-        <div class="qr-container">
-          <div class="qr-box" id="qrIndividual"></div>
-          <div class="qr-info">
-            <h4>📱 Scan untuk Murid</h4>
-            <p>Murid scan QR ini, tulis nama, lalu klik "Angkat Tangan". Daftar tangan terangkat muncul di bawah.</p>
-            <div class="qr-url">${qrUrl}</div>
-          </div>
-        </div>
-      </div>
-      <div class="hand-raise-section">
-        <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat <span class="hand-count-badge" id="handCountBadge">0</span></h3>
-        <div class="hand-list" id="handList">
-          <p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p>
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn-secondary" onclick="lowerAllHands()"><i class="fas fa-hand-paper-slash"></i> Turunkan Semua</button>
-          <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
-        </div>
-      </div>
-      <div class="section-block">
-        <h2 style="border:none;padding:0;margin-bottom:12px">🎯 Pilih Filter Soal</h2>
-        <div class="topic-selector" id="gameTopicSelector">
-          ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="setGameTopic('${k}',this)">${v.icon} ${v.title}</button>
-          `).join('')}
-          <button class="topic-btn active" onclick="setGameTopic('all',this)">🎲 Semua</button>
-        </div>
-        <div class="difficulty-selector" id="gameSpiceSelector">
-          <button class="diff-btn mild" onclick="setGameSpice('mild',this)">🌱 Mild</button>
-          <button class="diff-btn medium" onclick="setGameSpice('medium',this)">🌶️ Medium</button>
-          <button class="diff-btn hot" onclick="setGameSpice('hot',this)">🔥 Hot</button>
-          <button class="diff-btn extra" onclick="setGameSpice('extra',this)">💥 Extra Hot</button>
-          <button class="diff-btn active" style="color:var(--cream);background:var(--sushi-red);border-color:var(--sushi-red)" onclick="setGameSpice('all',this)">🎲 Semua Level</button>
-        </div>
-      </div>
-      <div class="game-score">
-        <h3>Skor Anda</h3>
-        <div class="score-num" id="gameScoreDisplay">0 / 0</div>
-      </div>
-      <div class="game-board" id="gameBoard">
-        ${Array.from({length:16}, (_,i) => `
-          <div class="game-box" id="box${i}" onclick="openBox(${i})">
-            <span class="box-num">${i+1}</span>
-            <span>🍣</span>
-          </div>
-        `).join('')}
-      </div>
-      <div style="text-align:center;margin-top:14px">
-        <button class="btn-secondary" onclick="resetGame()"><i class="fas fa-redo"></i> Reset Game</button>
-      </div>
-    </div>
-  `;
-  // Generate QR
-  setTimeout(() => {
-    const qrContainer = document.getElementById('qrIndividual');
-    if (qrContainer && typeof QRCode !== 'undefined') {
-      new QRCode(qrContainer, {
-        text: qrUrl,
-        width: 140,
-        height: 140,
-        colorDark: "#c0392b",
-        colorLight: "#FFFAF0",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-    renderHandList();
-  }, 100);
-}
-function setGameTopic(topic, btn) {
-  currentGameTopic = topic;
-  document.querySelectorAll('#gameTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  resetGame();
-}
-function setGameSpice(spice, btn) {
-  currentGameSpice = spice;
-  document.querySelectorAll('#gameSpiceSelector .diff-btn').forEach(b => {
-    b.classList.remove('active');
-    b.style.background = 'transparent';
-  });
-  btn.classList.add('active');
-  resetGame();
-}
-function getGameQuestion() {
-  let pool = [];
-  const topics = currentGameTopic === 'all' ? Object.keys(gameQuestions) : [currentGameTopic];
-  topics.forEach(t => {
-    const qs = gameQuestions[t] || [];
-    qs.forEach(q => {
-      if (currentGameSpice === 'all' || q.spice === currentGameSpice) {
-        pool.push({ ...q, topic: MATERIALS[t].title, topicKey: t });
-      }
-    });
-  });
-  if (pool.length === 0) return null;
-  let fresh = pool.filter(q => !usedQ.has(q.q));
-  if (fresh.length === 0) { usedQ.clear(); fresh = pool; }
-  const pick = fresh[Math.floor(Math.random() * fresh.length)];
-  usedQ.add(pick.q);
-  return pick;
-}
-function openBox(idx) {
-  if(openedBoxes.has(idx)) return;
-  const q = getGameQuestion();
-  if(!q) { notify('Tidak ada soal untuk filter ini!', true); return; }
-  const modal = document.getElementById('quizModal');
-  const content = document.getElementById('quizContent');
-  const spiceInfo = SPICE_LEVELS[q.spice];
-  content.innerHTML = `
-    <h3>🍣 Soal #${gameTotal + 1}</h3>
-    <div class="q-meta">
-      <span class="q-tag topic">${q.topic}</span>
-      <span class="q-tag spice spice-${q.spice}">${spiceInfo.label}</span>
-      <span class="q-tag" style="background:rgba(212,160,23,0.2);color:var(--gold)">+${spiceInfo.points} poin</span>
-    </div>
-    <div class="question">${q.q}</div>
-    <div class="quiz-options">
-      ${q.options.map((o,i) => `
-        <div class="quiz-option" onclick="selectOption(this,${i})" data-idx="${i}">${String.fromCharCode(65+i)}. ${o}</div>
-      `).join('')}
-    </div>
-    <button class="quiz-submit" onclick="submitAnswer(${q.answer},${idx},${spiceInfo.points})">Jawab</button>
-    <div class="quiz-result" id="quizResult"></div>
-  `;
-  modal.classList.add('show');
-}
-function selectOption(el, idx) {
-  document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function submitAnswer(correct, boxIdx, points) {
-  const selected = document.querySelector('.quiz-option.selected');
-  if(!selected) { notify('Pilih jawaban terlebih dahulu!', true); return; }
-  const selIdx = parseInt(selected.dataset.idx);
-  const result = document.getElementById('quizResult');
-  const box = document.getElementById('box' + boxIdx);
-  openedBoxes.add(boxIdx);
-  gameTotal++;
-  document.querySelectorAll('.quiz-option').forEach(o => {
-    o.style.pointerEvents = 'none';
-    if(parseInt(o.dataset.idx) === correct) o.classList.add('correct-answer');
-  });
-  if(selIdx === correct) {
-    gameCorrect++;
-    gameScore += points;
-    box.classList.add('opened','correct');
-    box.innerHTML = `<span class="box-num">${boxIdx+1}</span><span>✅</span>`;
-    result.className = 'quiz-result show correct';
-    result.innerHTML = `🎉 Benar! +${points} poin`;
-  } else {
-    selected.classList.add('wrong-answer');
-    box.classList.add('opened','wrong');
-    box.innerHTML = `<span class="box-num">${boxIdx+1}</span><span>❌</span>`;
-    result.className = 'quiz-result show wrong';
-    result.innerHTML = '❌ Salah! Jawaban yang benar ditandai hijau.';
-  }
-  document.getElementById('gameScoreDisplay').textContent = `${gameScore} poin (${gameCorrect}/${gameTotal} benar)`;
-  result.innerHTML += '<br><button class="quiz-submit" style="margin-top:10px" onclick="document.getElementById(\'quizModal\').classList.remove(\'show\')">Lanjut ▶</button>';
-}
-function resetGame() {
-  gameScore = 0; gameCorrect = 0; gameTotal = 0; openedBoxes = new Set(); usedQ.clear();
-  const board = document.getElementById('gameBoard');
-  if(board) {
-    board.innerHTML = Array.from({length:16}, (_,i) => `
-      <div class="game-box" id="box${i}" onclick="openBox(${i})">
-        <span class="box-num">${i+1}</span>
-        <span>🍣</span>
-      </div>
-    `).join('');
-  }
-  const score = document.getElementById('gameScoreDisplay');
-  if(score) score.textContent = '0 / 0';
-}
 // ==================== HAND RAISE MANAGEMENT ====================
 function renderHandList() {
   const list = document.getElementById('handList');
   const badge = document.getElementById('handCountBadge');
   if (!list) return;
-  const raised = handRaiseList.filter(h => h.status === 'raised').sort((a,b) => a.timestamp - b.timestamp);
+  const raised = handRaiseList.filter(h => h.status === 'raised' && (currentPage !== 'game' || h.type === gameMode)).sort((a,b) => a.timestamp - b.timestamp);
   if (badge) badge.textContent = raised.length;
   // Update dashboard count if visible
   const dashCount = document.getElementById('handCountDash');
@@ -1559,12 +1351,6 @@ function renderHandList() {
     </div>
   `).join('');
 }
-function callStudent(id) {
-  const entry = handRaiseList.find(h => h.id === id);
-  if (entry) {
-    notify(`📢 Memanggil ${entry.name}${entry.group ? ' (' + entry.group + ')' : ''}!`);
-  }
-}
 function lowerHand(id) {
   const e = handRaiseList.find(h => h.id === id);
   if (e) { e.status = 'lowered'; dbUpdate(id, {status:'lowered'}); renderHandList(); notify(`Tangan ${e.name} diturunkan`); }
@@ -1577,131 +1363,13 @@ function clearHandHistory() {
   if (confirm('Hapus semua riwayat angkat tangan?')) { handRaiseList = []; dbClear(); renderHandList(); notify('Riwayat dihapus'); }
 }
 // ==================== GROUP GAME ====================
-function renderGroupGame() {
-  const area = document.getElementById('contentArea');
-  wsFoundWords = [];
-  wsTeams = [
-    {name:"Tim Sushi 🍣",score:0},
-    {name:"Tim Bento 🍱",score:0},
-    {name:"Tim Onigiri 🍙",score:0},
-    {name:"Tim Ramen 🍜",score:0},
-    {name:"Tim Gyoza 🥟",score:0},
-    {name:"Tim Dango 🍡",score:0}
-  ];
-  const baseUrl = window.location.href.split('?')[0].split('#')[0];
-  const qrUrl = baseUrl + '?game=group';
-  area.innerHTML = `
-    <div class="fade-in">
-      <div class="section-block" style="margin-bottom:20px">
-        <h2><i class="fas fa-users"></i> Game Kelompok - Word Search 🍣</h2>
-        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Cari kata-kata tersembunyi di dalam kotak! Setiap tim bergiliran menemukan kata.</p>
-        <div class="topic-selector" id="wsTopicSelector">
-          ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn ${k===wsCurrentTopic?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>
-          `).join('')}
-        </div>
-      </div>
-      <div class="hand-raise-section">
-        <h3><i class="fas fa-qrcode"></i> QR Code Angkat Tangan (Kelompok)</h3>
-        <div class="qr-container">
-          <div class="qr-box" id="qrGroup"></div>
-          <div class="qr-info">
-            <h4>📱 Scan untuk Kelompok</h4>
-            <p>Kelompok scan QR ini, tulis nama wakil, pilih kelompok, lalu klik "Angkat Tangan".</p>
-            <div class="qr-url">${qrUrl}</div>
-          </div>
-        </div>
-      </div>
-      <div class="hand-raise-section">
-        <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat (Kelompok) <span class="hand-count-badge" id="handCountBadge">0</span></h3>
-        <div class="hand-list" id="handList">
-          <p style="color:var(--cream-dark);font-size:12px">Belum ada kelompok yang mengangkat tangan.</p>
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn-secondary" onclick="lowerAllHands()"><i class="fas fa-hand-paper-slash"></i> Turunkan Semua</button>
-          <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
-        </div>
-      </div>
-      <div id="wsGameArea"></div>
-    </div>
-  `;
-  setTimeout(() => {
-    const qrContainer = document.getElementById('qrGroup');
-    if (qrContainer && typeof QRCode !== 'undefined') {
-      new QRCode(qrContainer, {
-        text: qrUrl,
-        width: 140,
-        height: 140,
-        colorDark: "#c0392b",
-        colorLight: "#FFFAF0",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-    renderHandList();
-    startWordSearch();
-  }, 100);
-}
 function setWsTopic(topic, btn) {
   wsCurrentTopic = topic;
   document.querySelectorAll('#wsTopicSelector .topic-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   startWordSearch();
 }
-function startWordSearch() {
-  const data = WORDSEARCH_DATA[wsCurrentTopic];
-  if(!data) return;
-  wsFoundWords = [];
-  const gridSize = 10;
-  const grid = generateWordGrid(data.words, gridSize);
-  const wsArea = document.getElementById('wsGameArea');
-  wsArea.innerHTML = `
-    <div class="section-block">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-        <div>
-          <h3 style="font-size:16px;margin-bottom:4px">${data.title}</h3>
-          <p style="color:var(--cream-dark);font-size:12px">Temukan ${data.words.length} kata tersembunyi!</p>
-        </div>
-        <button class="btn-secondary" onclick="startWordSearch()"><i class="fas fa-redo"></i> Acak Ulang</button>
-      </div>
-      <div class="ws-words" id="wsWords">
-        ${data.words.map(w => `<div class="ws-word" id="wsw_${w}">${w}</div>`).join('')}
-      </div>
-      <div class="ws-grid-wrapper">
-        <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${gridSize},36px)">
-          ${grid.map((row,r) => row.map((cell,c) => `
-            <div class="ws-cell" data-r="${r}" data-c="${c}" 
-                 onmousedown="wsStartSelect(${r},${c})" 
-                 onmouseover="wsMoveSelect(${r},${c})" 
-                 onmouseup="wsEndSelect()">${cell}</div>
-          `).join('')).join('')}
-        </div>
-        <div class="ws-info">
-          <h4>📊 Skor Tim</h4>
-          ${wsTeams.map((t,i) => `
-            <div class="ws-team-score">
-              <span style="font-size:13px">${t.name}</span>
-              <span style="font-weight:700;color:var(--gold)" id="teamScore${i}">${t.score}</span>
-            </div>
-          `).join('')}
-          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-            <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Pilih tim yang menemukan kata:</p>
-            <div class="topic-selector" id="wsTeamSelector">
-              ${wsTeams.map((t,i) => `
-                <button class="topic-btn ${i===wsCurrentTeam?'active':''}" onclick="selectWsTeam(${i},this)">${t.name}</button>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
 let wsCurrentTeam = 0;
-function selectWsTeam(idx, btn) {
-  wsCurrentTeam = idx;
-  document.querySelectorAll('#wsTeamSelector .topic-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
 function generateWordGrid(words, size) {
   let grid = Array.from({length:size}, () => Array(size).fill(''));
   const directions = [[0,1],[1,0],[1,1],[0,-1],[-1,0],[-1,-1]];
@@ -1776,16 +1444,11 @@ function wsEndSelect() {
     });
     const wordEl = document.getElementById('wsw_' + word);
     if(wordEl) wordEl.classList.add('found');
-    wsTeams[wsCurrentTeam].score += 10;
-    const scoreEl = document.getElementById('teamScore' + wsCurrentTeam);
-    if(scoreEl) scoreEl.textContent = wsTeams[wsCurrentTeam].score;
-    notify(`${wsTeams[wsCurrentTeam].name} menemukan "${word}"! +10 poin`);
-    if(wsFoundWords.length === data.words.length) {
-      setTimeout(() => {
-        const winner = wsTeams.reduce((a,b) => a.score > b.score ? a : b);
-        notify(`🏆 Permainan selesai! Pemenang: ${winner.name} dengan ${winner.score} poin!`);
-      }, 500);
-    }
+    const sc = wsScorers()[wsCurrentTeam] || wsScorers()[0];
+    sc.score += 10;
+    renderWsScores();
+    notify(`${sc.name} menemukan "${word}"! +10 poin`);
+    if(wsFoundWords.length === data.words.length) wsFinish();
   }
   document.querySelectorAll('.ws-cell.selecting').forEach(c => c.classList.remove('selecting'));
   wsSelectedCells = [];
@@ -1797,166 +1460,164 @@ function updateWsSelection() {
     if(cell && !cell.classList.contains('found-cell')) cell.classList.add('selecting');
   });
 }
-// ==================== ADMIN PANEL ====================
-function renderAdmin() {
+// ==================== GAME WORD SEARCH (INDIVIDU & KELOMPOK) ====================
+const GROUP_NAMES = ["Tim Sushi 🍣","Tim Bento 🍱","Tim Onigiri 🍙","Tim Ramen 🍜","Tim Gyoza 🥟","Tim Dango 🍡"];
+let gameMode = 'individual';
+let wsIndiv = [{name:'Pemain 1', score:0}];
+let wsGroup = GROUP_NAMES.map(n => ({name:n, score:0}));
+let wsTimerId = null, wsStartTime = 0, wsFinished = false;
+const wsScorers = () => gameMode === 'group' ? wsGroup : wsIndiv;
+function setGameMode(m) { gameMode = m; wsCurrentTeam = 0; renderWordSearchGame(); }
+function renderWordSearchGame() {
   const area = document.getElementById('contentArea');
+  const isG = gameMode === 'group';
+  const qrUrl = window.location.href.split('?')[0].split('#')[0] + '?game=' + gameMode;
   area.innerHTML = `
     <div class="fade-in">
+      <div class="section-block" style="margin-bottom:20px">
+        <h2><i class="fas fa-th"></i> Game Word Search 🍣</h2>
+        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:12px">Temukan kata-kata tersembunyi (horizontal, vertikal, diagonal, bisa terbalik). Setiap kata benar = +10 poin.</p>
+        <div class="topic-selector" style="margin-bottom:10px">
+          <button class="topic-btn ${!isG ? 'active' : ''}" onclick="setGameMode('individual')">🙋 Mode Individu</button>
+          <button class="topic-btn ${isG ? 'active' : ''}" onclick="setGameMode('group')">👥 Mode Kelompok</button>
+        </div>
+        <div class="topic-selector" id="wsTopicSelector">
+          ${Object.entries(MATERIALS).map(([k,v]) => `<button class="topic-btn ${k===wsCurrentTopic?'active':''}" onclick="setWsTopic('${k}',this)">${v.icon} ${v.title}</button>`).join('')}
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-qrcode"></i> QR Angkat Tangan (${isG ? 'Kelompok' : 'Individu'})</h3>
+        <div class="qr-container">
+          <div class="qr-box" id="qrGame"></div>
+          <div class="qr-info">
+            <h4>📱 Scan untuk Murid</h4>
+            <p>${isG ? 'Wakil kelompok scan, tulis nama, pilih kelompok, lalu klik "Angkat Tangan".' : 'Murid scan, tulis nama, lalu klik "Angkat Tangan" saat menemukan kata.'} Tekan <b>Panggil</b> untuk menjadikannya ${isG ? 'tim' : 'pemain'} yang mendapat poin.</p>
+            <div class="qr-url">${qrUrl}</div>
+          </div>
+        </div>
+      </div>
+      <div class="hand-raise-section">
+        <h3><i class="fas fa-hand-paper"></i> Tangan Terangkat <span class="hand-count-badge" id="handCountBadge">0</span></h3>
+        <div class="hand-list" id="handList"><p style="color:var(--cream-dark);font-size:12px">Belum ada yang mengangkat tangan.</p></div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn-secondary" onclick="lowerAllHands()"><i class="fas fa-hand-paper-slash"></i> Turunkan Semua</button>
+          <button class="btn-secondary" onclick="clearHandHistory()"><i class="fas fa-trash"></i> Hapus Riwayat</button>
+        </div>
+      </div>
+      <div id="wsGameArea"></div>
+    </div>`;
+  setTimeout(() => {
+    const q = document.getElementById('qrGame');
+    if (q && typeof QRCode !== 'undefined') new QRCode(q, {text: qrUrl, width:140, height:140, colorDark:"#c0392b", colorLight:"#FFFAF0", correctLevel: QRCode.CorrectLevel.M});
+    renderHandList(); startWordSearch();
+  }, 100);
+}
+function startWordSearch() {
+  const data = WORDSEARCH_DATA[wsCurrentTopic];
+  if (!data) return;
+  wsFoundWords = []; wsFinished = false;
+  const size = 10, grid = generateWordGrid(data.words, size);
+  document.getElementById('wsGameArea').innerHTML = `
+    <div class="section-block">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div><h3 style="font-size:16px;margin-bottom:4px">${data.title}</h3>
+          <p style="color:var(--cream-dark);font-size:12px">Temukan ${data.words.length} kata • ⏱ <span id="wsTimer">00:00</span></p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="startWordSearch()"><i class="fas fa-redo"></i> Acak Ulang</button>
+          <button class="btn-secondary" onclick="resetWsScores()">Reset Skor</button>
+        </div>
+      </div>
+      <div class="ws-words" id="wsWords">${data.words.map(w => `<div class="ws-word" id="wsw_${w}">${w}</div>`).join('')}</div>
+      <div class="ws-grid-wrapper">
+        <div class="ws-grid" id="wsGrid" style="grid-template-columns:repeat(${size},36px)">
+          ${grid.map((row,r) => row.map((cell,c) => `<div class="ws-cell" data-r="${r}" data-c="${c}" onmousedown="wsStartSelect(${r},${c})" onmouseover="wsMoveSelect(${r},${c})" onmouseup="wsEndSelect()">${cell}</div>`).join('')).join('')}
+        </div>
+        <div class="ws-info"><h4>📊 Skor ${gameMode === 'group' ? 'Tim' : 'Pemain'}</h4><div id="wsScorePanel"></div></div>
+      </div>
+    </div>`;
+  renderWsScores();
+  clearInterval(wsTimerId); wsStartTime = Date.now();
+  wsTimerId = setInterval(() => {
+    const el = document.getElementById('wsTimer');
+    if (!el) { clearInterval(wsTimerId); return; }
+    if (wsFinished) return;
+    const s = Math.floor((Date.now() - wsStartTime) / 1000);
+    el.textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+  }, 1000);
+}
+function renderWsScores() {
+  const el = document.getElementById('wsScorePanel');
+  if (!el) return;
+  const list = wsScorers(), isG = gameMode === 'group';
+  el.innerHTML = list.map((s,i) => `<div class="ws-team-score"><span style="font-size:13px">${esc(s.name)}</span><span style="font-weight:700;color:var(--gold)">${s.score}</span></div>`).join('') + `
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <p style="font-size:11px;color:var(--cream-dark);margin-bottom:8px">Poin untuk ${isG ? 'tim' : 'pemain'}:</p>
+      <div class="topic-selector">${list.map((s,i) => `<button class="topic-btn ${i===wsCurrentTeam?'active':''}" onclick="selectWsTeam(${i})">${esc(s.name)}</button>`).join('')}</div>
+      ${isG ? '' : `<div style="display:flex;gap:6px;margin-top:10px"><input type="text" id="wsNewPlayer" placeholder="Tambah pemain..." style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--cream)"><button class="btn-secondary" onclick="addWsPlayer()">+</button></div>`}
+    </div>`;
+}
+function selectWsTeam(i) { wsCurrentTeam = i; renderWsScores(); }
+function addWsPlayer() {
+  const inp = document.getElementById('wsNewPlayer'), n = inp.value.trim();
+  if (!n) return;
+  wsIndiv.push({name:n, score:0}); wsCurrentTeam = wsIndiv.length - 1; renderWsScores();
+}
+function resetWsScores() { wsScorers().forEach(s => s.score = 0); renderWsScores(); notify('Skor direset'); }
+function wsFinish() {
+  wsFinished = true;
+  const s = Math.floor((Date.now() - wsStartTime) / 1000);
+  const w = wsScorers().reduce((a,b) => b.score > a.score ? b : a);
+  notify(`🏆 Selesai dalam ${Math.floor(s/60)}m ${s%60}d! Skor tertinggi: ${w.name} (${w.score} poin)`);
+}
+function callStudent(id) {
+  const e = handRaiseList.find(h => h.id === id);
+  if (!e) return;
+  if (currentPage === 'game') {
+    if (gameMode === 'group') { const i = wsGroup.findIndex(t => t.name === e.group); if (i >= 0) selectWsTeam(i); }
+    else { let i = wsIndiv.findIndex(p => p.name === e.name); if (i < 0) { wsIndiv.push({name:e.name, score:0}); i = wsIndiv.length - 1; } selectWsTeam(i); }
+  }
+  notify(`📢 Memanggil ${e.name}${e.group ? ' (' + e.group + ')' : ''}!`);
+}
+// ==================== ADMIN PANEL ====================
+function renderAdmin() {
+  document.getElementById('contentArea').innerHTML = `
+    <div class="fade-in">
       <div class="admin-tabs">
-        <button class="admin-tab active" onclick="showAdminTab('questions',this)">📝 Kelola Soal</button>
-        <button class="admin-tab" onclick="showAdminTab('addQuestion',this)">➕ Tambah Soal</button>
+        <button class="admin-tab active" onclick="showAdminTab('words',this)">🔤 Kelola Kata</button>
         <button class="admin-tab" onclick="showAdminTab('editMaterial',this)">📚 Edit Materi</button>
       </div>
       <div id="adminContent"></div>
-    </div>
-  `;
-  showAdminTab('questions');
+    </div>`;
+  showAdminTab('words');
 }
 function showAdminTab(tab, btn) {
-  if(btn) {
-    document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  const content = document.getElementById('adminContent');
-  if(tab === 'questions') {
-    content.innerHTML = `
-      <div class="admin-form">
-        <h3>📝 Daftar Soal per Sub-Tema (dengan Tingkat Kepedasan)</h3>
-        <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-secondary" onclick="exportQuestions()">⬇️ Ekspor Soal (JSON)</button><label class="btn-secondary" style="cursor:pointer">⬆️ Impor Soal<input type="file" accept=".json" hidden onchange="importQuestions(this)"></label></div>
-        <div class="topic-selector" style="margin-bottom:14px">
-          ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showQuestionsFor('${k}',this)">${v.icon} ${v.title} (${gameQuestions[k]?.length || 0})</button>
-          `).join('')}
-        </div>
-        <div id="questionListArea">
-          <p style="color:var(--cream-dark);font-size:13px">Pilih sub-tema untuk melihat daftar soal.</p>
-        </div>
-      </div>
-    `;
-  } else if(tab === 'addQuestion') {
-    content.innerHTML = `
-      <div class="admin-form">
-        <h3>➕ Tambah Soal Baru (Pilih Tingkat Kepedasan)</h3>
-        <div class="form-group">
-          <label>Sub-Tema</label>
-          <select id="newQTopic">
-            ${Object.entries(MATERIALS).map(([k,v]) => `<option value="${k}">${v.icon} ${v.title}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tingkat Kepedasan (Wasabi Level)</label>
-          <select id="newQSpice">
-            <option value="mild">🌱 Mild (Mudah) — 5 poin</option>
-            <option value="medium" selected>🌶️ Medium (Sedang) — 10 poin</option>
-            <option value="hot">🔥 Hot (Sulit) — 15 poin</option>
-            <option value="extra">💥 Extra Hot (Sangat Sulit) — 25 poin</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Pertanyaan</label>
-          <textarea id="newQText" placeholder="Tulis pertanyaan di sini..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>Pilihan A</label>
-          <input type="text" id="newQA" placeholder="Pilihan A">
-        </div>
-        <div class="form-group">
-          <label>Pilihan B</label>
-          <input type="text" id="newQB" placeholder="Pilihan B">
-        </div>
-        <div class="form-group">
-          <label>Pilihan C</label>
-          <input type="text" id="newQC" placeholder="Pilihan C">
-        </div>
-        <div class="form-group">
-          <label>Pilihan D</label>
-          <input type="text" id="newQD" placeholder="Pilihan D">
-        </div>
-        <div class="form-group">
-          <label>Jawaban Benar</label>
-          <select id="newQAnswer">
-            <option value="0">A</option>
-            <option value="1">B</option>
-            <option value="2">C</option>
-            <option value="3">D</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="addQuestion()"><i class="fas fa-plus"></i> Tambahkan Soal</button>
-      </div>
-    `;
-  } else if(tab === 'editMaterial') {
-    content.innerHTML = `
-      <div class="admin-form">
-        <h3>📚 Edit Materi</h3>
-        <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Aktifkan "Mode Edit" di pojok kanan atas, lalu pilih sub-tema yang ingin diedit:</p>
-        <div class="topic-selector">
-          ${Object.entries(MATERIALS).map(([k,v]) => `
-            <button class="topic-btn" onclick="showMaterial('${k}');if(!editMode)toggleEditMode()">${v.icon} ${v.title}</button>
-          `).join('')}
-        </div>
-        <div style="margin-top:16px;padding:14px;background:rgba(0,0,0,0.3);border-radius:10px;border-left:3px solid var(--wasabi)">
-          <p style="font-size:12px;color:var(--cream-dark)"><i class="fas fa-info-circle" style="color:var(--wasabi)"></i> <strong>Tips:</strong> Saat Mode Edit aktif, Anda dapat mengklik langsung pada teks untuk mengeditnya.</p>
-        </div>
-      </div>
-    `;
+  if (btn) { document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  const c = document.getElementById('adminContent');
+  if (tab === 'words') {
+    c.innerHTML = `<div class="admin-form"><h3>🔤 Kata Word Search per Sub-Tema</h3>
+      <p style="color:var(--cream-dark);font-size:12px;margin-bottom:12px">Huruf A–Z saja (romaji), tanpa spasi, 2–10 huruf, 3–10 kata. Pisahkan dengan koma atau baris baru.</p>
+      <div class="topic-selector" style="margin-bottom:14px">${Object.entries(WORDSEARCH_DATA).map(([k,v]) => `<button class="topic-btn" onclick="showWordsFor('${k}',this)">${v.title}</button>`).join('')}</div>
+      <div id="wordEditArea"></div></div>`;
+  } else {
+    c.innerHTML = `<div class="admin-form"><h3>📚 Edit Materi</h3>
+      <p style="color:var(--cream-dark);font-size:13px;margin-bottom:14px">Pilih sub-tema, Mode Edit akan aktif otomatis (perubahan teks belum tersimpan permanen):</p>
+      <div class="topic-selector">${Object.entries(MATERIALS).map(([k,v]) => `<button class="topic-btn" onclick="showMaterial('${k}');if(!editMode)toggleEditMode()">${v.icon} ${v.title}</button>`).join('')}</div></div>`;
   }
 }
-function showQuestionsFor(topic, btn) {
-  document.querySelectorAll('.topic-selector .topic-btn').forEach(b => b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  const qs = gameQuestions[topic] || [];
-  const listArea = document.getElementById('questionListArea');
-  if(qs.length === 0) {
-    listArea.innerHTML = '<p style="color:var(--cream-dark);font-size:13px">Belum ada soal untuk sub-tema ini.</p>';
-    return;
-  }
-  listArea.innerHTML = `
-    <div class="question-list">
-      ${qs.map((q,i) => `
-        <div class="question-item">
-          <div class="q-text">
-            <strong>${i+1}.</strong> ${q.q}<br>
-            <span class="spice-indicator spice-${q.spice}" style="margin-top:4px">${SPICE_LEVELS[q.spice].label} • +${SPICE_LEVELS[q.spice].points} poin</span>
-            <small style="color:var(--wasabi);margin-left:8px">Jawaban: ${q.options[q.answer]}</small>
-          </div>
-          <div class="q-actions">
-            <button class="btn-danger" onclick="deleteQuestion('${topic}',${i})"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+function showWordsFor(k, btn) {
+  document.querySelectorAll('#adminContent .topic-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('wordEditArea').innerHTML = `<textarea id="wordText" style="width:100%;min-height:110px">${WORDSEARCH_DATA[k].words.join(', ')}</textarea>
+    <button class="btn-primary" style="margin-top:10px" onclick="saveWords('${k}')"><i class="fas fa-save"></i> Simpan Kata</button>`;
 }
-function addQuestion() {
-  const topic = document.getElementById('newQTopic').value;
-  const spice = document.getElementById('newQSpice').value;
-  const text = document.getElementById('newQText').value.trim();
-  const a = document.getElementById('newQA').value.trim();
-  const b = document.getElementById('newQB').value.trim();
-  const c = document.getElementById('newQC').value.trim();
-  const d = document.getElementById('newQD').value.trim();
-  const answer = parseInt(document.getElementById('newQAnswer').value);
-  if(!text || !a || !b || !c || !d) {
-    notify('Semua field harus diisi!', true);
-    return;
-  }
-  if(!gameQuestions[topic]) gameQuestions[topic] = [];
-  gameQuestions[topic].push({q:text, options:[a,b,c,d], answer, spice});
-  saveQuestions();
-  document.getElementById('newQText').value = '';
-  document.getElementById('newQA').value = '';
-  document.getElementById('newQB').value = '';
-  document.getElementById('newQC').value = '';
-  document.getElementById('newQD').value = '';
-  notify('✅ Soal berhasil ditambahkan!');
-}
-function deleteQuestion(topic, idx) {
-  if(confirm('Yakin ingin menghapus soal ini?')) {
-    gameQuestions[topic].splice(idx, 1);
-    saveQuestions();
-    showQuestionsFor(topic);
-    notify('Soal berhasil dihapus');
-  }
+function saveWords(k) {
+  const ws = [...new Set(document.getElementById('wordText').value.toUpperCase().split(/[\s,]+/).filter(Boolean))];
+  const bad = ws.filter(w => !/^[A-Z]{2,10}$/.test(w));
+  if (bad.length) { notify('Tidak valid: ' + bad.join(', '), true); return; }
+  if (ws.length < 3 || ws.length > 10) { notify('Isi 3–10 kata', true); return; }
+  WORDSEARCH_DATA[k].words = ws;
+  try { const o = {}; for (const x in WORDSEARCH_DATA) o[x] = WORDSEARCH_DATA[x].words; localStorage.setItem('was4bi_words', JSON.stringify(o)); } catch(e) {}
+  notify('✅ Kata disimpan');
 }
 // ==================== UTILITIES ====================
 function notify(msg, isError = false) {
